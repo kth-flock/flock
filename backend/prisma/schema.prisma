@@ -12,8 +12,45 @@ datasource db {
   provider = "postgresql"
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  name  String?
-} 
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  imageUrl  String?
+
+  events    Event[]
+  invitees  Invitee[]
+}
+
+model Event {
+  id              Int       @id @default(autoincrement())
+  hostId          Int       
+  title           String
+  locationName    String?
+  googlePlaceId   String?
+  startsAt        DateTime
+  endsAt          DateTime?
+  imageUrl        String?
+
+  createdBy       User @relation(fields: [hostId], references: [id])
+
+  invitees        Invitee[]
+}
+
+model Invitee {
+  eventId         Int
+  userId          Int
+  rsvp            RSVP   @default(PENDING)
+
+  event           Event @relation(fields: [eventId], references: [id])
+  user            User  @relation(fields: [userId], references: [id])
+
+  @@id([eventId, userId])
+}
+
+enum RSVP {
+  PENDING
+  ACCEPTED
+  MAYBE
+  DECLINED
+}
