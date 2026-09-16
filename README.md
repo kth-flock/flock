@@ -69,12 +69,6 @@ flock/
    npx prisma migrate dev
    ```
 
-   Sometimes you may also need to run the following command as well
-
-   ```bash
-   npx prisma generate
-   ```
-
 5. Start the dev server
 
    ```bash
