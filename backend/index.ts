@@ -9,6 +9,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Express server running" });
 });
 
+// Routes
 app.use("/users", usersRouter);
 
 const PORT = 3000;
