@@ -87,19 +87,33 @@ docker run --name flockdatabase -e POSTGRES_PASSWORD=yourpassword -p 5434:5432 -
 
 After editing schema.prisma, for example when you add a table or update a table, run:
 
-### 1 Create new migration
-
+### After editing schema
+#### 1 Create a new migration
 Replace the "migration-name" with a short description of your change.
 
 ```bash
 npx prisma migrate dev --name migration-name
 ```
 
-### 2 Regenerate Prisma Client
+#### 2 Regenerate Prisma Client
 
 ```bash
 npx prisma generate
 ```
+
+### When someone else has updated a schema
+If someone else has updated a schema, you need to run
+
+```bash
+npx prisma migrate deploy
+```
+and 
+
+```bash
+npx prisma generate
+```
+
+to get your local database up to date
 
 ### Prisma Studio
 
