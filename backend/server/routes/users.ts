@@ -11,3 +11,21 @@ usersRouter.get("/", async (req, res) => {
     res.status(500).json({ error: (error as Error).message });
   }
 });
+<<<<<<< Updated upstream
+=======
+
+
+// add user to database
+usersRouter.post("/", async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    //console.log(name, email); TODO: remove debug logging for final deployment
+    const user = await prisma.user.create({
+      data: { name, email},
+    });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+>>>>>>> Stashed changes
