@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
+import Navbar from "../components/navbar";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -23,7 +24,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col px-24">{children}</body>
+      <body className="min-h-full flex flex-col px-6 md:px-24">
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
