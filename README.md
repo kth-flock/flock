@@ -40,6 +40,24 @@ flock/
     └─ .env.example          # Template for required env vars
 ```
 
+## Frontend setup
+
+**Prerequisites:** Node.js
+
+1. Install dependencies
+
+   ```bash
+   cd frontend
+   npm install
+   ```
+   
+2. Start dev server
+
+   ```bash
+   npm run dev
+   ```
+   The frontend will be running at `http://localhost:3000`.
+
 ## Backend setup
 
 **Prerequisites:** Node.js, Docker
@@ -75,7 +93,7 @@ flock/
    npm run dev
    ```
 
-The API will be running at `http://localhost:3000`.
+The API will be running at `http://localhost:4000`.
 
 ## Local Database
 

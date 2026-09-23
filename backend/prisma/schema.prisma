@@ -17,30 +17,38 @@ model User {
   name      String
   email     String   @unique
   imageUrl  String?
+  pwdHash   String?
 
   events    Event[]
   invitees  Invitee[]
+  sentFriendRequests     Friendship[] @relation("FriendRequester")
+  receivedFriendRequests Friendship[] @relation("FriendRequestee")
+  announcements   Announcement[]
+  comments    Comment[]
 }
 
 model Event {
   id              Int       @id @default(autoincrement())
-  hostId          Int       
+  createdById     Int       
   title           String
+  description     String?
   locationName    String?
   googlePlaceId   String?
   startsAt        DateTime
   endsAt          DateTime?
   imageUrl        String?
 
-  createdBy       User @relation(fields: [hostId], references: [id])
+  createdBy       User @relation(fields: [createdById], references: [id])
 
   invitees        Invitee[]
+  announcements   Announcement[]
 }
 
 model Invitee {
   eventId         Int
   userId          Int
   rsvp            RSVP   @default(PENDING)
+  rsvpComment     String?
 
   event           Event @relation(fields: [eventId], references: [id])
   user            User  @relation(fields: [userId], references: [id])
@@ -53,4 +61,45 @@ enum RSVP {
   ACCEPTED
   MAYBE
   DECLINED
+}
+
+model Friendship {
+  requesterId   Int
+  requesteeId   Int
+  status        STATUS @default(PENDING)
+
+  requester     User @relation("FriendRequester", fields: [requesterId], references: [id])
+  requestee     User @relation("FriendRequestee", fields: [requesteeId], references: [id])
+
+  @@id([requesterId, requesteeId])
+}
+
+enum STATUS {
+  PENDING
+  ACCEPTED
+}
+
+model Announcement {
+  id          Int @id @default(autoincrement())
+  eventId     Int
+  userId      Int
+  content     String
+  createdAt   DateTime @default(now())
+
+  event       Event @relation(fields: [eventId], references: [id])
+  user        User @relation(fields: [userId], references: [id])
+
+  comments    Comment[]
+}
+
+model Comment {
+  id              Int @id @default(autoincrement())
+  announcementId  Int
+  userId          Int
+  content         String
+  createdAt       DateTime @default(now())
+
+  announcement    Announcement @relation(fields: [announcementId], references: [id])
+  user            User @relation(fields: [userId], references: [id])
+
 }

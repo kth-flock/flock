@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center dark:bg-black">
+    <div className="flex flex-col flex-1 items-center justify-center dark:bg-black bg-amber-50">
       HOME PAGE
     </div>
   );
