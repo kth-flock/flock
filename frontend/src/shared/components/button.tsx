@@ -1,11 +1,24 @@
 "use client";
 import Link from "next/link";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonBaseProps = {
   variant?: "primary" | "secondary" | "tertiary" | "";
   className?: string;
-  href?: string;
-}
+  disabled?: boolean;
+  children: React.ReactNode;
+};
+
+type LinkButtonProps = ButtonBaseProps & {
+  href: string;
+  onClick?: () => void;
+};
+
+type PlainButtonProps = ButtonBaseProps & {
+  href?: undefined;
+  onClick: () => void;
+};
+
+type ButtonProps = LinkButtonProps | PlainButtonProps;
 
 const baseStyle =
   "flex gap-4 rounded-full cursor-pointer disabled:pointer-events-none";
@@ -53,6 +66,7 @@ export default function Button({
   href,
   children,
   disabled,
+  onClick,
   ...props
 }: ButtonProps) {
   if (href) {
@@ -74,6 +88,7 @@ export default function Button({
     <button
       disabled={disabled}
       className={getButtonClasses(variant, className, disabled)}
+      onClick={onClick}
       {...props}
     >
       {children}
@@ -81,10 +96,12 @@ export default function Button({
   );
 }
 
-interface IconButtonProps extends ButtonProps {
+type IconButtonProps = ButtonBaseProps & {
   ariaLabel: string;
+  href?: string;
+  onClick?: () => void;
   children: React.ReactElement;
-}
+};
 
 export function IconButton({
   className,
@@ -92,6 +109,7 @@ export function IconButton({
   disabled,
   ariaLabel,
   href,
+  onClick,
 }: IconButtonProps) {
   const iconClasses =
     "group-hover:scale-110 group-hover:-rotate-7 group-active:scale-100 group-active:rotate-0";
@@ -119,6 +137,7 @@ export function IconButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={getIconButtonClasses(className, disabled)}
+      onClick={onClick}
     >
       <span className={disabled ? "scale-100 rotate-0" : iconClasses}>
         {children}
