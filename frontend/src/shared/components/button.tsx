@@ -7,7 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseStyle =
-  "flex gap-4 rounded-full px-4 py-2 cursor-pointer disabled:pointer-events-none";
+  "flex gap-4 rounded-full cursor-pointer disabled:pointer-events-none";
 
 const buttonStyles = {
   primary:
@@ -23,21 +23,47 @@ export default function Button({
   href,
   children,
   disabled,
+  ...props
 }: ButtonProps) {
   return href ? (
     <Link
       href={href}
       aria-disabled={disabled}
-      className={`${baseStyle} ${variant && buttonStyles[variant]} ${className ?? ""}`}
+      className={`px-4 py-2 ${baseStyle} ${variant && buttonStyles[variant]} ${className ?? ""}`}
     >
       {children}
     </Link>
   ) : (
     <button
       disabled={disabled}
-      className={`${baseStyle} ${variant && buttonStyles[variant]} ${className ?? ""}`}
+      className={`px-4 py-2 ${baseStyle} ${variant && buttonStyles[variant]} ${className ?? ""}`}
+      {...props}
     >
       {children}
+    </button>
+  );
+}
+
+interface IconButtonProps extends ButtonProps {
+  ariaLabel: string;
+  children: React.ReactElement;
+}
+
+export function IconButton({
+  className,
+  children,
+  disabled,
+  ariaLabel,
+}: IconButtonProps) {
+  return (
+    <button
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className={`group p-4 ${baseStyle} ${buttonStyles["primary"]} ${className ?? ""}`}
+    >
+      <span className="group-hover:scale-110 group-hover:-rotate-7 group-active:scale-100 group-active:rotate-0">
+        {children}
+      </span>
     </button>
   );
 }
