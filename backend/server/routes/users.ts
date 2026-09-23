@@ -11,8 +11,6 @@ usersRouter.get("/", async (req, res) => {
     res.status(500).json({ error: (error as Error).message });
   }
 });
-<<<<<<< Updated upstream
-=======
 
 
 // add user to database
@@ -28,4 +26,4 @@ usersRouter.post("/", async (req, res) => {
     res.status(500).json({ error: (error as Error).message });
   }
 });
->>>>>>> Stashed changes
+
