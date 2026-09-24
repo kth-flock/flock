@@ -8,3 +8,7 @@ export const createUserSchema = z.object({
   img_url: z.string().optional(),
   password: z.string().optional(),
 });
+
+export const editUserSchema = createUserSchema
+  .omit({ email: true, password: true })
+  .partial();
