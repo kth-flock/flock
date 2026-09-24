@@ -19,6 +19,7 @@ export default function Navbar() {
           alt="Flock"
           width={200}
           height={200}
+          loading="eager"
           className="h-full w-full group-hover:drop-shadow-lg"
         />
       </Link>
