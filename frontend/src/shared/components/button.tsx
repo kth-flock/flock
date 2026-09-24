@@ -2,26 +2,36 @@
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 
-// TODO: Implement text+icon button, button-types, sizes + responsivity
+// TODO: button-types, sizes + responsivity
 
 // ---------- TYPES ----------
 
 type ButtonVariant = "primary" | "secondary" | "tertiary";
 
+type IconPlacement = "left" | "right" | "";
+
 type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
 };
 
-type ButtonProps = ClickableItemProps & {
-  variant?: ButtonVariant;
-};
+type ButtonProps =
+  | (ClickableItemProps & {
+      variant?: ButtonVariant;
+      icon?: undefined;
+      iconPlacement?: undefined;
+    })
+  | (ClickableItemProps & {
+      variant?: ButtonVariant;
+      icon: React.ReactElement;
+      iconPlacement: IconPlacement;
+    });
 
 type IconButtonProps = ClickableItemProps;
 
 // ---------- STYLE CLASSES ----------
 
 const baseStyle =
-  "flex gap-4 rounded-full cursor-pointer disabled:pointer-events-none";
+  "flex gap-1 items-center rounded-full cursor-pointer disabled:pointer-events-none";
 
 const buttonStyles: Record<ButtonVariant, string> = {
   primary:
@@ -43,13 +53,19 @@ const getButtonClasses = ({
   variant = "primary",
   className,
   disabled,
+  iconPlacement,
 }: {
   variant?: ButtonVariant;
   className?: string;
   disabled?: boolean;
+  iconPlacement?: IconPlacement;
 }) =>
   twMerge(
-    "px-4 py-2",
+    iconPlacement
+      ? iconPlacement == "left"
+        ? "pr-4 pl-3 py-2 flex-row-reverse"
+        : "pr-3 pl-4 py-2"
+      : "px-4 py-2",
     baseStyle,
     buttonStyles[variant],
     getDisabledClasses(disabled),
@@ -116,16 +132,24 @@ export default function Button({
   disabled,
   onClick,
   "aria-label": ariaLabel,
+  icon,
+  iconPlacement = "",
 }: ButtonProps) {
   return (
     <ClickableItem
       href={href}
       disabled={disabled}
       onClick={onClick}
-      className={getButtonClasses({ variant, className, disabled })}
+      className={getButtonClasses({
+        variant,
+        className,
+        disabled,
+        iconPlacement,
+      })}
       aria-label={ariaLabel}
     >
       {children}
+      {icon}
     </ClickableItem>
   );
 }
