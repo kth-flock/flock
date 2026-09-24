@@ -39,7 +39,7 @@ model Event {
   endsAt          DateTime?
   imageUrl        String?
 
-  createdBy       User @relation(fields: [createdById], references: [id])
+  createdBy       User @relation(fields: [createdById], references: [id], onDelete: Cascade)
 
   invitees        Invitee[]
   announcements   Announcement[]
@@ -52,7 +52,7 @@ model Invitee {
   rsvpComment     String?
 
   event           Event @relation(fields: [eventId], references: [id])
-  user            User  @relation(fields: [userId], references: [id])
+  user            User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([eventId, userId])
 }
@@ -69,8 +69,8 @@ model Friendship {
   requesteeId   Int
   status        STATUS @default(PENDING)
 
-  requester     User @relation("FriendRequester", fields: [requesterId], references: [id])
-  requestee     User @relation("FriendRequestee", fields: [requesteeId], references: [id])
+  requester     User @relation("FriendRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  requestee     User @relation("FriendRequestee", fields: [requesteeId], references: [id], onDelete: Cascade)
 
   @@id([requesterId, requesteeId])
 }
@@ -88,7 +88,7 @@ model Announcement {
   createdAt   DateTime @default(now())
 
   event       Event @relation(fields: [eventId], references: [id])
-  user        User @relation(fields: [userId], references: [id])
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   comments    Comment[]
 }
@@ -101,6 +101,6 @@ model Comment {
   createdAt       DateTime @default(now())
 
   announcement    Announcement @relation(fields: [announcementId], references: [id])
-  user            User @relation(fields: [userId], references: [id])
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 }
