@@ -4,14 +4,14 @@ import { FaCircleUser, FaCalendarDays, FaHouseChimney } from "react-icons/fa6";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
-const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-lg";
+const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
 export default function Navbar() {
   return (
     <nav className="w-full py-2 md:p-6 flex flex-row justify-between h-20 md:h-32 items-center">
       <Link
         href="/"
-        className={`flex h-[80%] ${navLinkStyle}`}
+        className={`flex h-[70%] ${navLinkStyle}`}
         aria-label="Flock Logo"
       >
         <Image
