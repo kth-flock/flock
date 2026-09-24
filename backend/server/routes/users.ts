@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { idSchema } from "../../../shared/schemas/common";
-import { createUserSchema } from "../../../shared/schemas/user";
+import { createUserSchema, editUserSchema } from "../../../shared/schemas/user";
 export const usersRouter = Router();
 import { getUserById } from "../utils/prismaUtils";
+import { z } from "zod";
 
 // get ALL users
 usersRouter.get("/", async (req, res) => {
@@ -44,7 +45,7 @@ usersRouter.post("/", async (req, res) => {
   }
 });
 
-// DELETE account
+// DELETE user account
 usersRouter.delete("/:userID", async (req, res) => {
   try {
     const id = idSchema.parse(req.params.userID);
@@ -52,12 +53,42 @@ usersRouter.delete("/:userID", async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
+    // Add authorisation
+
     await prisma.user.delete({
       where: { id },
     });
     res.json({ message: "User deleted" });
   } catch (error) {
     return res.status(404).json({ error: (error as Error).message });
+  }
+});
+
+// Edit user account
+usersRouter.patch("/:userID", async (req, res) => {
+  try {
+    const id = idSchema.parse(req.params.userID);
+    const existingUser = await getUserById(id);
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // add authorisation
+
+    const data = editUserSchema.parse(req.body);
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data,
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
