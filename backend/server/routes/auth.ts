@@ -3,9 +3,9 @@ import { prisma } from "../prisma";
 import bcrypt from "bcryptjs";
 
 
-const router = express.Router();
+const authRouter = express.Router();
 
-router.post("/register", async (req, res) => {
+authRouter.post("/register", async (req, res) => {
     try {
       const { name, email, pwdHash } = req.body;
       //console.log(name, email); TODO: remove debug logging for final deployment
@@ -30,4 +30,29 @@ router.post("/register", async (req, res) => {
     }
   });
 
-export default router;
+authRouter.post("/login", async (req, res) => {
+    try {
+      const { email, pwdHash } = req.body;
+      console.log("this is the login route");
+
+    //check if user email exists
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user || !user.pwdHash) {
+        return res.status(401).json({ status: "Unauthorized", error: "Invalid credentials" });
+      }
+
+      //check if password is correct
+      const isPasswordCorrect = await bcrypt.compare(pwdHash, user.pwdHash);
+      if (!isPasswordCorrect) {
+        return res.status(401).json({ status: "Unauthorized", error: "Invalid credentials" });
+      }
+
+      res.status(200).json({ status: "Success", data: user });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+});
+
+
+
+export default authRouter;
