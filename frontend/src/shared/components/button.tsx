@@ -1,64 +1,112 @@
 "use client";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
-type ButtonBaseProps = {
-  variant?: "primary" | "secondary" | "tertiary" | "";
-  className?: string;
-  disabled?: boolean;
-  children: React.ReactNode;
+// TODO: Implement text+icon button, button-types, sizes + responsivity
+
+// ---------- TYPES ----------
+
+type ButtonVariant = "primary" | "secondary" | "tertiary";
+
+type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  href?: string;
 };
 
-type LinkButtonProps = ButtonBaseProps & {
-  href: string;
-  onClick?: () => void;
+type ButtonProps = ClickableItemProps & {
+  variant?: ButtonVariant;
 };
 
-type PlainButtonProps = ButtonBaseProps & {
-  href?: undefined;
-  onClick: () => void;
-};
+type IconButtonProps = ClickableItemProps;
 
-type ButtonProps = LinkButtonProps | PlainButtonProps;
+// ---------- STYLE CLASSES ----------
 
 const baseStyle =
   "flex gap-4 rounded-full cursor-pointer disabled:pointer-events-none";
 
-const buttonStyles = {
+const buttonStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-secondary text-white shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-primary active:translate-0 active:inset-shadow-sm active:shadow-none",
+    "bg-secondary text-white shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-primary active:translate-y-0 active:inset-shadow-sm active:shadow-none",
   secondary:
-    "border-2 border-secondary text-secondary shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary/20 hover:border-primary hover:text-primary active:translate-0 active:inset-shadow-sm active:shadow-none active:bg-transparent",
+    "border-2 border-secondary text-secondary shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary/20 hover:border-primary hover:text-primary active:translate-y-0 active:inset-shadow-sm active:shadow-none active:bg-transparent",
   tertiary: "text-primary transition-all hover:underline disabled:opacity-50",
 };
+
+const iconHoverClasses =
+  "group-hover:scale-110 group-hover:-rotate-[7deg] group-active:scale-100 group-active:rotate-0";
+
+// ---------- HELPER FUNCTIONS ----------
 
 const getDisabledClasses = (disabled?: boolean) =>
   disabled ? "pointer-events-none opacity-50 shadow-none" : "";
 
-const getButtonClasses = (
-  variant?: ButtonProps["variant"],
-  className?: string,
-  disabled?: boolean,
-) =>
-  [
+const getButtonClasses = ({
+  variant = "primary",
+  className,
+  disabled,
+}: {
+  variant?: ButtonVariant;
+  className?: string;
+  disabled?: boolean;
+}) =>
+  twMerge(
     "px-4 py-2",
     baseStyle,
-    variant ? buttonStyles[variant] : "",
-    className ?? "",
+    buttonStyles[variant],
     getDisabledClasses(disabled),
-  ]
-    .filter(Boolean)
-    .join(" ");
+    className,
+  );
 
-const getIconButtonClasses = (className?: string, disabled?: boolean) =>
-  [
+const getIconButtonClasses = ({
+  className,
+  disabled,
+}: {
+  className?: string;
+  disabled?: boolean;
+}) =>
+  twMerge(
     "group p-4",
     baseStyle,
     buttonStyles.primary,
-    className ?? "",
     getDisabledClasses(disabled),
-  ]
-    .filter(Boolean)
-    .join(" ");
+    className,
+  );
+
+// ---------- COMPONENTS ----------
+
+export function ClickableItem({
+  href,
+  disabled,
+  className,
+  children,
+  "aria-label": ariaLabel,
+  onClick,
+}: ClickableItemProps) {
+  return href ? (
+    <Link
+      href={href}
+      className={className}
+      onClick={(event) => {
+        if (disabled) {
+          event.preventDefault();
+          return;
+        }
+      }}
+      aria-disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </Link>
+  ) : (
+    <button
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className={className}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function Button({
   variant,
@@ -67,81 +115,40 @@ export default function Button({
   children,
   disabled,
   onClick,
-  ...props
+  "aria-label": ariaLabel,
 }: ButtonProps) {
-  if (href) {
-    return (
-      <Link
-        href={href}
-        onClick={(event) => {
-          if (disabled) event.preventDefault();
-        }}
-        aria-disabled={disabled}
-        className={getButtonClasses(variant, className, disabled)}
-      >
-        {children}
-      </Link>
-    );
-  }
-
   return (
-    <button
+    <ClickableItem
+      href={href}
       disabled={disabled}
-      className={getButtonClasses(variant, className, disabled)}
       onClick={onClick}
-      {...props}
+      className={getButtonClasses({ variant, className, disabled })}
+      aria-label={ariaLabel}
     >
       {children}
-    </button>
+    </ClickableItem>
   );
 }
-
-type IconButtonProps = ButtonBaseProps & {
-  ariaLabel: string;
-  href?: string;
-  onClick?: () => void;
-  children: React.ReactElement;
-};
 
 export function IconButton({
   className,
   children,
   disabled,
-  ariaLabel,
+  "aria-label": ariaLabel,
   href,
   onClick,
 }: IconButtonProps) {
-  const iconClasses =
-    "group-hover:scale-110 group-hover:-rotate-7 group-active:scale-100 group-active:rotate-0";
-
-  if (href) {
-    return (
-      <Link
-        href={href}
-        onClick={(event) => {
-          if (disabled) event.preventDefault();
-        }}
-        aria-disabled={disabled}
-        aria-label={ariaLabel}
-        className={getIconButtonClasses(className, disabled)}
-      >
-        <span className={disabled ? "scale-100 rotate-0" : iconClasses}>
-          {children}
-        </span>
-      </Link>
-    );
-  }
-
   return (
-    <button
+    <ClickableItem
+      href={href}
       disabled={disabled}
-      aria-label={ariaLabel}
-      className={getIconButtonClasses(className, disabled)}
       onClick={onClick}
+      className={getIconButtonClasses({ className, disabled })}
+      aria-label={ariaLabel}
     >
-      <span className={disabled ? "scale-100 rotate-0" : iconClasses}>
+      <span className={disabled ? "scale-100 rotate-0" : iconHoverClasses}>
         {children}
       </span>
-    </button>
+    </ClickableItem>
   );
 }
