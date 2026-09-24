@@ -1,6 +1,7 @@
 import express from "express";
 import { prisma } from "../prisma";
 import bcrypt from "bcryptjs";
+import generateToken from "../utils/generateToken";
 
 
 const authRouter = express.Router();
@@ -46,6 +47,8 @@ authRouter.post("/login", async (req, res) => {
       if (!isPasswordCorrect) {
         return res.status(401).json({ status: "Unauthorized", error: "Invalid credentials" });
       }
+      //generate token
+      const token = generateToken(user.id);
 
       res.status(200).json({ status: "Success", data: user });
     } catch (error) {
