@@ -2,12 +2,10 @@
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 
-// TODO: button-types, sizes + responsivity
-
 // ---------- TYPES ----------
 
 type ButtonVariant = "primary" | "secondary" | "tertiary";
-
+type ButtonSize = "sm" | "md" | "lg";
 type IconPlacement = "left" | "right" | "";
 
 type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -17,16 +15,20 @@ type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 type ButtonProps =
   | (ClickableItemProps & {
       variant?: ButtonVariant;
+      size?: ButtonSize;
       icon?: undefined;
       iconPlacement?: undefined;
     })
   | (ClickableItemProps & {
       variant?: ButtonVariant;
+      size?: ButtonSize;
       icon: React.ReactElement;
       iconPlacement: IconPlacement;
     });
 
-type IconButtonProps = ClickableItemProps;
+type IconButtonProps = ClickableItemProps & {
+  size?: ButtonSize;
+};
 
 // ---------- STYLE CLASSES ----------
 
@@ -41,6 +43,42 @@ const buttonStyles: Record<ButtonVariant, string> = {
   tertiary: "text-primary transition-all hover:underline disabled:opacity-50",
 };
 
+const buttonSizeStyles: Record<ButtonSize, string> = {
+  sm: "px-3 py-1.5 text-sm gap-1",
+  md: "px-4 py-2 text-base gap-1.5",
+  lg: "px-5 py-2.5 text-base gap-2",
+};
+
+const buttonSizeIconStyles: Record<
+  ButtonSize,
+  Record<"left" | "right", string>
+> = {
+  sm: {
+    left: "pl-2.5 pr-3 py-1.5 text-sm gap-1 flex-row-reverse",
+    right: "pl-3 pr-2.5 py-1.5 text-sm gap-1",
+  },
+  md: {
+    left: "pl-3 pr-4 py-2 text-base gap-1.5 flex-row-reverse",
+    right: "pl-4 pr-3 py-2 text-base gap-1.5",
+  },
+  lg: {
+    left: "pl-4 pr-5 py-2.5 text-base gap-2 flex-row-reverse",
+    right: "pl-5 pr-4 py-2.5 text-base gap-2",
+  },
+};
+
+const iconSizeStyles: Record<ButtonSize, string> = {
+  sm: "[&>svg]:size-4",
+  md: "[&>svg]:size-5",
+  lg: "[&>svg]:size-6",
+};
+
+const iconButtonSizeStyles: Record<ButtonSize, string> = {
+  sm: "p-2 [&>svg]:size-4",
+  md: "p-3 [&>svg]:size-5",
+  lg: "p-4 [&>svg]:size-6",
+};
+
 const iconHoverClasses =
   "group-hover:scale-110 group-hover:-rotate-[7deg] group-active:scale-100 group-active:rotate-0";
 
@@ -51,21 +89,21 @@ const getDisabledClasses = (disabled?: boolean) =>
 
 const getButtonClasses = ({
   variant = "primary",
+  size = "md",
   className,
   disabled,
   iconPlacement,
 }: {
   variant?: ButtonVariant;
+  size?: ButtonSize;
   className?: string;
   disabled?: boolean;
   iconPlacement?: IconPlacement;
 }) =>
   twMerge(
     iconPlacement
-      ? iconPlacement == "left"
-        ? "pr-4 pl-3 py-2 flex-row-reverse"
-        : "pr-3 pl-4 py-2"
-      : "px-4 py-2",
+      ? buttonSizeIconStyles[size][iconPlacement === "left" ? "left" : "right"]
+      : buttonSizeStyles[size],
     baseStyle,
     buttonStyles[variant],
     getDisabledClasses(disabled),
@@ -73,14 +111,17 @@ const getButtonClasses = ({
   );
 
 const getIconButtonClasses = ({
+  size = "md",
   className,
   disabled,
 }: {
+  size?: ButtonSize;
   className?: string;
   disabled?: boolean;
 }) =>
   twMerge(
-    "group p-4",
+    "group",
+    iconButtonSizeStyles[size],
     baseStyle,
     buttonStyles.primary,
     getDisabledClasses(disabled),
@@ -96,6 +137,7 @@ export function ClickableItem({
   children,
   "aria-label": ariaLabel,
   onClick,
+  type,
 }: ClickableItemProps) {
   return href ? (
     <Link
@@ -118,6 +160,7 @@ export function ClickableItem({
       aria-label={ariaLabel}
       className={className}
       onClick={onClick}
+      type={type}
     >
       {children}
     </button>
@@ -126,49 +169,44 @@ export function ClickableItem({
 
 export default function Button({
   variant,
+  size = "md",
   className,
-  href,
   children,
   disabled,
-  onClick,
-  "aria-label": ariaLabel,
   icon,
   iconPlacement = "",
+  ...props
 }: ButtonProps) {
   return (
     <ClickableItem
-      href={href}
       disabled={disabled}
-      onClick={onClick}
       className={getButtonClasses({
         variant,
+        size,
         className,
         disabled,
         iconPlacement,
       })}
-      aria-label={ariaLabel}
+      {...props}
     >
       {children}
-      {icon}
+      {icon && <span className={iconSizeStyles[size]}>{icon}</span>}
     </ClickableItem>
   );
 }
 
 export function IconButton({
+  size = "md",
   className,
   children,
   disabled,
-  "aria-label": ariaLabel,
-  href,
-  onClick,
+  ...props
 }: IconButtonProps) {
   return (
     <ClickableItem
-      href={href}
       disabled={disabled}
-      onClick={onClick}
-      className={getIconButtonClasses({ className, disabled })}
-      aria-label={ariaLabel}
+      className={getIconButtonClasses({ size, className, disabled })}
+      {...props}
     >
       <span className={disabled ? "scale-100 rotate-0" : iconHoverClasses}>
         {children}
