@@ -9,6 +9,13 @@ type UserId = z.infer<typeof idSchema>;
 export async function getUserById(id: UserId) {
   const user = await prisma.user.findUnique({
     where: { id },
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      img_url: true,
+    },
   });
   return user;
 }

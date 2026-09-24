@@ -32,7 +32,7 @@ usersRouter.get("/:userID", async (req, res) => {
   }
 });
 
-// CREATE user
+// CREATE user, only for debug purposes
 usersRouter.post("/", async (req, res) => {
   try {
     const data = createUserSchema.parse(req.body);
@@ -49,7 +49,7 @@ usersRouter.post("/", async (req, res) => {
 usersRouter.delete("/:userID", async (req, res) => {
   try {
     const id = idSchema.parse(req.params.userID);
-    const user = getUserById(id);
+    const user = await getUserById(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -97,7 +97,7 @@ usersRouter.patch("/:userID", async (req, res) => {
 usersRouter.get("/:userID/friends", async (req, res) => {
   try {
     const userId = idSchema.parse(req.params.userID);
-    const user = await getUserById;
+    const user = await getUserById(userId);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -141,7 +141,7 @@ usersRouter.get("/:userID/friends", async (req, res) => {
 usersRouter.get("/:userID/friend_requests/sent", async (req, res) => {
   try {
     const userId = idSchema.parse(req.params.userID);
-    const user = await getUserById;
+    const user = await getUserById(userId);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -167,7 +167,7 @@ usersRouter.get("/:userID/friend_requests/sent", async (req, res) => {
 usersRouter.get("/:userID/friend_requests/received", async (req, res) => {
   try {
     const userId = idSchema.parse(req.params.userID);
-    const user = await getUserById;
+    const user = await getUserById(userId);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
