@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FaCircleUser, FaCalendarDays, FaHouseChimney } from "react-icons/fa6";
 
 const navLinkStyle =
-  "aspect-square items-center justify-center group hover:scale-120 hover:-rotate-5 transition-all";
+  "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-lg";
 
 export default function Navbar() {
