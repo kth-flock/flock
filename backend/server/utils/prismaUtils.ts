@@ -1,5 +1,4 @@
 import { idSchema } from "../../../shared/schemas/common";
-import { STATUS } from "../../prisma/generated/enums";
 import { prisma } from "../prisma";
 import { z } from "zod";
 
