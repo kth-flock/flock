@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { idSchema } from "../../../shared/schemas/common";
-import { createUserSchema, editUserSchema } from "../../../shared/schemas/user";
-import { getUserById, publicUserInformationSelect } from "../utils/prismaUtils";
+import { createUserSchema } from "../../../shared/schemas/user";
+import { getFriends, getUserById } from "../utils/prismaUtils";
 import { handleRouteError } from "../utils/errorHandlers";
 
 export const usersRouter = Router();
@@ -42,26 +42,8 @@ usersRouter.get("/:userId/friends", async (req, res) => {
     if (!user) {
       return res.status(404).json({ status: "Error", error: "User not found" });
     }
-
-    const friends = await prisma.friendship.findMany({
-      where: {
-        status: "ACCEPTED",
-        OR: [{ requesterId: userId }, { requesteeId: userId }],
-      },
-      include: {
-        requester: {
-          select: publicUserInformationSelect,
-        },
-        requestee: {
-          select: publicUserInformationSelect,
-        },
-      },
-    });
-
-    const friendsInfo = friends.map((friends) =>
-      friends.requesterId === userId ? friends.requestee : friends.requester,
-    );
-
+    const friendsInfo = await getFriends(idSchema.parse(userId));
+    console.log(friendsInfo);
     res.status(200).json({ status: "Success", data: friendsInfo });
   } catch (error) {
     return handleRouteError(error, res);
@@ -80,3 +62,6 @@ usersRouter.post("/", async (req, res) => {
     return handleRouteError(error, res);
   }
 });
+function getAcceptedFriends(arg0: number) {
+  throw new Error("Function not implemented.");
+}

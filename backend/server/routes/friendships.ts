@@ -1,11 +1,26 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { STATUS } from "../../prisma/generated/enums";
-import { getUserById, publicUserInformationSelect } from "../utils/prismaUtils";
+import {
+  getFriends,
+  getUserById,
+  publicUserInformationSelect,
+} from "../utils/prismaUtils";
 import { handleRouteError } from "../utils/errorHandlers";
 import { idSchema } from "../../../shared/schemas/common";
 
 export const friendshipsRouter = Router();
+
+// GET ALL my friends
+friendshipsRouter.get("/", async (req, res) => {
+  try {
+    const friendsInfo = await getFriends(idSchema.parse(req.user.id));
+
+    res.status(200).json({ status: "Success", data: friendsInfo });
+  } catch (error) {
+    return handleRouteError(error, res);
+  }
+});
 
 // GET friendship requests, use direction=sent or direction=received to get specific requests
 friendshipsRouter.get("/requests", async (req, res) => {
@@ -151,3 +166,6 @@ friendshipsRouter.delete("/", async (req, res) => {
     return handleRouteError(error, res);
   }
 });
+function getAcceptedFriends(arg0: number) {
+  throw new Error("Function not implemented.");
+}
