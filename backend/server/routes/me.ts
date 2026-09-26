@@ -62,6 +62,7 @@ meRouter.patch("/", async (req, res) => {
 
     const updatedUser = await prisma.user.update({
       where: { id },
+      select: privateUserInformationSelect,
       data,
     });
 

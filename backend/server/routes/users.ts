@@ -2,7 +2,11 @@ import { Router } from "express";
 import { prisma } from "../prisma";
 import { idSchema } from "../../../shared/schemas/common";
 import { createUserSchema } from "../../../shared/schemas/user";
-import { getFriends, getUserById } from "../utils/prismaUtils";
+import {
+  getFriends,
+  getUserById,
+  publicUserInformationSelect,
+} from "../utils/prismaUtils";
 import { handleRouteError } from "../utils/errorHandlers";
 
 export const usersRouter = Router();
@@ -10,7 +14,9 @@ export const usersRouter = Router();
 // GET ALL user accounts
 usersRouter.get("/", async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      select: publicUserInformationSelect,
+    });
     res.status(200).json({ status: "Success", data: users });
   } catch (error) {
     return handleRouteError(error, res);
@@ -49,19 +55,3 @@ usersRouter.get("/:userId/friends", async (req, res) => {
     return handleRouteError(error, res);
   }
 });
-
-// CREATE user, only for a debug purposes
-usersRouter.post("/", async (req, res) => {
-  try {
-    const data = createUserSchema.parse(req.body);
-    const user = await prisma.user.create({
-      data,
-    });
-    res.status(201).json({ status: "Success", data: user });
-  } catch (error) {
-    return handleRouteError(error, res);
-  }
-});
-function getAcceptedFriends(arg0: number) {
-  throw new Error("Function not implemented.");
-}
