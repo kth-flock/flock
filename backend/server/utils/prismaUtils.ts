@@ -4,17 +4,23 @@ import { z } from "zod";
 
 type UserId = z.infer<typeof idSchema>;
 
-// User validation
+export const publicUserInformationSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  imageUrl: true,
+} as const;
+
+export const privateUserInformationSelect = {
+  ...publicUserInformationSelect,
+  createdAt: true,
+};
+
 export async function getUserById(id: UserId) {
   const user = await prisma.user.findUnique({
     where: { id },
-    select: {
-      id: true,
-      first_name: true,
-      last_name: true,
-      email: true,
-      imageUrl: true,
-    },
+    select: publicUserInformationSelect,
   });
   return user;
 }
