@@ -1,4 +1,5 @@
 import { idSchema } from "../../../shared/schemas/common";
+import { STATUS } from "../../prisma/generated/enums";
 import { prisma } from "../prisma";
 import { z } from "zod";
 
@@ -23,4 +24,23 @@ export async function getUserById(id: UserId) {
     select: publicUserInformationSelect,
   });
   return user;
+}
+
+export async function getFriends(userId: number) {
+  const friendships = await prisma.friendship.findMany({
+    where: {
+      status: STATUS.ACCEPTED,
+      OR: [{ requesterId: userId }, { requesteeId: userId }],
+    },
+    include: {
+      requester: { select: publicUserInformationSelect },
+      requestee: { select: publicUserInformationSelect },
+    },
+  });
+
+  const friendInfo = friendships.map((f) =>
+    f.requesterId === userId ? f.requestee : f.requester,
+  );
+
+  return friendInfo;
 }
