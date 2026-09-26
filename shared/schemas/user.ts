@@ -4,7 +4,7 @@ export const createUserSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.email(),
-  imgUrl: z.string().optional(),
+  imgageUrl: z.string().optional(),
   password: z.string().optional(),
 });
 

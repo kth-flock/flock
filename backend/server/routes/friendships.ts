@@ -179,6 +179,3 @@ friendshipsRouter.delete("/", async (req, res) => {
     return handleRouteError(error, res);
   }
 });
-function getAcceptedFriends(arg0: number) {
-  throw new Error("Function not implemented.");
-}
