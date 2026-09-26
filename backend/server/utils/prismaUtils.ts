@@ -14,7 +14,7 @@ export async function getUserById(id: UserId) {
       first_name: true,
       last_name: true,
       email: true,
-      img_url: true,
+      imageUrl: true,
     },
   });
   return user;
