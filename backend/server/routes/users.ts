@@ -4,15 +4,16 @@ import { idSchema } from "../../../shared/schemas/common";
 import { createUserSchema, editUserSchema } from "../../../shared/schemas/user";
 export const usersRouter = Router();
 import { getUserById } from "../utils/prismaUtils";
-import { z } from "zod";
+import { z, ZodError } from "zod";
+import { handleZodError } from "../utils/errorHandlers";
 
 // get ALL users
 usersRouter.get("/", async (req, res) => {
   try {
     const users = await prisma.user.findMany();
-    res.json(users);
+    res.status(200).json({ status: "Success", data: users });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
@@ -23,25 +24,28 @@ usersRouter.get("/:userID", async (req, res) => {
     const user = await getUserById(id);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found", statusCode: 404 });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
-    res.json(user);
+    res.status(200).json({ status: "Success", data: user });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    handleZodError(error, res);
+
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
-// CREATE user, only for debug purposes
+// CREATE user, only forc a debug purposes
 usersRouter.post("/", async (req, res) => {
   try {
     const data = createUserSchema.parse(req.body);
     const user = await prisma.user.create({
       data,
     });
-    res.status(201).json(user);
+    res.status(201).json({ status: "Success", data: user });
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
@@ -51,7 +55,7 @@ usersRouter.delete("/:userID", async (req, res) => {
     const id = idSchema.parse(req.params.userID);
     const user = await getUserById(id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
     // Add authorisation
@@ -59,9 +63,10 @@ usersRouter.delete("/:userID", async (req, res) => {
     await prisma.user.delete({
       where: { id },
     });
-    res.json({ message: "User deleted" });
+    res.status(200).json({ status: "Success", message: "User deleted" });
   } catch (error) {
-    return res.status(404).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
@@ -71,7 +76,7 @@ usersRouter.patch("/:userID", async (req, res) => {
     const id = idSchema.parse(req.params.userID);
     const existingUser = await getUserById(id);
     if (!existingUser) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
     // add authorisation
@@ -83,12 +88,14 @@ usersRouter.patch("/:userID", async (req, res) => {
       data,
     });
 
-    res.json(updatedUser);
+    res.status(200).json({
+      status: "Success",
+      message: "User information successfully edited",
+      data: updatedUser,
+    });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.message });
-    }
-    res.status(500).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
@@ -100,7 +107,7 @@ usersRouter.get("/:userID/friends", async (req, res) => {
     const user = await getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
     const friends = await prisma.friendship.findMany({
@@ -132,9 +139,10 @@ usersRouter.get("/:userID/friends", async (req, res) => {
       friends.requesterId === userId ? friends.requestee : friends.requester,
     );
 
-    res.json(friendsInfo);
+    res.status(200).json({ status: "Success", data: friendsInfo });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 
@@ -144,7 +152,7 @@ usersRouter.get("/:userID/friend_requests/sent", async (req, res) => {
     const user = await getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
     const requests = await prisma.friendship.findMany({
@@ -159,9 +167,12 @@ usersRouter.get("/:userID/friend_requests/sent", async (req, res) => {
       },
     });
 
-    res.json(requests.map((r) => r.requestee));
+    res
+      .status(200)
+      .json({ status: "Success", data: requests.map((r) => r.requestee) });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
 usersRouter.get("/:userID/friend_requests/received", async (req, res) => {
@@ -170,7 +181,7 @@ usersRouter.get("/:userID/friend_requests/received", async (req, res) => {
     const user = await getUserById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ status: "Error", error: "User not found" });
     }
 
     const requests = await prisma.friendship.findMany({
@@ -185,8 +196,11 @@ usersRouter.get("/:userID/friend_requests/received", async (req, res) => {
       },
     });
 
-    res.json(requests.map((r) => r.requester));
+    res
+      .status(200)
+      .json({ status: "Success", data: requests.map((r) => r.requester) });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    handleZodError(error, res);
+    res.status(500).json({ status: "Error", error: "Internal server error" });
   }
 });
