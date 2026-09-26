@@ -5,7 +5,7 @@ import {
   privateUserInformationSelect,
   getUserById,
 } from "../utils/prismaUtils";
-import { handleZodError } from "../utils/errorHandlers";
+import { handleRouteError } from "../utils/errorHandlers";
 import { editUserSchema } from "../../../shared/schemas/user";
 import { friendshipsRouter } from "./friendships";
 
@@ -27,7 +27,7 @@ meRouter.get("/", async (req, res) => {
 
     res.status(200).json({ status: "Success", data: user });
   } catch (error) {
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
 
@@ -45,8 +45,7 @@ meRouter.delete("/", async (req, res) => {
     });
     res.status(200).json({ status: "Success", message: "User deleted" });
   } catch (error) {
-    handleZodError(error, res);
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
 
@@ -72,7 +71,6 @@ meRouter.patch("/", async (req, res) => {
       data: updatedUser,
     });
   } catch (error) {
-    handleZodError(error, res);
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
