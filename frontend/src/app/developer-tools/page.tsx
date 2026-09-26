@@ -59,7 +59,7 @@ export default function DeveloperTools() {
     <div className="flex flex-col flex-1 items-center justify-center dark:bg-black gap-4">
       <h1>DEVELOPER TOOLS PAGE</h1>
       <DeveloperButton onClick={getUsers}>Get Users</DeveloperButton>
-      <h2>Add to Database</h2>
+      {/* <h2>Add to Database</h2>
       <div>
         <form onSubmit={handleSubmit}>
           <input
@@ -83,8 +83,7 @@ export default function DeveloperTools() {
             Add User
           </button>
         </form>
-      </div>
-      <div id="users"></div>
+      </div> */}
     </div>
   );
 }
