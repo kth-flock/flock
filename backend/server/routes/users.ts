@@ -4,7 +4,6 @@ import { idSchema } from "../../../shared/schemas/common";
 import { createUserSchema, editUserSchema } from "../../../shared/schemas/user";
 export const usersRouter = Router();
 import { getUserById } from "../utils/prismaUtils";
-import { z, ZodError } from "zod";
 import { handleZodError } from "../utils/errorHandlers";
 
 // get ALL users
@@ -100,7 +99,6 @@ usersRouter.patch("/:userID", async (req, res) => {
 });
 
 // Endpoints for users friends
-
 usersRouter.get("/:userID/friends", async (req, res) => {
   try {
     const userId = idSchema.parse(req.params.userID);
