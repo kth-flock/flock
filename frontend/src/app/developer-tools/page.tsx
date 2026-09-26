@@ -40,8 +40,8 @@ export default function DeveloperTools() {
     const formData = new FormData(form);
 
     const data = {
-      first_name: formData.get("first_name") as string,
-      last_name: formData.get("last_name") as string,
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
       email: formData.get("email") as string,
     };
 
@@ -64,12 +64,12 @@ export default function DeveloperTools() {
         <form onSubmit={handleSubmit}>
           <input
             className="border-2 border-gray-300 rounded-md p-2"
-            name="first_name"
+            name="firstName"
             placeholder="First name"
           />
           <input
             className="border-2 border-gray-300 rounded-md p-2"
-            name="last_name"
+            name="lastName"
             placeholder="Last name"
           />
           <input
