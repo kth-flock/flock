@@ -3,7 +3,7 @@ import { prisma } from "../prisma";
 import { idSchema } from "../../../shared/schemas/common";
 import { createUserSchema, editUserSchema } from "../../../shared/schemas/user";
 import { getUserById, publicUserInformationSelect } from "../utils/prismaUtils";
-import { handleZodError } from "../utils/errorHandlers";
+import { handleRouteError } from "../utils/errorHandlers";
 
 export const usersRouter = Router();
 
@@ -13,7 +13,7 @@ usersRouter.get("/", async (req, res) => {
     const users = await prisma.user.findMany();
     res.status(200).json({ status: "Success", data: users });
   } catch (error) {
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
 
@@ -29,9 +29,7 @@ usersRouter.get("/:userId", async (req, res) => {
 
     res.status(200).json({ status: "Success", data: user });
   } catch (error) {
-    handleZodError(error, res);
-
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
 
@@ -66,8 +64,7 @@ usersRouter.get("/:userId/friends", async (req, res) => {
 
     res.status(200).json({ status: "Success", data: friendsInfo });
   } catch (error) {
-    handleZodError(error, res);
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
 
@@ -80,7 +77,6 @@ usersRouter.post("/", async (req, res) => {
     });
     res.status(201).json({ status: "Success", data: user });
   } catch (error) {
-    handleZodError(error, res);
-    res.status(500).json({ status: "Error", error: "Internal server error" });
+    return handleRouteError(error, res);
   }
 });
