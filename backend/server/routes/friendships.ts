@@ -112,6 +112,19 @@ friendshipsRouter.patch("/request", async (req, res) => {
     const requesteeId = req.user.id;
     const requesterId = idSchema.parse(req.body.requesterId);
 
+    const existing = await prisma.friendship.findUnique({
+      where: {
+        requesterId_requesteeId: { requesterId, requesteeId },
+        status: STATUS.PENDING,
+      },
+    });
+
+    if (!existing) {
+      return res
+        .status(404)
+        .json({ status: "Error", error: "Friend request not found" });
+    }
+
     const friendship = await prisma.friendship.update({
       where: {
         requesterId_requesteeId: { requesterId, requesteeId },
