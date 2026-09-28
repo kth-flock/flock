@@ -1,5 +1,8 @@
 import { twMerge } from "tailwind-merge";
 import { useFocusWithin } from "../hooks/useFocusWithin";
+import TextareaAutosize, {
+  TextareaAutosizeProps,
+} from "react-textarea-autosize";
 
 // TYPES
 
@@ -18,7 +21,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
 };
 
-type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+type TextareaProps = TextareaAutosizeProps & {
   icon?: React.ReactElement;
   label?: string;
 };
@@ -137,10 +140,10 @@ export function TextArea({
       label={label}
       htmlFor={props.id}
       isFocused={isFocused}
-      align="start"
+      align="center"
       onClick={() => ref.current?.focus()}
     >
-      <textarea
+      <TextareaAutosize
         {...props}
         ref={ref}
         placeholder={placeholder}
@@ -154,7 +157,7 @@ export function TextArea({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full resize-none border-0 bg-transparent p-0 body outline-none placeholder:text-neutral",
+          "w-full max-w-none! resize-none border-0 bg-transparent p-0 body outline-none placeholder:text-neutral",
           className,
         )}
       />
