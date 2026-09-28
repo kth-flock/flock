@@ -14,11 +14,12 @@ datasource db {
 
 model User {
   id              Int      @id @default(autoincrement())
-  first_name      String
-  last_name       String  
+  firstName       String
+  lastName        String  
   email           String   @unique
   imageUrl        String?
   pwdHash         String?
+  createdAt       DateTime @default(now())
 
   events    Event[]
   invitees  Invitee[]
