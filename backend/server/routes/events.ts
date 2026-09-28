@@ -69,7 +69,7 @@ eventsRouter.get("/:eventId", async (req, res) => {
     });
   }
 
-  res..status(200).json(event);
+  res.status(200).json(event);
 });
 
 //Get surface level data for all events created by user (no annoncements, comments, or userData)
