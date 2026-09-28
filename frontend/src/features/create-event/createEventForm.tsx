@@ -2,6 +2,7 @@
 import ImageUpload from "@/shared/components/imageUpload";
 import Input from "@/shared/components/formInputs";
 import { TextArea } from "@/shared/components/formInputs";
+import Button from "@/shared/components/button";
 import dynamic from "next/dynamic";
 
 const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
@@ -37,6 +38,9 @@ export default function CreateEventForm() {
         </span>
       </span>
       <TextArea icon={<FaFileLines />} />
+      <div className="w-full flex justify-end">
+        <Button>Next</Button>
+      </div>
     </form>
   );
 }

@@ -13,6 +13,15 @@ import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { FieldWrapper } from "./formInputs";
 import { useFocusWithin } from "../hooks/useFocusWithin";
 import { renderToStaticMarkup } from "react-dom/server";
+import type { Location, NominatimResult } from "../lib/nominatim";
+import {
+  formatLocationName,
+  DEFAULT_CENTER,
+  DEFAULT_ZOOM,
+} from "../lib/nominatim";
+import { nominatimFetch } from "../lib/apiFetch";
+
+// ---------- CONSTANTS ----------
 
 const markerIcon = L.divIcon({
   html: renderToStaticMarkup(
@@ -23,50 +32,7 @@ const markerIcon = L.divIcon({
   iconAnchor: [17, 34],
 });
 
-type Location = {
-  lat: number;
-  lng: number;
-  label: string;
-};
-
-type NominatimResult = {
-  place_id: number;
-  display_name: string;
-  lat: string;
-  lon: string;
-  address?: {
-    road?: string;
-    pedestrian?: string;
-    house_number?: string;
-    postcode?: string;
-    municipality?: string;
-    city?: string;
-    town?: string;
-    village?: string;
-  };
-};
-
-// Default view: Stockholm, Sweden
-const DEFAULT_CENTER: [number, number] = [59.3293, 18.0686];
-const DEFAULT_ZOOM = 12;
-
-function formatLocationName(result: NominatimResult) {
-  const address = result.address;
-  const street = address?.road ?? address?.pedestrian;
-  const streetAndNumber = [street, address?.house_number]
-    .filter(Boolean)
-    .join(" ");
-  const municipality =
-    address?.municipality ?? address?.city ?? address?.town ?? address?.village;
-  const formattedName = [streetAndNumber, address?.postcode, municipality]
-    .filter(Boolean)
-    .join(", ");
-  const shortName = formattedName || result.display_name;
-
-  return shortName.length > 56
-    ? `${shortName.slice(0, 53).trimEnd()}...`
-    : shortName;
-}
+// ---------- HELPER FUNCTIONS ----------
 
 function ClickHandler({
   onClick,
@@ -90,6 +56,8 @@ function RecenterOnSelect({ selected }: { selected: Location | null }) {
   }, [selected, map]);
   return null;
 }
+
+// ---------- COMPONENT ----------
 
 export default function LocationPicker({
   onSelect,
@@ -137,25 +105,13 @@ export default function LocationPicker({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({
+        const data: NominatimResult[] = await nominatimFetch("search", {
           q: query,
           format: "json",
           addressdetails: "1",
           limit: "5",
           countrycodes: "se",
         });
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_GEOCODING_API_URL}/search?${params.toString()}`,
-          {
-            referrer: window.location.origin,
-            referrerPolicy: "origin",
-            headers: {
-              "Accept-Language": "en",
-            },
-          },
-        );
-        const data: NominatimResult[] = await res.json();
         setResults(data);
       } catch (err) {
         console.error("Nominatim search failed:", err);
@@ -169,18 +125,22 @@ export default function LocationPicker({
     };
   }, [query]);
 
+  function commitLocation(location: Location, displayText: string) {
+    setSelected(location);
+    skipNextSearchRef.current = true;
+    setQuery(displayText);
+    onSelect?.(location);
+  }
+
   function chooseResult(result: NominatimResult) {
     const location: Location = {
       lat: parseFloat(result.lat),
       lng: parseFloat(result.lon),
       label: result.display_name,
     };
-    setSelected(location);
+    commitLocation(location, formatLocationName(result));
     setResults([]);
-    skipNextSearchRef.current = true;
-    setQuery(formatLocationName(result));
     setIsMapOpen(false);
-    onSelect?.(location);
   }
 
   async function handleMapClick(lat: number, lng: number) {
@@ -190,32 +150,19 @@ export default function LocationPicker({
 
     let label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     try {
-      const params = new URLSearchParams({
+      const result: NominatimResult = await nominatimFetch("reverse", {
         format: "json",
         lat: String(lat),
         lon: String(lng),
         addressdetails: "1",
       });
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_GEOCODING_API_URL}/reverse?${params.toString()}`,
-        {
-          referrer: window.location.origin,
-          referrerPolicy: "origin",
-          headers: { "Accept-Language": "en" },
-        },
-      );
-      if (!response.ok) throw new Error("Reverse geocoding failed");
 
-      const result: NominatimResult = await response.json();
       label = formatLocationName(result);
     } catch (err) {
       console.error("Nominatim reverse geocoding failed:", err);
     } finally {
       const location = { lat, lng, label };
-      setSelected(location);
-      skipNextSearchRef.current = true;
-      setQuery(label);
-      onSelect?.(location);
+      commitLocation(location, label);
       setLoading(false);
     }
   }
@@ -259,7 +206,7 @@ export default function LocationPicker({
           )}
 
           {results.length > 0 && (
-            <ul className="absolute left-0 right-0 top-full mt-5 z-1000 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-white p-0 shadow-md">
+            <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-white p-0 shadow-md">
               {results.map((r) => (
                 <li
                   key={r.place_id}
@@ -275,7 +222,7 @@ export default function LocationPicker({
       </FieldWrapper>
 
       {isMapOpen && (
-        <div className="absolute left-0 right-0 top-full z-1000 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
           <MapContainer
             center={selected ? [selected.lat, selected.lng] : DEFAULT_CENTER}
             zoom={DEFAULT_ZOOM}
