@@ -55,7 +55,7 @@ export function FieldWrapper({
         {label && (
           <label
             htmlFor={htmlFor}
-            className="flock-h6 font-bold! leading-none text-primary w-fit"
+            className="h6 font-bold! leading-none text-primary w-fit"
           >
             {label}
           </label>
@@ -112,7 +112,7 @@ export default function Input({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
+          "w-full border-0 bg-transparent p-0 body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
           className,
         )}
       />
@@ -156,7 +156,7 @@ export function TextArea({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full resize-none border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral",
+          "w-full max-w-none! resize-none border-0 bg-transparent p-0 body outline-none placeholder:text-neutral",
           className,
         )}
       />
