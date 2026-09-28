@@ -9,7 +9,7 @@ export default function CreateEventFlow() {
 
   return (
     <>
-      <h1 className="h1 text-center">
+      <h1 className="flock-h1 text-center">
         {eventId === null ? "Create Event" : "Invite friends"}
       </h1>
 

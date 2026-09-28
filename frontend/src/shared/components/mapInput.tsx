@@ -62,7 +62,7 @@ function RecenterOnSelect({ selected }: { selected: Location | null }) {
 export default function LocationPicker({
   onSelect,
 }: {
-  onSelect?: (location: Location) => void;
+  onSelect?: (location: Location | null) => void;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<NominatimResult[]>([]);
@@ -123,7 +123,7 @@ export default function LocationPicker({
 
   function commitLocation(location: Location, displayText: string) {
     setSelected(location);
-    skipNextSearchRef.current = true;
+    skipNextSearchRef.current = displayText !== query;
     setQuery(displayText);
     onSelect?.(location);
   }
@@ -176,11 +176,15 @@ export default function LocationPicker({
             ref={ref}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelected(null);
+              onSelect?.(null);
+            }}
             onFocus={focusWithinProps.onFocus}
             onBlur={focusWithinProps.onBlur}
             placeholder="Search for an address or place..."
-            className="body w-full border-0 bg-transparent p-0 pr-16 outline-none placeholder:text-neutral"
+            className="flock-body w-full border-0 bg-transparent p-0 pr-16 outline-none placeholder:text-neutral"
           />
           <button
             type="button"
@@ -194,7 +198,7 @@ export default function LocationPicker({
             <FaMapLocationDot aria-hidden="true" className="fill-primary" />
           </button>
           {loading && (
-            <span className="caption absolute right-16 top-1/2 -translate-y-1/2 text-primary">
+            <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary">
               Searching...
             </span>
           )}
@@ -204,10 +208,15 @@ export default function LocationPicker({
               {results.map((r) => (
                 <li
                   key={r.place_id}
-                  onClick={() => chooseResult(r)}
-                  className="body-sm cursor-pointer border-b border-primary/10 px-4 py-3 text-primary last:border-b-0 hover:bg-secondary/20"
+                  className="border-b border-primary/10 last:border-b-0"
                 >
-                  {formatLocationName(r)}
+                  <button
+                    type="button"
+                    onClick={() => chooseResult(r)}
+                    className="flock-body-sm block w-full px-4 py-3 text-left text-primary hover:bg-secondary/20 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {formatLocationName(r)}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -223,8 +232,8 @@ export default function LocationPicker({
             style={{ height: 350, width: "100%" }}
           >
             <TileLayer
-              attribution=""
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png."
             />
             <ClickHandler onClick={handleMapClick} />
             <RecenterOnSelect selected={selected} />

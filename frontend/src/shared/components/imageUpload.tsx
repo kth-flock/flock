@@ -26,7 +26,7 @@ export default function ImageUpload() {
         className="hidden"
         onChange={handleFileChange}
       />
-      <div className="flex items-center gap-4 text-primary h4 group-hover:text-secondary">
+      <div className="flex items-center gap-4 text-primary flock-h4 group-hover:text-secondary">
         <FaCamera size={40} />
         <span>{fileName ?? "Upload"}</span>
       </div>

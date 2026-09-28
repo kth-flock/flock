@@ -55,7 +55,7 @@ export function FieldWrapper({
         {label && (
           <label
             htmlFor={htmlFor}
-            className="h6 font-bold! leading-none text-primary w-fit"
+            className="flock-h6 font-bold! leading-none text-primary w-fit"
           >
             {label}
           </label>
@@ -68,8 +68,8 @@ export function FieldWrapper({
 
 export default function Input({
   icon,
-  label = "Event title",
-  placeholder = "Title",
+  label,
+  placeholder,
   className,
   onFocus,
   onBlur,
@@ -105,7 +105,6 @@ export default function Input({
         placeholder={placeholder}
         onFocus={(e) => {
           focusWithinProps.onFocus();
-          showPickerIfSupported();
           onFocus?.(e);
         }}
         onBlur={(e) => {
@@ -113,7 +112,7 @@ export default function Input({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full border-0 bg-transparent p-0 body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
+          "w-full border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
           className,
         )}
       />
@@ -157,7 +156,7 @@ export function TextArea({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full max-w-none! resize-none border-0 bg-transparent p-0 body outline-none placeholder:text-neutral",
+          "w-full resize-none border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral",
           className,
         )}
       />

@@ -4,6 +4,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-text-muted: #6b6b6b;
 }
 
 @theme inline {
@@ -16,7 +17,7 @@
   --weight-serif-bold: 700;
 
   --weight-sans-regular: 400;
-  --weight-sans-medium: 600;
+  --weight-sans-medium: 500;
   --weight-sans-bold: 700;
 
   --color-primary: #3a5a40;
@@ -45,6 +46,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --color-text-muted: #a3a3a3;
   }
 }
 
@@ -55,49 +57,49 @@ body {
 }
 
 /*  Headings  */
-.display {
+.flock-display {
   font-family: var(--font-serif);
   font-weight: var(--weight-serif-bold);
   font-size: var(--text-5xl);
   line-height: 1.3;
 }
 
-.h1 {
+.flock-h1 {
   font-family: var(--font-serif);
   font-weight: var(--weight-serif-bold);
   font-size: var(--text-4xl);
   line-height: 1.3;
 }
 
-.h2 {
+.flock-h2 {
   font-family: var(--font-serif);
   font-weight: var(--weight-serif-regular);
   font-size: var(--text-3xl);
   line-height: 1.3;
 }
 
-.h3 {
+.flock-h3 {
   font-family: var(--font-serif);
   font-weight: var(--weight-serif-regular);
   font-size: var(--text-2xl);
   line-height: 1.35;
 }
 
-.h4 {
+.flock-h4 {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-medium);
   font-size: var(--text-xl);
   line-height: 1.4;
 }
 
-.h5 {
+.flock-h5 {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-medium);
   font-size: var(--text-lg);
   line-height: 1.4;
 }
 
-.h6 {
+.flock-h6 {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-medium);
   font-size: var(--text-base);
@@ -105,7 +107,7 @@ body {
 }
 
 /*  Body text  */
-.lead {
+.flock-lead {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-regular);
   font-size: var(--text-lg);
@@ -113,15 +115,14 @@ body {
   max-width: 65ch;
 }
 
-.body {
+.flock-body {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-regular);
   font-size: var(--text-base);
   line-height: 1.5;
-  max-width: 65ch;
 }
 
-.body-serif {
+.flock-body-serif {
   font-family: var(--font-serif);
   font-weight: var(--weight-serif-regular);
   font-size: var(--text-lg);
@@ -129,7 +130,7 @@ body {
   max-width: 68ch;
 }
 
-.body-sm {
+.flock-body-sm {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-regular);
   font-size: var(--text-sm);
@@ -137,7 +138,7 @@ body {
 }
 
 /*  Quotes  */
-.quote {
+.flock-quote {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: var(--weight-serif-regular);
@@ -146,14 +147,14 @@ body {
 }
 
 /*  UI text  */
-.ui-label {
+.flock-ui-label {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-medium);
   font-size: var(--text-sm);
   line-height: 1.4;
 }
 
-.button-text {
+.flock-button-text {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-medium);
   font-size: var(--text-sm);
@@ -161,10 +162,10 @@ body {
 }
 
 /* ── Metadata ── */
-.caption {
+.flock-caption {
   font-family: var(--font-sans);
   font-weight: var(--weight-sans-regular);
   font-size: var(--text-xs);
   line-height: 1.4;
-  color: var(--color-text-muted, #6b6b6b);
+  color: var(--color-text-muted);
 }
