@@ -1,6 +1,8 @@
+"use client";
 import SearchBar from "@/shared/components/searchBar";
 import InviteFriendCard from "../invite-friends/inviteFriendCard";
 import { useState, useEffect } from "react";
+import Button from "@/shared/components/button";
 
 type SearchResult = {
   id: number;
@@ -48,53 +50,69 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     });
   }
 
+  function handleSendInvites() {
+    console.log("inviting...");
+  }
+
   return (
-    <div className="w-full flex flex-row gap-4">
-      <div className="w-full flex flex-col gap-2">
-        <SearchBar onQueryChange={onSearch} />
-        {searchResults ? (
-          <div className="w-full flex flex-col gap-2">
-            {searchResults.map((result) => (
-              <InviteFriendCard
-                key={result.id}
-                name={result.name}
-                isInvited={invitees.some((invitee) => invitee.id === result.id)}
-                isFriend={result.isFriend}
-                onInvite={() => handleInvite(result, "add")}
-                onRemove={() => handleInvite(result, "remove")}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="w-full flex flex-col gap-2">
-            <h3 className="flock-lead text-center">Suggestions</h3>
-            {suggestions.map((suggestion) => (
-              <InviteFriendCard
-                key={suggestion.id}
-                name={suggestion.name}
-                isInvited={invitees.some(
-                  (invitee) => invitee.id === suggestion.id,
-                )}
-                isFriend={suggestion.isFriend}
-                onInvite={() => handleInvite(suggestion, "add")}
-                onRemove={() => handleInvite(suggestion, "remove")}
-              />
-            ))}
-          </div>
-        )}
+    <div className="flex flex-col gap-4 ">
+      <div className="w-full flex flex-row gap-4">
+        <div className="w-full flex flex-col gap-2">
+          <SearchBar onQueryChange={onSearch} />
+          {searchResults ? (
+            <div className="w-full flex flex-col gap-2">
+              {searchResults.map((result) => (
+                <InviteFriendCard
+                  key={result.id}
+                  name={result.name}
+                  isInvited={invitees.some(
+                    (invitee) => invitee.id === result.id,
+                  )}
+                  isFriend={result.isFriend}
+                  onInvite={() => handleInvite(result, "add")}
+                  onRemove={() => handleInvite(result, "remove")}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full flex flex-col gap-2">
+              <h3 className="flock-lead text-center">Suggestions</h3>
+              {suggestions.map((suggestion) => (
+                <InviteFriendCard
+                  key={suggestion.id}
+                  name={suggestion.name}
+                  isInvited={invitees.some(
+                    (invitee) => invitee.id === suggestion.id,
+                  )}
+                  isFriend={suggestion.isFriend}
+                  onInvite={() => handleInvite(suggestion, "add")}
+                  onRemove={() => handleInvite(suggestion, "remove")}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="w-px shrink-0 self-stretch bg-primary/20" />
+        <div className="w-full flex flex-col gap-2">
+          <h2 className="flock-h3 text-center">Invitees</h2>
+          {invitees.map((invitee) => (
+            <InviteFriendCard
+              key={invitee.id}
+              name={invitee.name}
+              isInvited={true}
+              isFriend={invitee.isFriend}
+              onRemove={() => handleInvite(invitee, "remove")}
+            />
+          ))}
+        </div>
       </div>
-      <div className="w-px shrink-0 self-stretch bg-primary/20" />
-      <div className="w-full flex flex-col gap-2">
-        <h2 className="flock-h3 text-center">Invitees</h2>
-        {invitees.map((invitee) => (
-          <InviteFriendCard
-            key={invitee.id}
-            name={invitee.name}
-            isInvited={true}
-            isFriend={invitee.isFriend}
-            onRemove={() => handleInvite(invitee, "remove")}
-          />
-        ))}
+      <div className="w-full flex justify-between">
+        <Button type="button" variant="secondary" href="/event">
+          Skip
+        </Button>
+        <Button type="button" onClick={handleSendInvites}>
+          Send invites
+        </Button>
       </div>
     </div>
   );
