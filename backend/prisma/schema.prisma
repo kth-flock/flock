@@ -69,6 +69,7 @@ model Friendship {
   requesterId   Int
   requesteeId   Int
   status        STATUS @default(PENDING)
+  acceptedAt    DateTime?
 
   requester     User @relation("FriendRequester", fields: [requesterId], references: [id], onDelete: Cascade)
   requestee     User @relation("FriendRequestee", fields: [requesteeId], references: [id], onDelete: Cascade)

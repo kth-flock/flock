@@ -5,7 +5,7 @@ import { usersRouter } from "./server/routes/users";
 import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
 import { fakeAuth } from "./server/middleware/fakeAuth";
-import { errorHandler } from "./server/utils/errorHandlers";
+import { errorHandler } from "./server/middleware/errorHandlers";
 
 const app = express();
 app.use(cors({ origin: "http://localhost:3000" }));
