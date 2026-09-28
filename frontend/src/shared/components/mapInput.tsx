@@ -19,7 +19,7 @@ import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
 } from "../lib/nominatim";
-import { nominatimFetch } from "../lib/apiFetch";
+import { geocodeFetch } from "../lib/apiFetch";
 
 // ---------- CONSTANTS ----------
 
@@ -105,16 +105,12 @@ export default function LocationPicker({
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const data: NominatimResult[] = await nominatimFetch("search", {
+        const data = await geocodeFetch<NominatimResult[]>("search", {
           q: query,
-          format: "json",
-          addressdetails: "1",
-          limit: "5",
-          countrycodes: "se",
         });
         setResults(data);
       } catch (err) {
-        console.error("Nominatim search failed:", err);
+        console.error("Geocoding search failed:", err);
       } finally {
         setLoading(false);
       }
@@ -150,16 +146,14 @@ export default function LocationPicker({
 
     let label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     try {
-      const result: NominatimResult = await nominatimFetch("reverse", {
-        format: "json",
+      const result = await geocodeFetch<NominatimResult>("reverse", {
         lat: String(lat),
         lon: String(lng),
-        addressdetails: "1",
       });
 
       label = formatLocationName(result);
     } catch (err) {
-      console.error("Nominatim reverse geocoding failed:", err);
+      console.error("Geocoding reverse lookup failed:", err);
     } finally {
       const location = { lat, lng, label };
       commitLocation(location, label);
