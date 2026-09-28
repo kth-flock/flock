@@ -21,7 +21,7 @@ const userSelect = {
 //Get surface level data for all events (no annoncements, comments, or userData)
 eventsRouter.get("/", async (req, res) => {
   const events = await prisma.event.findMany();
-  res.json(events);
+  res.status(200).json(events);
 });
 
 //Get full information for a specific event. Includes all annoncements, comments
@@ -69,7 +69,7 @@ eventsRouter.get("/:eventId", async (req, res) => {
     });
   }
 
-  res.json(event);
+  res..status(200).json(event);
 });
 
 //Get surface level data for all events created by user (no annoncements, comments, or userData)
@@ -86,45 +86,39 @@ eventsRouter.get("/createdBy/:userId", async (req, res) => {
   const events = await prisma.event.findMany({
     where: { createdById: userId },
   });
-  res.json(events);
+  res.status(200).json(events);
 });
 
 //Get surface level data for all events a user is invited to (no annoncements or comments)
 //Also includes userdata for user that created the event.
 eventsRouter.get("/invited/:userId", async (req, res) => {
-  try {
-    const result = idSchema.safeParse(req.params.userId);
+  const result = idSchema.safeParse(req.params.userId);
 
-    if (!result.success) {
-      return res.status(400).json({
-        error: "Invalid user ID",
-      });
-    }
-
-    const userId = result.data;
-
-    const events = await prisma.event.findMany({
-      where: {
-        invitees: {
-          some: {
-            userId: userId,
-          },
-        },
-      },
-
-      include: {
-        createdBy: {
-          select: userSelect,
-        },
-      },
-    });
-
-    res.json(events);
-  } catch (error) {
-    res.status(500).json({
-      error: (error as Error).message,
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
     });
   }
+
+  const userId = result.data;
+
+  const events = await prisma.event.findMany({
+    where: {
+      invitees: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+
+    include: {
+      createdBy: {
+        select: userSelect,
+      },
+    },
+  });
+
+  res.status(200).json(events);
 });
 
 //Post a new event
@@ -174,7 +168,7 @@ eventsRouter.patch("/:eventId", async (req, res) => {
     data: eventData,
   });
 
-  res.json(event);
+  res.status(200).json(event);
 });
 
 //Delte event by eventId
