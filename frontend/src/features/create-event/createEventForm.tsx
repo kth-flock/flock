@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa6";
 
 // TODO: Validation with zod + make sure data conforms to DB structure + connect to API
+// TODO: Mobile styling
 
 type EventInfo = {
   title: string;
