@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { usersRouter } from "./server/routes/users";
+import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
 import { fakeAuth } from "./server/middleware/fakeAuth";
 import { errorHandler } from "./server/utils/errorHandlers";
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/users", usersRouter);
+app.use("/events", eventsRouter);
 app.use("/me", fakeAuth, meRouter);
 
 app.use(errorHandler);

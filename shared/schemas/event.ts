@@ -11,3 +11,13 @@ export const createEventSchema = z.object({
   endsAt: z.coerce.date().optional(),
   imageUrl: z.string().optional(),
 });
+
+export const updateEventSchema = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().nullable().optional(),
+  locationName: z.string().optional(),
+  googlePlaceId: z.string().optional(),
+  startsAt: z.coerce.date().optional(),
+  endsAt: z.coerce.date().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
+});
