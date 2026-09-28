@@ -5,7 +5,6 @@ import {
   privateUserInformationSelect,
   getUserById,
 } from "../utils/prismaUtils";
-import { handleRouteError } from "../utils/errorHandlers";
 import { editUserSchema } from "../../../shared/schemas/user";
 import { friendshipsRouter } from "./friendships";
 
@@ -15,63 +14,65 @@ meRouter.use("/friendships", friendshipsRouter);
 
 // GET my account
 meRouter.get("/", async (req, res) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: privateUserInformationSelect,
-    });
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: privateUserInformationSelect,
+  });
 
-    if (!user) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
-
-    res.status(200).json({ status: "Success", data: user });
-  } catch (error) {
-    return handleRouteError(error, res);
+  if (!user) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
   }
+
+  res.status(200).json({ status: "Success", data: user });
 });
 
 // DELETE my user account
 meRouter.delete("/", async (req, res) => {
-  try {
-    const id = idSchema.parse(req.user.id);
-    const user = await getUserById(id);
-    if (!user) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
-
-    await prisma.user.delete({
-      where: { id },
+  const result = idSchema.safeParse(req.user.id);
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
     });
-    res.status(200).json({ status: "Success", message: "User deleted" });
-  } catch (error) {
-    return handleRouteError(error, res);
   }
+  const id = result.data;
+  const user = await getUserById(id);
+  if (!user) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
+  }
+
+  await prisma.user.delete({
+    where: { id },
+  });
+  res.status(200).json({ status: "Success", message: "User deleted" });
 });
 
 // Edit my user account
 meRouter.patch("/", async (req, res) => {
-  try {
-    const id = idSchema.parse(req.user.id);
-    const existingUser = await getUserById(id);
-    if (!existingUser) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
+  const result = idSchema.safeParse(req.user.id);
 
-    const data = editUserSchema.parse(req.body);
-
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      select: privateUserInformationSelect,
-      data,
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
     });
-
-    res.status(200).json({
-      status: "Success",
-      message: "User information successfully edited",
-      data: updatedUser,
-    });
-  } catch (error) {
-    return handleRouteError(error, res);
   }
+  const id = result.data;
+
+  const existingUser = await getUserById(id);
+  if (!existingUser) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
+  }
+
+  const data = editUserSchema.parse(req.body);
+
+  const updatedUser = await prisma.user.update({
+    where: { id },
+    select: privateUserInformationSelect,
+    data,
+  });
+
+  res.status(200).json({
+    status: "Success",
+    message: "User information successfully edited",
+    data: updatedUser,
+  });
 });
