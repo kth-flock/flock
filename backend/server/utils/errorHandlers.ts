@@ -4,10 +4,12 @@ import { ZodError } from "zod";
 export function handleRouteError(
   error: unknown,
   res: Response,
-  message: string = "Invalid request body",
+  message: string = "Invalid request",
 ) {
   if (error instanceof ZodError) {
     return res.status(400).json({ status: "Error", error: message });
   }
-  return res.status(500).json({ status: "Error", error: "Internal server error" });
+  return res
+    .status(500)
+    .json({ status: "Error", error: "Internal server error" });
 }

@@ -7,7 +7,7 @@ import {
   publicUserInformationSelect,
 } from "../utils/prismaUtils";
 import { handleRouteError } from "../utils/errorHandlers";
-import { idSchema } from "../../../shared/schemas/common";
+import { directionSchema, idSchema } from "../../../shared/schemas/common";
 
 export const friendshipsRouter = Router();
 
@@ -26,7 +26,7 @@ friendshipsRouter.get("/", async (req, res) => {
 friendshipsRouter.get("/requests", async (req, res) => {
   try {
     const status = STATUS.PENDING;
-    const { direction } = req.query;
+    const direction = directionSchema.parse(req.query.direction);
     const userId = req.user.id;
 
     const where =
