@@ -6,51 +6,53 @@ import {
   getUserById,
   publicUserInformationSelect,
 } from "../utils/prismaUtils";
-import { handleRouteError } from "../utils/errorHandlers";
 
 export const usersRouter = Router();
 
 // GET ALL user accounts
 usersRouter.get("/", async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      select: publicUserInformationSelect,
-    });
-    res.status(200).json({ status: "Success", data: users });
-  } catch (error) {
-    return handleRouteError(error, res);
-  }
+  const users = await prisma.user.findMany({
+    select: publicUserInformationSelect,
+  });
+  res.status(200).json({ status: "Success", data: users });
 });
 
 // GET specific user account
 usersRouter.get("/:userId", async (req, res) => {
-  try {
-    const id = idSchema.parse(req.params.userId);
-    const user = await getUserById(id);
+  const result = idSchema.safeParse(req.params.userId);
 
-    if (!user) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
-
-    res.status(200).json({ status: "Success", data: user });
-  } catch (error) {
-    return handleRouteError(error, res);
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
+    });
   }
+
+  const user = await getUserById(result.data);
+
+  if (!user) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
+  }
+
+  res.status(200).json({ status: "Success", data: user });
 });
 
 // Endpoints for to get a users friends list
 usersRouter.get("/:userId/friends", async (req, res) => {
-  try {
-    const userId = idSchema.parse(req.params.userId);
-    const user = await getUserById(userId);
+  const result = idSchema.safeParse(req.params.userId);
 
-    if (!user) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
-    const friendsInfo = await getFriends(idSchema.parse(userId));
-
-    res.status(200).json({ status: "Success", data: friendsInfo });
-  } catch (error) {
-    return handleRouteError(error, res);
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
+    });
   }
+
+  const userId = result.data;
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
+  }
+  const friendsInfo = await getFriends(idSchema.parse(userId));
+
+  res.status(200).json({ status: "Success", data: friendsInfo });
 });

@@ -1,15 +1,12 @@
-import { Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { ZodError } from "zod";
 
-export function handleRouteError(
+export function errorHandler(
   error: unknown,
+  req: Request,
   res: Response,
-  message: string = "Invalid request",
+  next: NextFunction,
 ) {
-  if (error instanceof ZodError) {
-    return res.status(400).json({ status: "Error", error: message });
-  }
-  return res
-    .status(500)
-    .json({ status: "Error", error: "Internal server error" });
+  console.log(error);
+  res.status(500).json({ status: "Error", error: "Internal server error" });
 }
