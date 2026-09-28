@@ -168,8 +168,11 @@ export default function CreateEventForm({
         value={eventDraft.description}
         onChange={(e) => handleInputChange("description", e.target.value)}
       />
-      <div className="w-full flex justify-end">
-        <Button type="submit">Next</Button>
+      <div className="w-full flex justify-between">
+        <Button type="button" variant="secondary" href="/">
+          Cancel
+        </Button>
+        <Button type="submit">Create</Button>
       </div>
     </form>
   );
