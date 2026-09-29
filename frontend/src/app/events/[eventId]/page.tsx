@@ -7,7 +7,7 @@ import {
   // getEvent,
 } from "@/features/event/data";
 
-// TODO: restore fetching by eventId once backend is hooked up
+// TODO: restore fetching by eventid once backend is hooked up
 // export async function generateMetadata({
 //   params,
 // }: PageProps<"/events/[eventId]">): Promise<Metadata> {
@@ -16,7 +16,7 @@ import {
 //   return { title: event ? `${event.title} | Flock` : "Event not found | Flock" };
 // }
 export const metadata: Metadata = {
-  title: `${exampleEvent.title} | Flock`,
+  title: `${exampleEvent.title} • Flock`,
 };
 
 export default async function EventPage(/* {

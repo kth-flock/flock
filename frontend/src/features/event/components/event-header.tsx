@@ -1,4 +1,6 @@
-import { FaCalendarDays, FaLocationDot } from "react-icons/fa6";
+import { FaCalendarDays, FaCalendarPlus, FaLocationDot } from "react-icons/fa6";
+import Button from "@/components/button";
+import { googleCalendarUrl } from "../calendar";
 import type { EventDetails } from "../data";
 import { formatEventTime, fullName } from "../format";
 import RsvpButtons from "./rsvp-buttons";
@@ -35,19 +37,30 @@ export default function EventHeader({ event }: { event: EventDetails }) {
         <RsvpButtons />
       </div>
 
-      <div className="flex flex-col gap-2 rounded-2xl bg-accent/10 p-4 md:p-6">
-        <p className={detailStyle}>
-          <FaCalendarDays className={detailIconStyle} aria-hidden />
-          <time dateTime={event.startsAt}>
-            {formatEventTime(event.startsAt, event.endsAt)}
-          </time>
-        </p>
-        {event.locationName && (
+      <div className="flex flex-col gap-4 rounded-2xl bg-accent/10 p-4 md:flex-row md:items-center md:justify-between md:p-6">
+        <div className="flex flex-col gap-2">
           <p className={detailStyle}>
-            <FaLocationDot className={detailIconStyle} aria-hidden />
-            {event.locationName}
+            <FaCalendarDays className={detailIconStyle} aria-hidden />
+            <time dateTime={event.startsAt}>
+              {formatEventTime(event.startsAt, event.endsAt)}
+            </time>
           </p>
-        )}
+          {event.locationName && (
+            <p className={detailStyle}>
+              <FaLocationDot className={detailIconStyle} aria-hidden />
+              {event.locationName}
+            </p>
+          )}
+        </div>
+
+        <Button
+          href={googleCalendarUrl(event)}
+          icon={<FaCalendarPlus />}
+          iconPlacement="left"
+          className="shrink-0 self-start md:self-center"
+        >
+          Add to Google Calendar
+        </Button>
       </div>
 
       {event.description && (
