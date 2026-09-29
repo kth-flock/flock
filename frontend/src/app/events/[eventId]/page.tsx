@@ -5,7 +5,7 @@ import EventHeader from "@/features/event/components/event-header";
 import {
   exampleEvent,
   // getEvent,
-} from "@/features/event/data";
+} from "@/features/event/example_data";
 
 // TODO: restore fetching by eventid once backend is hooked up
 // export async function generateMetadata({

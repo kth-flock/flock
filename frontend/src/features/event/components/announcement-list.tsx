@@ -1,4 +1,4 @@
-import type { EventAnnouncement } from "../data";
+import type { EventAnnouncement } from "../example_data";
 import Announcement from "./announcement";
 
 export default function AnnouncementList({

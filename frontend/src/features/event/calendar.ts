@@ -1,4 +1,4 @@
-import type { EventDetails } from "./data";
+import type { EventDetails } from "./example_data";
 
 const DEFAULT_DURATION_MS = 60 * 60 * 1000;
 

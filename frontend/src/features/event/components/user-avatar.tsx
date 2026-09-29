@@ -1,6 +1,6 @@
 import { FaCircleUser } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
-import type { EventUser } from "../data";
+import type { EventUser } from "../example_data";
 import { fullName } from "../format";
 
 export default function UserAvatar({

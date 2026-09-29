@@ -1,4 +1,4 @@
-import type { EventAnnouncement } from "../data";
+import type { EventAnnouncement } from "../example_data";
 import PostMeta from "./post-meta";
 
 export default function Announcement({
