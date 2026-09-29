@@ -4,6 +4,8 @@ import InviteFriendCard from "../invite-friends/inviteFriendCard";
 import { useState, useEffect } from "react";
 import Button from "@/shared/components/button";
 
+// TODO: Connect to API and make sure types and structures are correct
+
 type SearchResult = {
   id: number;
   name: string;
@@ -56,7 +58,7 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
 
   return (
     <div className="flex flex-col gap-4 ">
-      <div className="w-full flex flex-row gap-4">
+      <div className="w-full flex flex-col md:flex-row gap-4">
         <div className="w-full flex flex-col gap-2">
           <SearchBar onQueryChange={onSearch} />
           {searchResults ? (

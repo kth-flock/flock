@@ -44,9 +44,9 @@ const buttonStyles: Record<ButtonVariant, string> = {
 };
 
 const buttonSizeStyles: Record<ButtonSize, string> = {
-  sm: "px-3 py-1 text-sm gap-1",
-  md: "px-4 py-2 text-base gap-1.5",
-  lg: "px-5 py-2.5 text-base gap-2",
+  sm: "px-3 py-1 text-xs md:text-sm gap-1",
+  md: "px-4 py-2 text-sm md:text-base gap-1.5",
+  lg: "px-5 py-2.5 text-sm md:text-base gap-2",
 };
 
 const buttonSizeIconStyles: Record<
@@ -54,15 +54,15 @@ const buttonSizeIconStyles: Record<
   Record<"left" | "right", string>
 > = {
   sm: {
-    left: "pl-2.5 pr-3 py-1 text-sm gap-1.5 flex-row-reverse",
-    right: "pl-3 pr-2.5 py-1.5 text-sm gap-1",
+    left: "pl-2.5 pr-3 py-1 text-xs md:text-sm gap-1.5 flex-row-reverse",
+    right: "pl-3 pr-2.5 py-1.5 text-xs md:text-sm gap-1",
   },
   md: {
-    left: "pl-3 pr-4 py-2 text-base gap-1.5 flex-row-reverse",
+    left: "pl-3 pr-4 py-2 text-sm md:text-basegap-1.5 flex-row-reverse",
     right: "pl-4 pr-3 py-2 text-base gap-1.5",
   },
   lg: {
-    left: "pl-4 pr-5 py-2.5 text-base gap-2 flex-row-reverse",
+    left: "pl-4 pr-5 py-2.5 text-sm md:text-base gap-2 flex-row-reverse",
     right: "pl-5 pr-4 py-2.5 text-base gap-2",
   },
 };
