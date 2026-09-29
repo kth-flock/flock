@@ -11,6 +11,14 @@ export async function getMyFriends(req: Request, res: Response) {
       error: "Invalid user ID",
     });
   }
+
+  const userId = result.data;
+  const user = await getUserById(userId);
+
+  if (!user) {
+    return res.status(404).json({ status: "Error", error: "User not found" });
+  }
+
   const friendsInfo = await friendsServices.getAllFriends(result.data);
 
   res.status(200).json({ status: "Success", data: friendsInfo });
@@ -35,7 +43,7 @@ export async function getFriendRequests(req: Request, res: Response) {
   res.status(200).json({ status: "Success", data: friendshipRequests });
 }
 
-// double check
+// Send request
 export async function sendFriendRequest(req: Request, res: Response) {
   const result = idSchema.safeParse(req.body.requesteeId);
   if (!result.success) {

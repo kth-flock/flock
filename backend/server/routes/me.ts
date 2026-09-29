@@ -1,7 +1,4 @@
 import { Router } from "express";
-import { prisma } from "../prisma";
-import { idSchema } from "../../../shared/schemas/common";
-import { editUserInfoSchema } from "../../../shared/schemas/user";
 import { friendshipsRouter } from "./friendships";
 import {
   getMyAccount,

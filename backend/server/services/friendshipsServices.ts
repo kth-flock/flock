@@ -1,9 +1,9 @@
-import { Direction, idSchema } from "@flock/shared/schemas/common";
-import { prisma } from "../prisma";
-import { STATUS } from "../../prisma/generated/enums";
-import { publicUserInformationSelect } from "../utils/selectors";
+import { Direction } from "@flock/shared/schemas/common";
 import { UserId } from "@flock/shared/schemas/user";
 import { Friendship } from "../../prisma/generated/client";
+import { STATUS } from "../../prisma/generated/enums";
+import { prisma } from "../prisma";
+import { publicUserInformationSelect } from "../utils/selectors";
 import { getUserById } from "./usersServices";
 
 export async function getAllFriends(userId: UserId) {

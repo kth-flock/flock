@@ -1,13 +1,20 @@
 import { z } from "zod";
+import { idSchema } from "./common";
 
-export const createUserSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.email(),
-  imageUrl: z.string().optional(),
-  password: z.string().optional(),
-});
+export type UserId = z.infer<typeof idSchema>;
+export type UserInfo = z.infer<typeof editUserInfoSchema>;
 
-export const editUserSchema = createUserSchema
+export const createUserSchema = z
+  .object({
+    firstName: z.string().trim(),
+    lastName: z.string().trim(),
+    email: z.email(),
+    imageUrl: z.string().optional().nullable(),
+    password: z.string().optional(),
+  })
+  .strict();
+
+export const editUserInfoSchema = createUserSchema
   .omit({ email: true, password: true })
-  .partial();
+  .partial()
+  .strict();

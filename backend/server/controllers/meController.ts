@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import * as meServices from "../services/meServices";
 import { getUserById } from "../services/usersServices";
-
 import { idSchema } from "@flock/shared/schemas/common";
-import { prisma } from "../prisma";
 import { editUserInfoSchema } from "@flock/shared/schemas/user";
 
 export async function getMyAccount(req: Request, res: Response) {
@@ -51,9 +49,15 @@ export async function editUserInfo(req: Request, res: Response) {
     return res.status(404).json({ status: "Error", error: "User not found" });
   }
 
-  const data = editUserInfoSchema.parse(req.body);
+  const editData = editUserInfoSchema.safeParse(req.body);
 
-  const updatedUser = await meServices.editUserInfo(id, data);
+  if (!editData.success) {
+    return res.status(400).json({
+      error: "Invalid request body",
+    });
+  }
+
+  const updatedUser = await meServices.editUserInfo(id, editData.data);
 
   res.status(200).json({
     status: "Success",

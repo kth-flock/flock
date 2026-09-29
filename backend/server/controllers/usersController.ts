@@ -40,9 +40,8 @@ export async function getUserFriends(req: Request, res: Response) {
   if (!user) {
     return res.status(404).json({ status: "Error", error: "User not found" });
   }
-  const friendsInfo = await friendshipsServices.getAllFriends(
-    idSchema.parse(userId),
-  );
+
+  const friendsInfo = await friendshipsServices.getAllFriends(userId);
 
   res.status(200).json({ status: "Success", data: friendsInfo });
 }
