@@ -49,15 +49,16 @@ export async function editUserInfo(req: Request, res: Response) {
     return res.status(404).json({ status: "Error", error: "User not found" });
   }
 
-  const editData = editUserInfoSchema.safeParse(req.body);
+  const editDataResult = editUserInfoSchema.safeParse(req.body);
 
-  if (!editData.success) {
+  if (!editDataResult.success) {
     return res.status(400).json({
       error: "Invalid request body",
+      details: editDataResult.error.issues,
     });
   }
 
-  const updatedUser = await meServices.editUserInfo(id, editData.data);
+  const updatedUser = await meServices.editUserInfo(id, editDataResult.data);
 
   res.status(200).json({
     status: "Success",
