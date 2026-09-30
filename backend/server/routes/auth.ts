@@ -9,6 +9,7 @@ authRouter.post("/register", async (req, res) => {
   try {
     const { firstName, lastName, email, pwdHash } = req.body;
 
+    //error handling for user already exists
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
       return res
@@ -16,9 +17,12 @@ authRouter.post("/register", async (req, res) => {
         .json({ status: "Conflict", error: "User already exists, email must be unique" });
     }
 
+
+     //hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(pwdHash, salt);
 
+    //create user --> service
     const user = await prisma.user.create({
       data: { firstName, lastName, email, pwdHash: hashedPassword },
     });
@@ -35,6 +39,7 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { email, pwdHash } = req.body;
 
+    //error handling for user not found
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.pwdHash) {
       return res
@@ -42,6 +47,7 @@ authRouter.post("/login", async (req, res) => {
         .json({ status: "Unauthorized", error: "Invalid credentials" });
     }
 
+    //compare hashed password
     const isPasswordCorrect = await bcrypt.compare(pwdHash, user.pwdHash);
     if (!isPasswordCorrect) {
       return res
