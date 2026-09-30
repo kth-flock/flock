@@ -1,6 +1,6 @@
 import jwt, {type SignOptions} from "jsonwebtoken";
 
-const generateToken = (userId: string) => {
+const generateToken = (userId: number | string) => {
     //userid, then server secret to sign the token
     //this token will be used to authenticate the user on every request
     const secret = process.env.JWT_SECRET;
