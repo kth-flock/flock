@@ -1,6 +1,5 @@
 const skeletonStyle = "animate-pulse rounded-2xl bg-neutral/50";
 
-// Mirrors the event page layout so content doesn't jump when it loads
 export default function EventLoading() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 pb-16">
