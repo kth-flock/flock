@@ -7,6 +7,7 @@ import { geocodeRouter } from "./server/routes/geocode";
 import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
 import { fakeAuth } from "./server/middleware/fakeAuth";
+import { authMiddleware } from "./server/middleware/authMiddleware";
 import { errorHandler } from "./server/utils/errorHandlers";
 
 const app = express();
@@ -22,7 +23,7 @@ app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/geocode", geocodeRouter);
 app.use("/events", eventsRouter);
-app.use("/me", fakeAuth, meRouter);
+app.use("/me", authMiddleware, meRouter);
 
 app.use(errorHandler);
 

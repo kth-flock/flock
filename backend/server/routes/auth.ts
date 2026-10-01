@@ -60,15 +60,19 @@ authRouter.post("/login", async (req, res) => {
     const { pwdHash: _, ...safeUser } = user; 
 
     res.status(200).json({ status: "Success", data: { user: safeUser, token } });
+    console.log(user)
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
 });
 
 authRouter.post("/logout", async (req, res) => {
-  res.status(200).json({ status: "Success", data: { message: "Logged out successfully" } });
+  
   //logging out = removing the token from the user's cookie
   res.cookie("token", "", {httpOnly: true, expires: new Date(0)})
+  console.log(res)
+  res.status(200).json({ status: "Success", data: { message: "Logged out successfully" } });
+ 
 });
 
 export default authRouter;
