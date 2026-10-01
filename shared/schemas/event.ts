@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { idSchema } from "./common";
 
+export type EventId = z.infer<typeof idSchema>;
+
 export const createEventSchema = z.object({
   createdById: idSchema,
   title: z.string().min(1),
@@ -12,6 +14,8 @@ export const createEventSchema = z.object({
   imageUrl: z.string().optional(),
 });
 
+export type CreateEventData = z.infer<typeof createEventSchema>;
+
 export const updateEventSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().nullable().optional(),
@@ -21,3 +25,5 @@ export const updateEventSchema = z.object({
   endsAt: z.coerce.date().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
 });
+
+export type UpdateEventData = z.infer<typeof updateEventSchema>;
