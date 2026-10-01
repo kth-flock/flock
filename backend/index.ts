@@ -8,7 +8,7 @@ import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
 import { fakeAuth } from "./server/middleware/fakeAuth";
 import { authMiddleware } from "./server/middleware/authMiddleware";
-import { errorHandler } from "./server/utils/errorHandlers";
+import { errorHandler } from "./server/middleware/errorHandlers";
 import cookieParser from "cookie-parser";
 
 const app = express();
