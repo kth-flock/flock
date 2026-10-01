@@ -6,7 +6,7 @@ import { getEvent } from "@/features/event/lib/api";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/events/[eventId]">): Promise<Metadata> {
+}: PageProps<"/event/[eventId]">): Promise<Metadata> {
   const { eventId } = await params;
   const event = await getEvent(eventId);
   return { title: event ? `${event.title} • Flock` : "Event not found • Flock" };
@@ -14,7 +14,7 @@ export async function generateMetadata({
 
 export default async function EventPage({
   params,
-}: PageProps<"/events/[eventId]">) {
+}: PageProps<"/event/[eventId]">) {
   const { eventId } = await params;
   const event = await getEvent(eventId);
 
