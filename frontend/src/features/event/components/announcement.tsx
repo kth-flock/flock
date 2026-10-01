@@ -1,5 +1,6 @@
 import type { EventAnnouncement } from "../lib/types";
 import PostMeta from "./postMeta";
+import ReplyForm from "./replyForm";
 
 export default function Announcement({
   announcement,
@@ -28,6 +29,8 @@ export default function Announcement({
           ))}
         </ul>
       )}
+
+      <ReplyForm announcementId={announcement.id} />
     </li>
   );
 }
