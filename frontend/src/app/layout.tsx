@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/navbar";
+import Navbar from "../shared/components/navbar";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
