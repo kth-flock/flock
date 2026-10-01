@@ -1,4 +1,4 @@
-import type { EventComment } from "../example_data";
+import type { EventComment } from "../types";
 import { formatDate, formatTime, fullName } from "../format";
 import UserAvatar from "./user-avatar";
 

@@ -1,7 +1,7 @@
 import { FaCalendarDays, FaCalendarPlus, FaLocationDot } from "react-icons/fa6";
-import Button from "@/components/button";
+import Button from "@/shared/components/button";
 import { googleCalendarUrl } from "../calendar";
-import type { EventDetails, EventUser } from "../example_data";
+import type { EventDetails, EventUser } from "../types";
 import { formatEventTime, fullName } from "../format";
 import RsvpButtons from "./rsvp-buttons";
 import UserAvatar from "./user-avatar";

@@ -1,4 +1,8 @@
+// Formatting runs on the server, so pin the time zone instead of using the server's
+const TIME_ZONE = "Europe/Stockholm";
+
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
   weekday: "short",
   day: "numeric",
   month: "short",
@@ -6,6 +10,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 });
 
 const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
 });

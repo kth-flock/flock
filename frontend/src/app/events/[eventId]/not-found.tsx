@@ -1,4 +1,4 @@
-import Button from "@/components/button";
+import Button from "@/shared/components/button";
 
 export default function EventNotFound() {
   return (

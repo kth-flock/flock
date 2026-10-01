@@ -1,5 +1,5 @@
-import type { EventAnnouncement } from "../example_data";
-import Announcement from "./announcement";
+import type { EventAnnouncement } from "../types";
+import Announcement from "./user-updates";
 
 export default function AnnouncementList({
   announcements,
@@ -13,9 +13,9 @@ export default function AnnouncementList({
 
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="font-serif text-2xl text-primary">Announcements</h2>
+      <h2 className="font-serif text-2xl text-primary">Updates</h2>
       {sorted.length === 0 ? (
-        <p className="text-foreground/60">No announcements yet.</p>
+        <p className="text-foreground/60">No updates yet.</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {sorted.map((announcement) => (
