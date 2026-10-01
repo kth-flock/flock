@@ -1,9 +1,6 @@
-import { idSchema } from "@flock/shared/schemas/common";
 import { prisma } from "../prisma";
 import { publicUserInformationSelect } from "../utils/selectors";
-import { z } from "zod";
 import { FriendshipStatus, UserId } from "@flock/shared/schemas/user";
-import { Friendship } from "../../prisma/generated/client";
 
 export async function getUsers() {
   const users = await prisma.user.findMany({
