@@ -4,7 +4,7 @@ export default function EventLoading() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 pb-16">
       <div className={`h-64 md:h-96 w-full rounded-3xl ${skeletonStyle}`} />
-      <div className="flex justify-center gap-3 pt-2">
+      <div className="flex justify-center gap-3">
         <div className={`h-11 w-32 rounded-full ${skeletonStyle}`} />
         <div className={`h-11 w-32 rounded-full ${skeletonStyle}`} />
         <div className={`h-11 w-32 rounded-full ${skeletonStyle}`} />

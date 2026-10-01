@@ -9,7 +9,7 @@ const libreBaskerville = Libre_Baskerville({
 });
 
 const openSans = Open_Sans({
-  variable: "--font-open-sans",
+  variable: "--font-fira-sans",
   subsets: ["latin"],
 });
 
