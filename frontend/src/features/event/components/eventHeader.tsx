@@ -9,15 +9,12 @@ import { googleCalendarUrl } from "../lib/calendar";
 import type { EventDetails } from "../lib/types";
 import RsvpButtons from "./rsvpButtons";
 
-const detailStyle = "flock-lead flex items-center gap-3 text-foreground/80";
-const detailIconStyle = "size-5 shrink-0 fill-secondary";
-
 function HostedBy({ host }: { host: PublicUser }) {
   return (
     <div className="flock-body-sm flex items-center gap-2">
       <UserAvatar user={host} className="size-6" />
       <span>
-        Hosted by <span className="font-semibold">{fullName(host)}</span>
+        Hosted by <span className="flock-ui-label">{fullName(host)}</span>
       </span>
     </div>
   );
@@ -54,15 +51,21 @@ export default function EventHeader({ event }: { event: EventDetails }) {
 
       <div className="flex flex-col gap-4 rounded-2xl bg-accent/10 p-4 md:flex-row md:items-center md:justify-between md:p-6">
         <div className="flex flex-col gap-2">
-          <p className={detailStyle}>
-            <FaCalendarDays className={detailIconStyle} aria-hidden />
+          <p className="flock-lead flex items-center gap-3 text-foreground/80">
+            <FaCalendarDays
+              className="size-5 shrink-0 fill-secondary"
+              aria-hidden
+            />
             <time dateTime={event.startsAt}>
               {formatDateTimeRange(event.startsAt, event.endsAt)}
             </time>
           </p>
           {event.locationName && (
-            <p className={detailStyle}>
-              <FaLocationDot className={detailIconStyle} aria-hidden />
+            <p className="flock-lead flex items-center gap-3 text-foreground/80">
+              <FaLocationDot
+                className="size-5 shrink-0 fill-secondary"
+                aria-hidden
+              />
               {event.locationName}
             </p>
           )}

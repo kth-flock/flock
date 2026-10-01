@@ -52,7 +52,7 @@ export default function RsvpButtons({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+    <div className="flex flex-wrap items-center justify-center gap-3">
       {options.map((option) => (
         <Button
           key={option.value}
