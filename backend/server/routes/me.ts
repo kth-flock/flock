@@ -5,6 +5,7 @@ import {
   deleteMyAccount,
   editUserInfo,
 } from "../controllers/meController";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 export const meRouter = Router();
 
