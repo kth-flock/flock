@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as usersServices from "../services/usersServices";
 import * as friendshipsServices from "../services/friendshipsServices";
 import { idSchema } from "@flock/shared/schemas/common";
+import { searchUsersQuerySchema } from "@flock/shared/schemas/user";
 
 export async function getUsers(req: Request, res: Response) {
   const users = await usersServices.getUsers();
@@ -44,4 +45,17 @@ export async function getUserFriends(req: Request, res: Response) {
   const friendsInfo = await friendshipsServices.getAllFriends(userId);
 
   res.status(200).json({ status: "Success", data: friendsInfo });
+}
+
+export async function searchUsers(req: Request, res: Response) {
+  const parsedQuery = searchUsersQuerySchema.safeParse(req.query);
+  if (!parsedQuery.success) {
+    return res.status(400).json({ status: "Error", error: "Invalid request" });
+  }
+
+  const data = await usersServices.searchUsers(
+    req.user.id,
+    parsedQuery.data.query,
+  );
+  res.status(200).json({ status: "Success", data: data });
 }

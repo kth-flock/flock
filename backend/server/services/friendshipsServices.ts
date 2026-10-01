@@ -48,6 +48,7 @@ export async function getFriendRequests(userId: UserId, direction: Direction) {
 
   return friendshipRequests;
 }
+
 export class SelfFriendRequestError extends Error {}
 export class UserNotFoundError extends Error {}
 export class AlreadyFriendsError extends Error {}
