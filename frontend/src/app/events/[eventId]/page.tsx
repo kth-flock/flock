@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AnnouncementList from "@/features/event/components/user-updates-list";
-import EventHeader from "@/features/event/components/event-header";
-import { getEvent } from "@/features/event/api";
+import EventHeader from "@/features/event/components/eventHeader";
+import UserUpdateList from "@/features/event/components/userUpdateList";
+import { getEvent } from "@/features/event/lib/api";
 
 export async function generateMetadata({
   params,
@@ -23,7 +23,7 @@ export default async function EventPage({
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 pb-16">
       <EventHeader event={event} />
-      <AnnouncementList announcements={event.announcements} />
+      <UserUpdateList announcements={event.announcements} />
     </main>
   );
 }

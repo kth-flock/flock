@@ -18,7 +18,7 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
 export const formatDate = (iso: string) => dateFormatter.format(new Date(iso));
 export const formatTime = (iso: string) => timeFormatter.format(new Date(iso));
 
-export function formatEventTime(startsAt: string, endsAt: string | null) {
+export function formatDateTimeRange(startsAt: string, endsAt: string | null) {
   const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
   if (!endsAt) return start;
 
@@ -29,6 +29,3 @@ export function formatEventTime(startsAt: string, endsAt: string | null) {
 
   return `${start} – ${end}`;
 }
-
-export const fullName = (user: { firstName: string; lastName: string }) =>
-  `${user.firstName} ${user.lastName}`;

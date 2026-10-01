@@ -1,22 +1,23 @@
-import type { EventDetails, EventUser } from "./types";
+import type { PublicUser } from "@/shared/types/user";
+import type { EventDetails } from "./types";
 
 // Placeholder data used while the event page isn't wired to the backend
 
-const alice: EventUser = {
+const alice: PublicUser = {
   id: 1,
   firstName: "Felix",
   lastName: "Larsson",
   imageUrl: null,
 };
 
-const bob: EventUser = {
+const bob: PublicUser = {
   id: 2,
   firstName: "Sandra",
   lastName: "Kåhre",
   imageUrl: null,
 };
 
-const clara: EventUser = {
+const clara: PublicUser = {
   id: 3,
   firstName: "Alice",
   lastName: "Cohen",

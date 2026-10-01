@@ -1,16 +1,17 @@
-import type { EventComment } from "../types";
-import { formatDate, formatTime, fullName } from "../format";
-import UserAvatar from "./user-avatar";
+import UserAvatar from "@/shared/components/userAvatar";
+import { formatDate, formatTime } from "@/shared/lib/dateFormat";
+import { fullName } from "@/shared/lib/user";
+import type { EventComment } from "../lib/types";
 
 export default function PostMeta({
   user,
   createdAt,
 }: Pick<EventComment, "user" | "createdAt">) {
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="flex items-center gap-2">
       <UserAvatar user={user} />
-      <span className="font-semibold">{fullName(user)}</span>
-      <time dateTime={createdAt} className="text-foreground/60">
+      <span className="flock-ui-label">{fullName(user)}</span>
+      <time dateTime={createdAt} className="flock-caption">
         {formatDate(createdAt)}, {formatTime(createdAt)}
       </time>
     </div>

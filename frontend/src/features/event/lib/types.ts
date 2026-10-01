@@ -1,11 +1,6 @@
-// Shapes returned by GET /events/:eventId (dates arrive as ISO strings)
+import type { PublicUser } from "@/shared/types/user";
 
-export type EventUser = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  imageUrl: string | null;
-};
+// Shapes returned by GET /events/:eventId (dates arrive as ISO strings)
 
 export type EventComment = {
   id: number;
@@ -13,7 +8,7 @@ export type EventComment = {
   userId: number;
   content: string;
   createdAt: string;
-  user: EventUser;
+  user: PublicUser;
 };
 
 export type EventAnnouncement = {
@@ -22,7 +17,7 @@ export type EventAnnouncement = {
   userId: number;
   content: string;
   createdAt: string;
-  user: EventUser;
+  user: PublicUser;
   comments: EventComment[];
 };
 
@@ -36,7 +31,7 @@ export type EventDetails = {
   startsAt: string;
   endsAt: string | null;
   imageUrl: string | null;
-  createdBy: EventUser;
+  createdBy: PublicUser;
   announcements: EventAnnouncement[];
 };
 

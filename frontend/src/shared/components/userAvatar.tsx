@@ -1,13 +1,13 @@
 import { FaCircleUser } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
-import type { EventUser } from "../types";
-import { fullName } from "../format";
+import { fullName } from "@/shared/lib/user";
+import type { PublicUser } from "@/shared/types/user";
 
 export default function UserAvatar({
   user,
   className,
 }: {
-  user: EventUser;
+  user: PublicUser;
   className?: string;
 }) {
   const style = twMerge("size-8 shrink-0 rounded-full", className);

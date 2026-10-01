@@ -1,17 +1,19 @@
 import { FaCalendarDays, FaCalendarPlus, FaLocationDot } from "react-icons/fa6";
 import Button from "@/shared/components/button";
-import { googleCalendarUrl } from "../calendar";
-import type { EventDetails, EventUser } from "../types";
-import { formatEventTime, fullName } from "../format";
-import RsvpButtons from "./rsvp-buttons";
-import UserAvatar from "./user-avatar";
+import UserAvatar from "@/shared/components/userAvatar";
+import { formatDateTimeRange } from "@/shared/lib/dateFormat";
+import { fullName } from "@/shared/lib/user";
+import type { PublicUser } from "@/shared/types/user";
+import { googleCalendarUrl } from "../lib/calendar";
+import type { EventDetails } from "../lib/types";
+import RsvpButtons from "./rsvpButtons";
 
-const detailStyle = "flex items-center gap-3 text-lg text-foreground/80";
+const detailStyle = "flock-lead flex items-center gap-3 text-foreground/80";
 const detailIconStyle = "size-5 shrink-0 fill-secondary";
 
-function HostedBy({ host }: { host: EventUser }) {
+function HostedBy({ host }: { host: PublicUser }) {
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="flock-body-sm flex items-center gap-2">
       <UserAvatar user={host} className="size-6" />
       <span>
         Hosted by <span className="font-semibold">{fullName(host)}</span>
@@ -33,15 +35,13 @@ export default function EventHeader({ event }: { event: EventDetails }) {
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 text-white drop-shadow-md md:p-8">
-            <h1 className="font-serif text-3xl md:text-5xl">{event.title}</h1>
+            <h1 className="flock-h1">{event.title}</h1>
             <HostedBy host={event.createdBy} />
           </div>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <h1 className="font-serif text-3xl md:text-5xl text-primary">
-            {event.title}
-          </h1>
+          <h1 className="flock-h1 text-primary">{event.title}</h1>
           <HostedBy host={event.createdBy} />
         </div>
       )}
@@ -53,7 +53,7 @@ export default function EventHeader({ event }: { event: EventDetails }) {
           <p className={detailStyle}>
             <FaCalendarDays className={detailIconStyle} aria-hidden />
             <time dateTime={event.startsAt}>
-              {formatEventTime(event.startsAt, event.endsAt)}
+              {formatDateTimeRange(event.startsAt, event.endsAt)}
             </time>
           </p>
           {event.locationName && (
@@ -77,10 +77,8 @@ export default function EventHeader({ event }: { event: EventDetails }) {
 
       {event.description && (
         <section className="flex flex-col gap-2">
-          <h2 className="font-serif text-2xl text-primary">About this event</h2>
-          <p className="whitespace-pre-line leading-relaxed">
-            {event.description}
-          </p>
+          <h2 className="flock-h2 text-primary">About this event</h2>
+          <p className="flock-body whitespace-pre-line">{event.description}</p>
         </section>
       )}
     </header>

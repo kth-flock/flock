@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import Button from "@/shared/components/button";
-import type { Rsvp } from "../types";
+import type { Rsvp } from "../lib/types";
 
 const options: {
   value: Rsvp;
