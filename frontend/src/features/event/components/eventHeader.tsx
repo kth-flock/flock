@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FaCalendarDays, FaCalendarPlus, FaLocationDot } from "react-icons/fa6";
 import Button from "@/shared/components/button";
-import UserAvatar from "@/shared/components/userAvatar";
+import ProfileImage from "@/shared/components/profileImage";
 import { formatDateTimeRange } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
@@ -12,7 +12,11 @@ import RsvpButtons from "./rsvpButtons";
 function HostedBy({ host }: { host: PublicUser }) {
   return (
     <div className="flock-body-sm flex items-center gap-2">
-      <UserAvatar user={host} className="size-6" />
+      {host.imageUrl ? (
+        <ProfileImage profileImgSrc={host.imageUrl} />
+      ) : (
+        <ProfileImage firstName={host.firstName} lastName={host.lastName} />
+      )}
       <span>
         Hosted by <span className="flock-ui-label">{fullName(host)}</span>
       </span>
