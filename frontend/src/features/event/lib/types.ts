@@ -35,5 +35,4 @@ export type EventDetails = {
   announcements: EventAnnouncement[];
 };
 
-// Matches the RSVP enum in the Prisma schema
-export type Rsvp = "PENDING" | "ACCEPTED" | "MAYBE" | "DECLINED";
+export type { RSVP as Rsvp } from "../../../../../backend/prisma/generated/enums";

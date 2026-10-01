@@ -1,7 +1,7 @@
 import type { EventAnnouncement } from "../lib/types";
-import UserUpdate from "./userUpdate";
+import Announcement from "./announcement";
 
-export default function UserUpdateList({
+export default function AnnouncementList({
   announcements,
 }: {
   announcements: EventAnnouncement[];
@@ -19,7 +19,7 @@ export default function UserUpdateList({
       ) : (
         <ul className="flex flex-col gap-4">
           {sorted.map((announcement) => (
-            <UserUpdate key={announcement.id} announcement={announcement} />
+            <Announcement key={announcement.id} announcement={announcement} />
           ))}
         </ul>
       )}

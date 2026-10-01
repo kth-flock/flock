@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EventHeader from "@/features/event/components/eventHeader";
-import UserUpdateList from "@/features/event/components/userUpdateList";
+import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent } from "@/features/event/lib/api";
 
 export async function generateMetadata({
@@ -21,9 +21,9 @@ export default async function EventPage({
   if (!event) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 pb-16">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10">
       <EventHeader event={event} />
-      <UserUpdateList announcements={event.announcements} />
+      <AnnouncementList announcements={event.announcements} />
     </main>
   );
 }

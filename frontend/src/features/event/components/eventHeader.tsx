@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FaCalendarDays, FaCalendarPlus, FaLocationDot } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import UserAvatar from "@/shared/components/userAvatar";
@@ -26,12 +27,15 @@ export default function EventHeader({ event }: { event: EventDetails }) {
   return (
     <header className="flex flex-col gap-6">
       {event.imageUrl ? (
-        <div className="relative h-64 w-full overflow-hidden rounded-3xl shadow-lg md:h-96">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <div className="relative h-64 w-full overflow-hidden rounded-2xl shadow-lg md:h-96">
+          <Image
             src={event.imageUrl}
             alt=""
-            className="size-full object-cover"
+            fill
+            sizes="(min-width: 48rem) 48rem, 100vw"
+            loading="eager"
+            fetchPriority="high"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-6 text-white drop-shadow-md md:p-8">

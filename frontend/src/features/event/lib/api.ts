@@ -9,7 +9,6 @@ const USE_EXAMPLE_DATA = true;
 const REQUEST_TIMEOUT_MS = 10_000;
 
 // Returns null when the event doesn't exist or the id is invalid.
-// Wrapped in cache() so generateMetadata and the page share one request.
 export const getEvent = cache(
   async (eventId: string): Promise<EventDetails | null> => {
     if (USE_EXAMPLE_DATA) return exampleEvent;

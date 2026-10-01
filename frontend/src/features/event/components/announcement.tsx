@@ -1,7 +1,7 @@
 import type { EventAnnouncement } from "../lib/types";
 import PostMeta from "./postMeta";
 
-export default function UserUpdate({
+export default function Announcement({
   announcement,
 }: {
   announcement: EventAnnouncement;
