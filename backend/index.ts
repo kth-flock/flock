@@ -9,10 +9,12 @@ import { meRouter } from "./server/routes/me";
 import { fakeAuth } from "./server/middleware/fakeAuth";
 import { authMiddleware } from "./server/middleware/authMiddleware";
 import { errorHandler } from "./server/utils/errorHandlers";
+import cookieParser from "cookie-parser";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json()); //body parsing middleware
+app.use(cookieParser()); //cookie parsing middleware
 
 app.get("/", (req, res) => {
   res.json({ message: "Express server running" });
