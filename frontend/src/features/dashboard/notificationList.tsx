@@ -1,6 +1,8 @@
 "use client";
 import Notification, { NotificationAction } from "./notification";
 
+// TODO: Fix mobile view
+
 export default function NotificationList() {
   function handleAction(notifId: number, action: NotificationAction) {
     switch (action) {

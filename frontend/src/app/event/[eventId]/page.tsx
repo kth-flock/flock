@@ -9,7 +9,9 @@ export async function generateMetadata({
 }: PageProps<"/event/[eventId]">): Promise<Metadata> {
   const { eventId } = await params;
   const event = await getEvent(eventId);
-  return { title: event ? `${event.title} • Flock` : "Event not found • Flock" };
+  return {
+    title: event ? `${event.title} • Flock` : "Event not found • Flock",
+  };
 }
 
 export default async function EventPage({
@@ -21,7 +23,7 @@ export default async function EventPage({
   if (!event) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <EventHeader event={event} />
       <AnnouncementList announcements={event.announcements} />
     </main>
