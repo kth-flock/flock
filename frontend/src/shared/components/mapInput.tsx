@@ -25,7 +25,7 @@ import { geocodeFetch } from "../lib/apiFetch";
 
 const markerIcon = L.divIcon({
   html: renderToStaticMarkup(
-    <FaLocationDot size={34} className="fill-primary" />,
+    <FaLocationDot size={34} className="fill-primary" aria-hidden />,
   ),
   className: "custom-marker",
   iconSize: [34, 34],
@@ -50,7 +50,7 @@ function ClickHandler({
 function RecenterOnSelect({ selected }: { selected: Location | null }) {
   const map = useMap();
   useEffect(() => {
-    if (selected) {
+    if (selected?.lat !== undefined && selected.lng !== undefined) {
       map.setView([selected.lat, selected.lng], map.getZoom());
     }
   }, [selected, map]);
@@ -70,26 +70,29 @@ export default function LocationPicker({
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchRequestRef = useRef(0);
   const skipNextSearchRef = useRef(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();
 
   useEffect(() => {
-    if (!isMapOpen) return;
-
     function handleOutsidePointer(event: PointerEvent) {
       if (!pickerRef.current?.contains(event.target as Node)) {
         setIsMapOpen(false);
+        setResults([]);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        searchRequestRef.current += 1;
       }
     }
 
     document.addEventListener("pointerdown", handleOutsidePointer);
     return () =>
       document.removeEventListener("pointerdown", handleOutsidePointer);
-  }, [isMapOpen]);
+  }, []);
 
   useEffect(() => {
+    const requestId = ++searchRequestRef.current;
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (skipNextSearchRef.current) {
@@ -108,7 +111,7 @@ export default function LocationPicker({
         const data = await geocodeFetch<NominatimResult[]>("search", {
           q: query,
         });
-        setResults(data);
+        if (requestId === searchRequestRef.current) setResults(data);
       } catch (err) {
         console.error("Geocoding search failed:", err);
       } finally {
@@ -118,6 +121,7 @@ export default function LocationPicker({
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
+      searchRequestRef.current += 1;
     };
   }, [query]);
 
@@ -164,7 +168,7 @@ export default function LocationPicker({
   return (
     <div ref={pickerRef} className="relative z-20 w-full">
       <FieldWrapper
-        icon={<FaLocationDot />}
+        icon={<FaLocationDot aria-hidden />}
         label="Location"
         htmlFor="location-search"
         isFocused={isFocused}
@@ -177,13 +181,15 @@ export default function LocationPicker({
             type="text"
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value);
+              const value = e.target.value;
+              setQuery(value);
               setSelected(null);
-              onSelect?.(null);
+              onSelect?.(value.trim() ? { label: value } : null);
             }}
             onFocus={focusWithinProps.onFocus}
             onBlur={focusWithinProps.onBlur}
             placeholder="Search for an address or place..."
+            autoComplete="off"
             className="flock-body w-full border-0 bg-transparent p-0 pr-16 outline-none placeholder:text-neutral"
           />
           <button
@@ -195,7 +201,7 @@ export default function LocationPicker({
             }}
             className="absolute flex items-center bg-accent/50 p-2 rounded-lg right-0 -top-1/2 cursor-pointer hover:shadow-md hover:scale-110"
           >
-            <FaMapLocationDot aria-hidden="true" className="fill-primary" />
+            <FaMapLocationDot aria-hidden className="fill-primary" />
           </button>
           {loading && (
             <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary">
@@ -227,7 +233,11 @@ export default function LocationPicker({
       {isMapOpen && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
           <MapContainer
-            center={selected ? [selected.lat, selected.lng] : DEFAULT_CENTER}
+            center={
+              selected?.lat !== undefined && selected.lng !== undefined
+                ? [selected.lat, selected.lng]
+                : DEFAULT_CENTER
+            }
             zoom={DEFAULT_ZOOM}
             style={{ height: 350, width: "100%" }}
           >
@@ -237,7 +247,7 @@ export default function LocationPicker({
             />
             <ClickHandler onClick={handleMapClick} />
             <RecenterOnSelect selected={selected} />
-            {selected && (
+            {selected?.lat !== undefined && selected.lng !== undefined && (
               <Marker
                 position={[selected.lat, selected.lng]}
                 icon={markerIcon}

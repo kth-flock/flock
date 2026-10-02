@@ -47,7 +47,7 @@ export function FieldWrapper({
       <div
         onClick={onClick}
         className={twMerge(
-          "flex w-full cursor-text gap-4 rounded-2xl border bg-white px-6 py-4 transition-colors hover:border-primary",
+          "flex w-full cursor-text gap-3 md:gap-4 rounded-2xl border bg-white px-4 py-3 md:px-6 md:py-4 transition-colors hover:border-primary",
           align === "center" ? "items-center" : "items-start",
           isFocused ? "border-secondary shadow-md" : "border-primary/20",
           error && "border-error",
@@ -64,7 +64,7 @@ export function FieldWrapper({
           {label && (
             <label
               htmlFor={htmlFor}
-              className="h6 font-bold! leading-none text-primary w-fit"
+              className="flock-h6 font-bold! leading-none text-primary w-fit"
             >
               {label}
               {required && <span className="text-error"> *</span>}
@@ -133,9 +133,10 @@ export default function Input({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full border-0 bg-transparent p-0 body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
+          "w-full border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
           className,
         )}
+        autoComplete="off"
       />
     </FieldWrapper>
   );
@@ -177,7 +178,7 @@ export function TextArea({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full max-w-none! resize-none border-0 bg-transparent p-0 body outline-none placeholder:text-neutral",
+          "w-full max-w-none! resize-none border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral",
           className,
         )}
       />

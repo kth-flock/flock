@@ -1,6 +1,6 @@
 export type Location = {
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
   label: string;
 };
 
