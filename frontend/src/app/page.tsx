@@ -2,6 +2,7 @@ import EventPreview, {
   SmallEventPreview,
 } from "@/features/dashboard/eventPrievew";
 import FriendPreview from "@/features/dashboard/friendPreview";
+import NotificationList from "@/features/dashboard/notificationList";
 
 export default function Home() {
   return (
@@ -15,8 +16,9 @@ export default function Home() {
           <SmallEventPreview />
         </div>
       </div>
-      <div className="md:sticky md:top-24 w-full">
+      <div className="md:sticky md:top-24 w-full flex flex-col gap-12">
         <FriendPreview />
+        <NotificationList />
       </div>
     </div>
   );
