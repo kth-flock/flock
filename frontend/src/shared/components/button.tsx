@@ -58,7 +58,7 @@ const buttonSizeIconStyles: Record<
     right: "pl-3 pr-2.5 py-1.5 text-xs md:text-sm gap-1",
   },
   md: {
-    left: "pl-3 pr-4 py-2 text-sm md:text-basegap-1.5 flex-row-reverse",
+    left: "pl-3 pr-4 py-2 text-sm md:text-base gap-1.5 flex-row-reverse",
     right: "pl-4 pr-3 py-2 text-base gap-1.5",
   },
   lg: {
