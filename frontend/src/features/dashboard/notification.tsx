@@ -12,6 +12,7 @@ export type NotificationType =
   | "comment";
 
 // TODO: Add comment and announcements as proper notification
+// TODO: Add dates to notifications
 
 type NotificationProps = {
   from: string; // Should be User type later

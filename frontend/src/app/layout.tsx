@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col px-6 md:px-24">
+      <body className="min-h-full flex flex-col px-6 md:px-24 items-center">
         <Navbar />
         {children}
       </body>
