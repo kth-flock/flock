@@ -25,7 +25,7 @@ export default function ProfileImage({
   lastName,
 }: ProfileImageProps) {
   return (
-    <div className="rounded-full overflow-hidden h-8 w-8 group relative">
+    <div className="rounded-full overflow-hidden h-8 w-8 shrink-0 group relative">
       {profileImgSrc ? (
         <Image src={profileImgSrc} fill alt={`${firstName} ${lastName}`} />
       ) : (
