@@ -1,4 +1,4 @@
-import CreateEventFlow from "@/features/create-event/createEventFlow";
+import CreateEventFlow from "@/features/create-event/components/createEventFlow";
 
 export default function CreateEventPage() {
   return (

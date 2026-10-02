@@ -78,6 +78,7 @@ export async function getInvitedEventsFor(req: Request, res: Response) {
 }
 
 export async function createNewEvent(req: Request, res: Response) {
+  // TODO: Connect user ID in backend to the valid session
   const result = createEventSchema.safeParse(req.body);
 
   if (!result.success) {

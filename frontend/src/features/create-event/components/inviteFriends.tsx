@@ -1,6 +1,6 @@
 "use client";
 import SearchBar from "@/shared/components/searchBar";
-import InviteFriendCard from "../invite-friends/inviteFriendCard";
+import InviteFriendCard from "../../invite-friends/inviteFriendCard";
 import { useState, useEffect } from "react";
 import Button from "@/shared/components/button";
 

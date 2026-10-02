@@ -9,16 +9,19 @@ import TextareaAutosize, {
 type FieldWrapperProps = {
   icon?: React.ReactElement;
   label?: string;
+  required?: boolean;
   htmlFor?: string;
   isFocused: boolean;
   onClick: () => void;
   align?: "center" | "start";
   children: React.ReactNode;
+  error?: string;
 };
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   icon?: React.ReactElement;
   label?: string;
+  error?: string;
 };
 
 type TextareaProps = TextareaAutosizeProps & {
@@ -31,37 +34,51 @@ type TextareaProps = TextareaAutosizeProps & {
 export function FieldWrapper({
   icon,
   label,
+  required = false,
   htmlFor,
   isFocused,
   onClick,
   align = "center",
   children,
+  error,
 }: FieldWrapperProps) {
   return (
-    <div
-      onClick={onClick}
-      className={twMerge(
-        "flex w-full cursor-text gap-4 rounded-2xl border bg-white px-6 py-4 transition-colors hover:border-primary",
-        align === "center" ? "items-center" : "items-start",
-        isFocused ? "border-secondary shadow-md" : "border-primary/20",
-      )}
-    >
-      {icon && (
-        <span className={twMerge("text-primary", align === "start" && "pt-1")}>
-          {icon}
-        </span>
-      )}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {label && (
-          <label
-            htmlFor={htmlFor}
-            className="h6 font-bold! leading-none text-primary w-fit"
-          >
-            {label}
-          </label>
+    <div className="flex flex-col gap-1 w-full">
+      <div
+        onClick={onClick}
+        className={twMerge(
+          "flex w-full cursor-text gap-4 rounded-2xl border bg-white px-6 py-4 transition-colors hover:border-primary",
+          align === "center" ? "items-center" : "items-start",
+          isFocused ? "border-secondary shadow-md" : "border-primary/20",
+          error && "border-error",
         )}
-        {children}
+      >
+        {icon && (
+          <span
+            className={twMerge("text-primary", align === "start" && "pt-1")}
+          >
+            {icon}
+          </span>
+        )}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {label && (
+            <label
+              htmlFor={htmlFor}
+              className="h6 font-bold! leading-none text-primary w-fit"
+            >
+              {label}
+              {required && <span className="text-error"> *</span>}
+            </label>
+          )}
+
+          {children}
+        </div>
       </div>
+      {error && (
+        <p className="flock-ui-label text-error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -69,11 +86,13 @@ export function FieldWrapper({
 export default function Input({
   icon,
   label,
+  required = false,
   placeholder,
   className,
   onFocus,
   onBlur,
   type = "text",
+  error,
   ...props
 }: InputProps) {
   const { ref, isFocused, focusWithinProps } =
@@ -91,8 +110,10 @@ export default function Input({
     <FieldWrapper
       icon={icon}
       label={label}
+      required={required}
       htmlFor={props.id}
       isFocused={isFocused}
+      error={error}
       onClick={() => {
         ref.current?.focus();
         showPickerIfSupported();

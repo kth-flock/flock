@@ -1,6 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FaCircleUser, FaCalendarDays, FaHouseChimney } from "react-icons/fa6";
+import {
+  FaCircleUser,
+  FaCalendarDays,
+  FaHouseChimney,
+  FaCirclePlus,
+} from "react-icons/fa6";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -31,6 +36,13 @@ export default function Navbar() {
           aria-label="Home"
         >
           <FaHouseChimney className={navIconStyle} />
+        </Link>
+        <Link
+          href="/create-event"
+          className={`flex h-[50%] ${navLinkStyle}`}
+          aria-label="Home"
+        >
+          <FaCirclePlus className={navIconStyle} />
         </Link>
         <Link
           href="/"
