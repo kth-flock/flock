@@ -109,7 +109,7 @@ export async function updateFriendship(friendship: Friendship) {
         requesteeId: friendship.requesteeId,
       },
     },
-    data: { status: STATUS.ACCEPTED },
+    data: { status: STATUS.ACCEPTED, updatedAt: new Date() },
   });
   return updatedFriendship;
 }

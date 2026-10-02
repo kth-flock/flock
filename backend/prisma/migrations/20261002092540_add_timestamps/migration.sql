@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Friendship" ADD COLUMN     "updateddAt" TIMESTAMP(3),
+ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
