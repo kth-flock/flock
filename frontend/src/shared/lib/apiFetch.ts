@@ -1,4 +1,5 @@
 import type { CreateEventData } from "@flock/shared/schemas/event";
+import { UserSearchResult } from "../types/user";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -34,4 +35,23 @@ export async function createEventFetch(
 
   const response: { id: number } = await res.json();
   return response;
+}
+
+export async function searchUsersFetch(
+  query: string,
+): Promise<UserSearchResult[]> {
+  const params = new URLSearchParams({ query });
+  const res = await fetch(`${API_BASE_URL}/users/search?${params}`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to search users");
+  }
+
+  const response: { status: string; data: UserSearchResult[] } =
+    await res.json();
+
+  return response.data;
 }

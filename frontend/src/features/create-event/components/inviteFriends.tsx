@@ -3,52 +3,55 @@ import SearchBar from "@/shared/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
 import { useState, useEffect } from "react";
 import Button from "@/shared/components/button";
+import type { UserSearchResult } from "@/shared/types/user";
+import { searchUsersFetch } from "@/shared/lib/apiFetch";
 
 // TODO: Connect to API and make sure types and structures are correct
 
-type SearchResult = {
-  id: number;
-  name: string;
-  isFriend: boolean;
-};
-
-const allSuggestions: SearchResult[] = [
-  { id: 3, name: "Alice Cohen", isFriend: true },
-  { id: 4, name: "Sandra Kåhre", isFriend: false },
+const allSuggestions: UserSearchResult[] = [
+  {
+    user: { firstName: "Sandra", lastName: "Kåhre", id: 1 },
+    friendshipStatus: "FRIENDS",
+  },
+  {
+    user: { firstName: "Alice", lastName: "Cohen", id: 2 },
+    friendshipStatus: "NONE",
+  },
 ];
 
 export default function InviteFriends({ eventId }: { eventId: number | null }) {
-  const [searchResults, setSearchResults] = useState<SearchResult[] | null>(
+  const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
-  const [invitees, setInvitees] = useState<SearchResult[]>([]);
+  const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState(allSuggestions);
 
   useEffect(() => {
-    const invitedIds = new Set(invitees.map((invitee) => invitee.id));
+    const invitedIds = new Set(invitees.map((invitee) => invitee.user.id));
     setSuggestions(
-      allSuggestions.filter((suggestion) => !invitedIds.has(suggestion.id)),
+      allSuggestions.filter(
+        (suggestion) => !invitedIds.has(suggestion.user.id),
+      ),
     );
   }, [invitees]);
 
-  function onSearch(query: string) {
-    query.trim()
-      ? setSearchResults([
-          { id: 1, name: "Felix Larsson", isFriend: false },
-          { id: 2, name: "Elinor Selinder", isFriend: true },
-        ])
-      : setSearchResults(null);
+  async function onSearch(query: string) {
+    if (query.trim()) {
+      setSearchResults(await searchUsersFetch(query));
+    } else {
+      setSearchResults(null);
+    }
   }
 
-  function handleInvite(user: SearchResult, action: "add" | "remove") {
+  function handleInvite(user: UserSearchResult, action: "add" | "remove") {
     setInvitees((prev) => {
       if (action === "add") {
-        return prev.some((invitee) => invitee.id === user.id)
+        return prev.some((invitee) => invitee.user.id === user.user.id)
           ? prev
           : [...prev, user];
       }
 
-      return prev.filter((invitee) => invitee.id !== user.id);
+      return prev.filter((invitee) => invitee.user.id !== user.user.id);
     });
   }
 
@@ -65,12 +68,12 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
             <div className="w-full flex flex-col gap-2">
               {searchResults.map((result) => (
                 <InviteFriendCard
-                  key={result.id}
-                  name={result.name}
+                  key={result.user.id}
+                  user={result.user}
                   isInvited={invitees.some(
-                    (invitee) => invitee.id === result.id,
+                    (invitee) => invitee.user.id === result.user.id,
                   )}
-                  isFriend={result.isFriend}
+                  friendshipStatus={result.friendshipStatus}
                   onInvite={() => handleInvite(result, "add")}
                   onRemove={() => handleInvite(result, "remove")}
                 />
@@ -81,12 +84,12 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
               <h3 className="flock-lead text-center">Suggestions</h3>
               {suggestions.map((suggestion) => (
                 <InviteFriendCard
-                  key={suggestion.id}
-                  name={suggestion.name}
+                  key={suggestion.user.id}
+                  user={suggestion.user}
                   isInvited={invitees.some(
-                    (invitee) => invitee.id === suggestion.id,
+                    (invitee) => invitee.user.id === suggestion.user.id,
                   )}
-                  isFriend={suggestion.isFriend}
+                  friendshipStatus={suggestion.friendshipStatus}
                   onInvite={() => handleInvite(suggestion, "add")}
                   onRemove={() => handleInvite(suggestion, "remove")}
                 />
@@ -99,10 +102,10 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
           <h2 className="flock-h3 text-center">Invitees</h2>
           {invitees.map((invitee) => (
             <InviteFriendCard
-              key={invitee.id}
-              name={invitee.name}
+              key={invitee.user.id}
+              user={invitee.user}
               isInvited={true}
-              isFriend={invitee.isFriend}
+              friendshipStatus={invitee.friendshipStatus}
               onRemove={() => handleInvite(invitee, "remove")}
             />
           ))}

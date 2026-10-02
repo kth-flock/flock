@@ -1,27 +1,27 @@
 import { FaUser, FaPaperPlane, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
+import type { PublicUser } from "@/shared/types/user";
+import { FriendshipStatus } from "@flock/shared/schemas/user";
 
 type InviteFriendCardProps = {
-  profileImg?: string;
-  name: string;
+  user: PublicUser;
   isInvited: boolean;
-  isFriend: boolean;
+  friendshipStatus: FriendshipStatus;
   onInvite?: () => void;
   onRemove?: () => void;
 };
 
 export default function InviteFriendCard({
-  profileImg,
-  name,
+  user,
   isInvited,
-  isFriend,
+  friendshipStatus,
   onInvite,
   onRemove,
 }: InviteFriendCardProps) {
   return (
     <div className="bg-white rounded-2xl p-3 flex flex-row justify-between items-center">
       <div className="flex flex-row gap-4 items-center">
-        {profileImg ? (
+        {user.imageUrl ? (
           ""
         ) : (
           <div className="rounded-full w-12 h-12 border-primary border-3 flex items-end justify-center overflow-clip">
@@ -30,15 +30,19 @@ export default function InviteFriendCard({
         )}
 
         <div className="flex flex-col">
-          <p className="flock-body font-bold!">{name}</p>
-          {isFriend && <p className="flock-caption">Friend</p>}
+          <p className="flock-body font-bold!">
+            {user.firstName} {user.lastName}
+          </p>
+          {friendshipStatus !== "NONE" && (
+            <p className="flock-caption">Friend</p>
+          )}
         </div>
       </div>
       {isInvited ? (
         <Button
           variant="secondary"
           size="sm"
-          icon={<FaTrash />}
+          icon={<FaTrash aria-hidden />}
           iconPlacement="right"
           className="border-error! text-error!"
           onClick={onRemove}
@@ -49,7 +53,7 @@ export default function InviteFriendCard({
         <Button
           variant="secondary"
           size="sm"
-          icon={<FaPaperPlane />}
+          icon={<FaPaperPlane aria-hidden />}
           iconPlacement="right"
           onClick={onInvite}
         >

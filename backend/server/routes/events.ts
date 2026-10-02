@@ -31,5 +31,5 @@ eventsRouter.post("/", createNewEvent);
 //Patch an event with eventId
 eventsRouter.patch("/:eventId", updateEventInfo);
 
-//Delte event by eventId
+//Delete event by eventId
 eventsRouter.delete("/:eventId", deleteEvent);
