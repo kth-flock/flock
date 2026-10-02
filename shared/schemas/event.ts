@@ -9,7 +9,8 @@ export const createEventSchema = z
     title: z.string({ error: "Title is required." }).min(1),
     description: z.string().optional(),
     locationName: z.string().optional(),
-    googlePlaceId: z.string().optional(),
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
     startsAt: z.coerce
       .date({ error: "Start date is required." })
       .refine((date) => date.getTime() > Date.now(), {
@@ -29,6 +30,14 @@ export const createEventSchema = z
     {
       path: ["endsAt"],
       error: "End date must be after the start date.",
+    },
+  )
+  .refine(
+    (event) =>
+      (event.latitude === undefined) === (event.longitude === undefined),
+    {
+      path: ["latitude"],
+      error: "Latitude and longitude must be provided together.",
     },
   );
 

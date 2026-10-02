@@ -35,7 +35,8 @@ model Event {
   title           String
   description     String?
   locationName    String?
-  googlePlaceId   String?
+  latitude        Float?
+  longitude       Float?
   startsAt        DateTime
   endsAt          DateTime?
   imageUrl        String?

@@ -4,7 +4,7 @@ import Input from "@/shared/components/formInputs";
 import { TextArea } from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CreateEventDraft } from "../types/eventTypes";
 import { createEventSchema } from "@flock/shared/schemas/event";
 const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
@@ -19,8 +19,9 @@ import {
   FaFileLines,
 } from "react-icons/fa6";
 
-// TODO: Validation with zod + make sure data conforms to DB structure + connect to API
-// TODO: Mobile styling
+// TODO: make enddate optional
+
+// TODO: Wire up image-upload
 
 export default function CreateEventForm({
   onCreated,
@@ -87,6 +88,8 @@ export default function CreateEventForm({
       title: eventDraft.title,
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
+      latitude: eventDraft.location?.lat,
+      longitude: eventDraft.location?.lng,
       startsAt: startsAt ?? undefined,
       endsAt: endsAt ?? undefined,
     });
@@ -109,11 +112,11 @@ export default function CreateEventForm({
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmitEvent}>
+    <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
       <ImageUpload />
       <span className="flex flex-1 max-sm:flex-wrap gap-2">
         <Input
-          icon={<FaHeading />}
+          icon={<FaHeading aria-hidden />}
           type="text"
           label="Event title"
           required
@@ -129,9 +132,10 @@ export default function CreateEventForm({
       <span className="flex flex-wrap gap-2">
         <span className="flex flex-1 max-sm:flex-wrap gap-2">
           <Input
-            icon={<FaCalendarDay />}
+            icon={<FaCalendarDay aria-hidden />}
             type="date"
             label="Startdate"
+            required
             value={eventDraft.startDate}
             onChange={(e) => {
               const startDate = e.target.value;
@@ -139,16 +143,16 @@ export default function CreateEventForm({
               setEventDraft((prev) => ({
                 ...prev,
                 startDate,
-                endDate: prev.endDate || startDate,
               }));
             }}
             error={validationError["startDate"] ?? ""}
           />
 
           <Input
-            icon={<FaClock />}
+            icon={<FaClock aria-hidden />}
             type="time"
             label="Starttime"
+            required
             value={eventDraft.startTime}
             onChange={(e) => {
               const startTime = e.target.value;
@@ -156,7 +160,6 @@ export default function CreateEventForm({
               setEventDraft((prev) => ({
                 ...prev,
                 startTime,
-                endTime: prev.endTime || startTime,
               }));
             }}
             error={validationError["startDate"] ?? ""}
@@ -164,7 +167,7 @@ export default function CreateEventForm({
         </span>
         <span className="flex flex-1 max-sm:flex-wrap gap-2">
           <Input
-            icon={<FaCalendarDay />}
+            icon={<FaCalendarDay aria-hidden />}
             type="date"
             label="Enddate"
             value={eventDraft.endDate}
@@ -172,7 +175,7 @@ export default function CreateEventForm({
             error={validationError["endDate"] ?? ""}
           />
           <Input
-            icon={<FaClock />}
+            icon={<FaClock aria-hidden />}
             type="time"
             label="Endtime"
             value={eventDraft.endTime}
@@ -182,7 +185,7 @@ export default function CreateEventForm({
         </span>
       </span>
       <TextArea
-        icon={<FaFileLines />}
+        icon={<FaFileLines aria-hidden />}
         value={eventDraft.description}
         onChange={(e) => handleInputChange("description", e.target.value)}
       />
