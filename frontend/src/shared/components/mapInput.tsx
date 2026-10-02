@@ -13,6 +13,7 @@ import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { FieldWrapper } from "./formInputs";
 import { useFocusWithin } from "../hooks/useFocusWithin";
 import { renderToStaticMarkup } from "react-dom/server";
+import { debounce } from "../lib/debounce";
 import type { Location, NominatimResult } from "../lib/nominatim";
 import {
   formatLocationName,
@@ -69,8 +70,24 @@ export default function LocationPicker({
   const [selected, setSelected] = useState<Location | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchRequestRef = useRef(0);
+  const debouncedSearch = useRef(
+    debounce(async (searchQuery: string, requestId: number) => {
+      setLoading(true);
+      try {
+        const data = await geocodeFetch<NominatimResult[]>("search", {
+          q: searchQuery,
+        });
+        if (requestId === searchRequestRef.current) setResults(data);
+      } catch (err) {
+        if (requestId === searchRequestRef.current) {
+          console.error("Geocoding search failed:", err);
+        }
+      } finally {
+        if (requestId === searchRequestRef.current) setLoading(false);
+      }
+    }, 1000),
+  ).current;
   const skipNextSearchRef = useRef(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
@@ -81,8 +98,9 @@ export default function LocationPicker({
       if (!pickerRef.current?.contains(event.target as Node)) {
         setIsMapOpen(false);
         setResults([]);
-        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debouncedSearch.cancel();
         searchRequestRef.current += 1;
+        setLoading(false);
       }
     }
 
@@ -93,37 +111,27 @@ export default function LocationPicker({
 
   useEffect(() => {
     const requestId = ++searchRequestRef.current;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debouncedSearch.cancel();
 
     if (skipNextSearchRef.current) {
       skipNextSearchRef.current = false;
+      setLoading(false);
       return;
     }
 
     if (query.trim().length < 3) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
-    debounceRef.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const data = await geocodeFetch<NominatimResult[]>("search", {
-          q: query,
-        });
-        if (requestId === searchRequestRef.current) setResults(data);
-      } catch (err) {
-        console.error("Geocoding search failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    }, 400);
+    debouncedSearch(query, requestId);
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debouncedSearch.cancel();
       searchRequestRef.current += 1;
     };
-  }, [query]);
+  }, [query, debouncedSearch]);
 
   function commitLocation(location: Location, displayText: string) {
     setSelected(location);

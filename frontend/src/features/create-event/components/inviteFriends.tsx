@@ -1,10 +1,11 @@
 "use client";
 import SearchBar from "@/shared/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
 import type { UserSearchResult } from "@/shared/types/user";
 import { searchUsersFetch } from "@/shared/lib/apiFetch";
+import { debounce } from "@/shared/lib/debounce";
 
 // TODO: Connect to API and make sure types and structures are correct
 
@@ -20,6 +21,19 @@ const allSuggestions: UserSearchResult[] = [
 ];
 
 export default function InviteFriends({ eventId }: { eventId: number | null }) {
+  const searchRequestRef = useRef(0);
+  const debouncedSearch = useRef(
+    debounce(async (query: string, requestId: number) => {
+      try {
+        const results = await searchUsersFetch(query);
+        if (requestId === searchRequestRef.current) setSearchResults(results);
+      } catch (error) {
+        if (requestId === searchRequestRef.current) {
+          console.error("User search failed:", error);
+        }
+      }
+    }),
+  ).current;
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
@@ -35,12 +49,23 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     );
   }, [invitees]);
 
-  async function onSearch(query: string) {
-    if (query.trim()) {
-      setSearchResults(await searchUsersFetch(query));
-    } else {
+  useEffect(
+    () => () => {
+      debouncedSearch.cancel();
+      searchRequestRef.current += 1;
+    },
+    [debouncedSearch],
+  );
+
+  function onSearch(query: string) {
+    const requestId = ++searchRequestRef.current;
+    if (!query.trim()) {
+      debouncedSearch.cancel();
       setSearchResults(null);
+      return;
     }
+
+    debouncedSearch(query, requestId);
   }
 
   function handleInvite(user: UserSearchResult, action: "add" | "remove") {
