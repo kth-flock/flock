@@ -6,7 +6,6 @@ import authRouter from "./server/routes/auth";
 import { geocodeRouter } from "./server/routes/geocode";
 import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
-import { fakeAuth } from "./server/middleware/fakeAuth";
 import { authMiddleware } from "./server/middleware/authMiddleware";
 import { errorHandler } from "./server/middleware/errorHandlers";
 import cookieParser from "cookie-parser";

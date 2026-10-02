@@ -25,21 +25,38 @@ export default function SearchBar({
       onClick={() => ref.current?.focus()}
       icon={<FaMagnifyingGlass />}
     >
-      <input
-        id="search"
-        ref={ref}
-        type="search"
-        value={query}
-        onChange={(event) => {
-          const value = event.target.value;
-          setQuery(value);
-          onQueryChange?.(value);
-        }}
-        onFocus={focusWithinProps.onFocus}
-        onBlur={focusWithinProps.onBlur}
-        placeholder={placeholder}
-        className="flock-body w-full border-0 bg-transparent p-0 outline-none placeholder:text-neutral"
-      />
+      <div className="flex min-w-0 items-center gap-2">
+        <input
+          id="search"
+          ref={ref}
+          type="text"
+          value={query}
+          onChange={(event) => {
+            const value = event.target.value;
+            setQuery(value);
+            onQueryChange?.(value);
+          }}
+          onFocus={focusWithinProps.onFocus}
+          onBlur={focusWithinProps.onBlur}
+          placeholder={placeholder}
+          className="flock-body min-w-0 flex-1 border-0 bg-transparent p-0 outline-none placeholder:text-neutral"
+        />
+        {query && (
+          <button
+            type="button"
+            aria-label="Clear search"
+            title="Clear search"
+            onClick={() => {
+              setQuery("");
+              onQueryChange?.("");
+              ref.current?.focus();
+            }}
+            className="shrink-0 cursor-pointer text-primary hover:text-secondary"
+          >
+            <FaX aria-hidden="true" />
+          </button>
+        )}
+      </div>
     </FieldWrapper>
   );
 }
