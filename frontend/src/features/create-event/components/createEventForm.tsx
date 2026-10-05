@@ -76,6 +76,7 @@ export default function CreateEventForm({
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
+    // TODO: Upload image FIRST. If it fails, abort event creation
     e.preventDefault();
 
     const startsAt = combineDateTime(
