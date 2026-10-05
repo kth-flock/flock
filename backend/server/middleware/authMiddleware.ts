@@ -2,8 +2,8 @@ import jwt, { type JwtPayload} from "jsonwebtoken";
 import { prisma } from "../prisma";
 import { Request, Response, NextFunction } from "express";
 
+
 export const authMiddleware = async(req: Request, res: Response, next: NextFunction) => {
-    console.log("authMiddleware running...")
     let token;
 
     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
