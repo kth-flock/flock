@@ -6,6 +6,8 @@ import {
   updateEventSchema,
 } from "@flock/shared/schemas/event";
 import { getUserById } from "../services/usersServices";
+import { validate } from "../utils/validate";
+import { NotFoundError } from "../utils/errors";
 
 export async function getEvents(req: Request, res: Response) {
   const events = await eventsService.getEvents();
@@ -13,142 +15,73 @@ export async function getEvents(req: Request, res: Response) {
 }
 
 export async function getEventById(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.params.eventId);
+  const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid event ID",
-    });
-  }
-
-  const eventId = result.data;
-
-  const event = await eventsService.getEventById(eventId);
-
-  if (!event) {
-    return res.status(404).json({
-      error: "Event not found",
-    });
-  }
+  const event = await eventsService.getEventById(eventId, userId);
 
   res.status(200).json(event);
 }
 
-export async function getEventsCreatedBy(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.params.userId);
-
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-
-  const userId = result.data;
+export async function getCreatedEvents(req: Request, res: Response) {
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
   const user = await getUserById(userId);
 
   if (!user) {
-    return res.status(404).json({ status: "Error", error: "User not found" });
+    throw new NotFoundError("User not found");
   }
 
-  const events = await eventsService.getEventsCreatedBy(userId);
+  const events = await eventsService.getCreatedEvents(userId);
   res.status(200).json(events);
 }
 
-export async function getInvitedEventsFor(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.params.userId);
-
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-
-  const userId = result.data;
+export async function getInvitedEvents(req: Request, res: Response) {
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
   const user = await getUserById(userId);
 
   if (!user) {
-    return res.status(404).json({ status: "Error", error: "User not found" });
+    throw new NotFoundError("User not found");
   }
 
-  const events = await eventsService.getInvitedEventsFor(userId);
+  const events = await eventsService.getInvitedEvents(userId);
 
   res.status(200).json(events);
 }
 
 export async function createNewEvent(req: Request, res: Response) {
-  // TODO: Connect user ID in backend to the valid session
-  const result = createEventSchema.safeParse(req.body);
+  const eventData = validate(createEventSchema, req.body, "Invalid event data");
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid event data",
-      details: result.error.issues,
-    });
-  }
+  const createEventData = {
+    createdById: userId,
+    ...eventData,
+  };
 
-  const eventData = result.data;
-
-  const event = await eventsService.createNewEvent(eventData);
+  const event = await eventsService.createNewEvent(createEventData);
   res.status(201).json(event);
 }
 
 export async function updateEventInfo(req: Request, res: Response) {
-  const idResult = idSchema.safeParse(req.params.eventId);
+  const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
+  const eventData = validate(updateEventSchema, req.body, "Invalid event data");
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  if (!idResult.success) {
-    return res.status(400).json({
-      error: "Invalid event ID",
-    });
-  }
-
-  const eventId = idResult.data;
-
-  const event = await eventsService.getEventById(eventId);
-
-  if (!event) {
-    return res.status(404).json({
-      error: "Event not found",
-    });
-  }
-
-  const bodyResult = updateEventSchema.safeParse(req.body);
-
-  if (!bodyResult.success) {
-    return res.status(400).json({
-      error: "Invalid event data",
-      details: bodyResult.error.issues,
-    });
-  }
-
-  const eventData = bodyResult.data;
-
-  const updatedEvent = await eventsService.updateEventInfo(eventId, eventData);
+  const updatedEvent = await eventsService.updateEventInfo(
+    eventId,
+    eventData,
+    userId,
+  );
 
   res.status(200).json(updatedEvent);
 }
 
 export async function deleteEvent(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.params.eventId);
+  const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid event ID",
-    });
-  }
-
-  const eventId = result.data;
-
-  const event = await eventsService.getEventById(eventId);
-
-  if (!event) {
-    return res.status(404).json({
-      error: "Event not found",
-    });
-  }
-
-  await eventsService.deleteEvent(eventId);
+  await eventsService.deleteEvent(eventId, userId);
 
   res.status(204).send();
 }
