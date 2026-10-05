@@ -1,65 +1,35 @@
 import {Request, Response} from "express";
-import { prisma } from "../prisma";
-import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken";
+import * as authService from "../services/authService";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { firstName, lastName, email, pwdHash } = req.body;
-
-    //error handling for user already exists
-    const userExists = await prisma.user.findUnique({ where: { email } });
-    if (userExists) {
-      return res
-        .status(409)
-        .json({ status: "Conflict", error: "User already exists, email must be unique" });
-    }
-
-
-     //hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(pwdHash, salt);
-
-    //create user --> service
-    const user = await prisma.user.create({
-      data: { firstName, lastName, email, pwdHash: hashedPassword },
-    });
+    const user = await authService.registerUser(req.body);
 
     // Don't return the password hash to the client
     const { pwdHash: _, ...safeUser } = user;
     res.status(201).json({ status: "Success", data: safeUser });
   } catch (error) {
+    if (error instanceof authService.DuplicateEmailError) {
+      return res.status(409).json({ status: "Error", error: "User already exists, email must be unique" });
+    }
     res.status(500).json({ error: (error as Error).message });
   }
 }
 
 export async function login(req: Request, res: Response) {
   try {
-    const { email, pwdHash } = req.body;
-
-    //error handling for user not found
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.pwdHash) {
-      return res
-        .status(401)
-        .json({ status: "Unauthorized", error: "Invalid credentials" });
-    }
-
-    //compare hashed password
-    const isPasswordCorrect = await bcrypt.compare(pwdHash, user.pwdHash);
-    if (!isPasswordCorrect) {
-      return res
-        .status(401)
-        .json({ status: "Unauthorized", error: "Invalid credentials" });
-    }
-
+   
+    const user = await authService.loginUser(req.body);
     //generate token
     const token = generateToken(user.id, res);
     const { pwdHash: _, ...safeUser } = user; 
 
     res.status(200).json({ status: "Success", data: { user: safeUser, token } });
-    console.log(user)
   } catch (error) {
+    if (error instanceof authService.InvalidCredentialsError) {
+      return res.status(401).json({ status: "Error", error: "Invalid credentials" });
+    }
     res.status(500).json({ error: (error as Error).message });
   }
 }
@@ -67,8 +37,7 @@ export async function login(req: Request, res: Response) {
 export async function logout(req: Request, res: Response) {
   
   //logging out = removing the token from the user's cookie
-  res.cookie("token", "", {httpOnly: true, expires: new Date(0)})
-  console.log(res)
+  res.cookie("token", "", {httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", expires: new Date(0)})
   res.status(200).json({ status: "Success", data: { message: "Logged out successfully" } });
  
 }
