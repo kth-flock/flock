@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "../shared/components/navbar";
+import Footer from "../shared/components/footer";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col px-6 md:px-24 items-center">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
