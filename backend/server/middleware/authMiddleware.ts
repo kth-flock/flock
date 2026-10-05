@@ -30,7 +30,7 @@ export const authMiddleware = async(req: Request, res: Response, next: NextFunct
             return res.status(401).json({ status: "Unauthorized", error: "Invalid token" });
           }
 
-        const user = await prisma.user.findUnique({ where: { id: decoded.id  }, }); //TODO: use one of the services? eg. getUserById /usersServices.ts or /meServices.ts, or just keep this one?
+        const user = await prisma.user.findUnique({ where: { id: decoded.id  }, }); 
         if(!user) {
             return res.status(401).json({ status: "Unauthorized", error: "User no longer exists" });
         }

@@ -12,12 +12,15 @@ export async function register(req: Request, res: Response) {
     }
     const user = await authService.registerUser(result.data);
 
+    //generate token
+    const token = generateToken(user.id, res);
+
     // Don't return the password hash to the client
     const { pwdHash: _, ...safeUser } = user;
-    res.status(201).json({ status: "Success", data: safeUser });
+    res.status(201).json({ status: "Success", data: {safeUser, token} });
   } catch (error) {
     if (error instanceof authService.DuplicateEmailError) {
-      return res.status(409).json({ status: "Error", error: "User already exists, email must be unique" });
+      return res.status(400).json({ status: "Error", error: "Could not create account" }); //Intentionally vague error message to prevent enumeration attacks
     }
     throw error;
   }
