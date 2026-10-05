@@ -8,7 +8,6 @@ export type PublicUser = {
   imageUrl?: string | null;
 };
 
-export type UserSearchResult = {
-  user: PublicUser;
+export type UserSearchResult = PublicUser & {
   friendshipStatus: FriendshipStatus;
 };

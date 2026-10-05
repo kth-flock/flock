@@ -1,12 +1,10 @@
 import { FaUser, FaPaperPlane, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
-import type { PublicUser } from "@/shared/types/user";
-import { FriendshipStatus } from "@flock/shared/schemas/user";
+import type { UserSearchResult } from "@/shared/types/user";
 
 type InviteFriendCardProps = {
-  user: PublicUser;
+  user: UserSearchResult;
   isInvited: boolean;
-  friendshipStatus: FriendshipStatus;
   onInvite?: () => void;
   onRemove?: () => void;
 };
@@ -14,7 +12,6 @@ type InviteFriendCardProps = {
 export default function InviteFriendCard({
   user,
   isInvited,
-  friendshipStatus,
   onInvite,
   onRemove,
 }: InviteFriendCardProps) {
@@ -33,7 +30,7 @@ export default function InviteFriendCard({
           <p className="flock-body font-bold!">
             {user.firstName} {user.lastName}
           </p>
-          {friendshipStatus !== "NONE" && (
+          {user.friendshipStatus !== "NONE" && (
             <p className="flock-caption">Friend</p>
           )}
         </div>
