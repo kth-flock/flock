@@ -66,3 +66,28 @@ export async function editUserInfo(req: Request, res: Response) {
     data: updatedUser,
   });
 }
+
+export async function changeEmail(req: Request, res: Response) {
+  const result = idSchema.safeParse(req.user.id); //TODO: we do this check often, we should maybe make a middleware for this.
+  if (!result.success) {
+    return res.status(400).json({
+      error: "Invalid user ID",
+    });
+  }
+  const id = result.data;
+  //validate the id is their own id
+  //validate the new email is not already in use an email type
+  //change the email via the service
+
+  res.status(200).json({
+    status: "Success",
+    message: "User information successfully edited",
+    data: "Email changed successfully", //TODO: send the new email to the user
+  });
+
+
+}
+
+export async function changePassword(req: Request, res: Response) {
+  //TODO
+}

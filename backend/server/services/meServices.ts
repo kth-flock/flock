@@ -26,3 +26,17 @@ export async function editUserInfo(userId: UserId, data: UserInfo) {
 
   return updatedUser;
 }
+
+export async function changeEmail(userId: UserId, newEmail: string) {
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    select: privateUserInformationSelect,
+    data: { email: newEmail },
+  });
+
+  return updatedUser;
+}
+
+export async function changePassword(userId: UserId, newPassword: string) {
+  
+}
