@@ -40,7 +40,7 @@ export default function Navbar() {
         <Link
           href="/create-event"
           className={`flex h-[50%] ${navLinkStyle}`}
-          aria-label="Home"
+          aria-label="Create Event"
         >
           <FaCirclePlus className={navIconStyle} />
         </Link>
