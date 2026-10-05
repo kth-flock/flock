@@ -1,10 +1,16 @@
 import {Request, Response} from "express";
 import generateToken from "../utils/generateToken";
 import * as authService from "../services/authService";
+import { loginUserSchema, registerUserSchema } from "@flock/shared/schemas/auth";
 
 export async function register(req: Request, res: Response) {
   try {
-    const user = await authService.registerUser(req.body);
+
+    const result = registerUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ status: "Error", error: "Invalid request body", details: result.error.issues.map((issue) => issue.message).join(", ") });
+    }
+    const user = await authService.registerUser(result.data);
 
     // Don't return the password hash to the client
     const { pwdHash: _, ...safeUser } = user;
@@ -20,7 +26,11 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
    
-    const user = await authService.loginUser(req.body);
+    const result = loginUserSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ status: "Error", error: "Invalid request body", details: result.error.issues.map((issue) => issue.message).join(", ") });
+    }
+    const user = await authService.loginUser(result.data);
     //generate token
     const token = generateToken(user.id, res);
     const { pwdHash: _, ...safeUser } = user; 
