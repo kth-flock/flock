@@ -19,7 +19,7 @@ export async function register(req: Request, res: Response) {
     if (error instanceof authService.DuplicateEmailError) {
       return res.status(409).json({ status: "Error", error: "User already exists, email must be unique" });
     }
-    res.status(500).json({ error: (error as Error).message });
+    throw error;
   }
 }
 
@@ -40,11 +40,11 @@ export async function login(req: Request, res: Response) {
     if (error instanceof authService.InvalidCredentialsError) {
       return res.status(401).json({ status: "Error", error: "Invalid credentials" });
     }
-    res.status(500).json({ error: (error as Error).message });
+    throw error;
   }
 }
 
-export async function logout(req: Request, res: Response) {
+export function logout(req: Request, res: Response) {
   
   //logging out = removing the token from the user's cookie
   res.cookie("token", "", {httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", expires: new Date(0)})
