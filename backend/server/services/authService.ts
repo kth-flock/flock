@@ -1,12 +1,13 @@
+import { LoginUser, RegisterUser } from "@flock/shared/schemas/auth";
 import { prisma } from "../prisma";
 import bcrypt from "bcryptjs";
 
 export class DuplicateEmailError extends Error {}
 export class InvalidCredentialsError extends Error {}
 
-export async function registerUser(userData: { firstName: string, lastName: string, email: string, password: string }) {
+export async function registerUser(userData: RegisterUser) {
 
-    const { firstName, lastName, email, password } = userData; //TODO: change to zod schema
+    const { firstName, lastName, email, password } = userData;
 
     const userExists = await prisma.user.findUnique({ where: { email } });
     if (userExists) {
@@ -21,7 +22,7 @@ export async function registerUser(userData: { firstName: string, lastName: stri
     return user;
 }
 
-export async function loginUser(userInput: { email: string, password: string }) {
+export async function loginUser(userInput: LoginUser) {
     const { email, password } = userInput;
 
   
