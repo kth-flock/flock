@@ -9,7 +9,11 @@ import {
   deleteEvent,
 } from "../controllers/eventsController";
 
+import {inviteesRouter } from "./invitees";
+
 export const eventsRouter = Router();
+
+eventsRouter.use("/friendships", inviteesRouter);
 
 //Get surface level data for all events (no annoncements, comments, or userData)
 eventsRouter.get("/", getEvents);
