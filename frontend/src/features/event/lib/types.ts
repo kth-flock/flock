@@ -21,18 +21,4 @@ export type EventAnnouncement = {
   comments: EventComment[];
 };
 
-export type EventDetails = {
-  id: number;
-  createdById: number;
-  title: string;
-  description: string | null;
-  locationName: string | null;
-  googlePlaceId: string | null;
-  startsAt: string;
-  endsAt: string | null;
-  imageUrl: string | null;
-  createdBy: PublicUser;
-  announcements: EventAnnouncement[];
-};
-
 export type { RSVP as Rsvp } from "../../../../../backend/prisma/generated/enums";
