@@ -17,6 +17,7 @@ import {
   FaCalendarDay,
   FaClock,
   FaFileLines,
+  FaCamera,
 } from "react-icons/fa6";
 
 // TODO: make enddate optional
@@ -75,6 +76,7 @@ export default function CreateEventForm({
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
+    // TODO: Upload image FIRST. If it fails, abort event creation
     e.preventDefault();
 
     const startsAt = combineDateTime(
@@ -113,7 +115,13 @@ export default function CreateEventForm({
 
   return (
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
-      <ImageUpload />
+      <ImageUpload className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4">
+        <span className="flex items-center gap-4">
+          <FaCamera size={40} aria-hidden="true" />
+          <span>Upload</span>
+        </span>
+      </ImageUpload>
+
       <span className="flex flex-1 max-sm:flex-wrap gap-2">
         <Input
           icon={<FaHeading aria-hidden />}
