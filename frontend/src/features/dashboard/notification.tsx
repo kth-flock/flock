@@ -38,7 +38,7 @@ function FriendRequestAction({
   onAction: (type: FriendRequestActionType) => void;
 }) {
   return (
-    <div className="flex lg:flex-col gap-1">
+    <div className="flex gap-2">
       <Button variant="secondary" size="sm" onClick={() => onAction("ACCEPT")}>
         Accept
       </Button>
@@ -61,16 +61,15 @@ export default function Notification({
   onAction,
 }: NotificationProps) {
   return (
-    <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between cursor-pointer hover:bg-accent/10">
-      <div className="flex gap-4 items-center">
-        <ProfileImage firstName={"firstName"} lastName={"lastName"} />
+    <div className="flex gap-4 items-center p-4 cursor-pointer hover:bg-accent/10">
+      <ProfileImage firstName={"firstName"} lastName={"lastName"} />
+      <div className="flex flex-col gap-2">
         <p className="flock-body">
           <b>{from}</b>{" "}
           {type === "RSVP" ? messageMap.RSVP[RSVPstatus] : messageMap[type]}
         </p>
+        {type === "req" && <FriendRequestAction onAction={onAction} />}
       </div>
-
-      {type === "req" && <FriendRequestAction onAction={onAction} />}
     </div>
   );
 }

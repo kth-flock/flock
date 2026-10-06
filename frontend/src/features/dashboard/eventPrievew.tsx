@@ -19,7 +19,7 @@ export default function EventPreview() {
         </div>
 
         <span className="flex gap-4">
-          <span className="inline-flex gap-2 items-center flock-body">
+          <span className="inline-flex gap-2 items-center flock-body" title="Date">
             <FaCalendar />
             Tomorrow
           </span>
@@ -39,8 +39,8 @@ export default function EventPreview() {
 
 export function SmallEventPreview() {
   return (
-    <div className="flex lg:flex-col h-28 w-full lg:h-48 lg:w-44 overflow-hidden rounded-2xl shadow-md bg-neutral/50">
-      <div className="w-1/2 lg:h-1/2 lg:w-full bg-primary" />
+    <div className="flex h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/50">
+      <div className="w-1/2 bg-primary" />
 
       <div className="flex flex-1 flex-col justify-center gap-1 p-4">
         <span className="flex justify-between">
@@ -48,7 +48,7 @@ export function SmallEventPreview() {
           <FaCircleCheck className="fill-secondary" />
         </span>
 
-        <span className="inline-flex items-center gap-1 flock-caption">
+        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
           <FaCalendar />
           Tomorrow
         </span>
