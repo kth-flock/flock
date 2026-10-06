@@ -104,38 +104,31 @@ export default function Register() {
   return (
     <>
       <h1 className="flock-h1 text-center">Register</h1>
-      <form
-        className="mt-8 flex flex-col gap-4"
-        onSubmit={handleSubmitRegister}
-      >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[160px_1fr]">
-          <ImageUpload />
+      <form className="flex flex-col gap-4" onSubmit={handleSubmitRegister}>
+        <div className="flex flex-col gap-4 md:flex-row">
+          <Input
+            id="firstName"
+            name="firstName"
+            label="First name"
+            placeholder="First name"
+            required
+            autoComplete="given-name"
+            value={registerDraft.firstName}
+            onChange={(e) => handleInputChange("firstName", e.target.value)}
+            error={validationError["firstName"] ?? ""}
+          />
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Input
-              id="firstName"
-              name="firstName"
-              label="First name"
-              placeholder="First name"
-              required
-              autoComplete="given-name"
-              value={registerDraft.firstName}
-              onChange={(e) => handleInputChange("firstName", e.target.value)}
-              error={validationError["firstName"] ?? ""}
-            />
-
-            <Input
-              id="lastName"
-              name="lastName"
-              label="Last name"
-              placeholder="Last name"
-              required
-              autoComplete="family-name"
-              value={registerDraft.lastName}
-              onChange={(e) => handleInputChange("lastName", e.target.value)}
-              error={validationError["lastName"] ?? ""}
-            />
-          </div>
+          <Input
+            id="lastName"
+            name="lastName"
+            label="Last name"
+            placeholder="Last name"
+            required
+            autoComplete="family-name"
+            value={registerDraft.lastName}
+            onChange={(e) => handleInputChange("lastName", e.target.value)}
+            error={validationError["lastName"] ?? ""}
+          />
         </div>
 
         <Input
@@ -151,7 +144,7 @@ export default function Register() {
           error={validationError["email"] ?? ""}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-4 md:flex-row">
           <Input
             id="password"
             name="password"
