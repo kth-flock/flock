@@ -27,5 +27,34 @@ export function formatDateTimeRange(startsAt: string, endsAt: string | null) {
     ? formatTime(endsAt)
     : `${formatDate(endsAt)}, ${formatTime(endsAt)}`;
 
-  return `${start} – ${end}`;
+  return `${start} - ${end}`;
+}
+
+export function formatTimeRange(startsAt: string, endsAt: string | null) {
+  return endsAt && formatDate(startsAt) === formatDate(endsAt)
+    ? `${formatTime(startsAt)} - ${formatTime(endsAt)}`
+    : formatTime(startsAt);
+}
+
+const calendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIME_ZONE,
+});
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const RELATIVE_DAYS_AHEAD = 14;
+
+const daysFromToday = (iso: string) =>
+  Math.round(
+    (Date.parse(calendarDayFormatter.format(new Date(iso))) -
+      Date.parse(calendarDayFormatter.format(new Date()))) /
+      MS_PER_DAY,
+  );
+
+// Relative date formatting
+export function formatRelativeDate(iso: string) {
+  const days = daysFromToday(iso);
+  if (days < 0 || days > RELATIVE_DAYS_AHEAD) return formatDate(iso);
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  return `In ${days} days`;
 }
