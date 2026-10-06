@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { usersRouter } from "./server/routes/users";
-import authRouter from "./server/routes/auth";
+import { authRouter } from "./server/routes/auth";
 import { geocodeRouter } from "./server/routes/geocode";
 import { eventsRouter } from "./server/routes/events";
 import { meRouter } from "./server/routes/me";
