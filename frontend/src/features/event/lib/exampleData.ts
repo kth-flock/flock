@@ -1,7 +1,8 @@
 import type { PublicUser } from "@/shared/types/user";
+import type { DashboardNotification } from "@/features/dashboard/lib/types";
 import type { EventDetails } from "./types";
 
-// Placeholder data used while the event page isn't wired to the backend
+// Placeholder data used while the event page and dashboard aren't wired to the backend
 
 const alice: PublicUser = {
   id: 1,
@@ -108,4 +109,28 @@ export const exampleEvents: EventDetails[] = [
   exampleEvent,
   hemmafest,
   boardGameNight,
+];
+
+export const exampleNotifications: DashboardNotification[] = [
+  {
+    id: 1,
+    type: "req",
+    from: bob,
+    createdAt: "2026-10-05T18:20:00.000Z",
+  },
+  {
+    id: 2,
+    type: "invite",
+    from: bob,
+    event: { id: hemmafest.id, title: hemmafest.title },
+    createdAt: "2026-10-04T12:00:00.000Z",
+  },
+  {
+    id: 3,
+    type: "RSVP",
+    from: bob,
+    event: { id: exampleEvent.id, title: exampleEvent.title },
+    RSVPstatus: "ACCEPTED",
+    createdAt: "2026-10-02T08:45:00.000Z",
+  },
 ];
