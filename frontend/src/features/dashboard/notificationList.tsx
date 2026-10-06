@@ -1,17 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import Notification, { NotificationAction } from "./notification";
-
-// TODO: Fix mobile view
+import type { DashboardNotification } from "./lib/types";
 
 const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
 
-export default function NotificationList() {
-  // Only affects mobile, the list is always shown from md and up
+export default function NotificationList({
+  notifications,
+}: {
+  notifications: DashboardNotification[];
+}) {
+  // Only affects mobile - list is always shown from md and up
   const [isOpen, setIsOpen] = useState(false);
 
-  function handleAction(notifId: number, action: NotificationAction) {
+  function handleAction(
+    notif: DashboardNotification,
+    action: NotificationAction,
+  ) {
     switch (action) {
       case "ACCEPT":
         return;
@@ -46,24 +52,20 @@ export default function NotificationList() {
         id="notification-list"
         className={`${isOpen ? "flex" : "hidden"} md:flex flex-col w-full`}
       >
-        <Notification
-          from="Sandra Kåhre"
-          type="req"
-          onAction={(type) => handleAction(1, type)}
-        />
-        <div className="w-full border-b border-primary/20" />
-        <Notification
-          from="Sandra Kåhre"
-          type="invite"
-          onAction={(type) => handleAction(2, type)}
-        />
-        <div className="w-full border-b border-primary/20" />
-        <Notification
-          from="Sandra Kåhre"
-          type="RSVP"
-          RSVPstatus="ACCEPTED"
-          onAction={(type) => handleAction(3, type)}
-        />
+        {notifications.length === 0 && (
+          <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
+            No new notifications
+          </p>
+        )}
+        {notifications.map((notif, index) => (
+          <Fragment key={notif.id}>
+            {index > 0 && <div className="w-full border-b border-primary/20" />}
+            <Notification
+              notification={notif}
+              onAction={(action) => handleAction(notif, action)}
+            />
+          </Fragment>
+        ))}
       </div>
     </div>
   );

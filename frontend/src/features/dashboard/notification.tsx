@@ -1,6 +1,8 @@
 "use client";
 import ProfileImage from "@/shared/components/profileImage";
 import Button from "@/shared/components/button";
+import { fullName } from "@/shared/lib/user";
+import type { DashboardNotification } from "./lib/types";
 
 export type FriendRequestActionType = "ACCEPT" | "DECLINE";
 export type NotificationAction = FriendRequestActionType | "VIEW";
@@ -11,16 +13,13 @@ export type NotificationType =
   | "announcement"
   | "comment";
 
-// TODO: Add comment and announcements as proper notification
+// TODO: Add comment and announcements as notification
 // TODO: Add dates to notifications
 
 type NotificationProps = {
-  from: string; // Should be User type later
+  notification: DashboardNotification;
   onAction: (action: NotificationAction) => void;
-} & (
-  | { type: "req" | "invite"; RSVPstatus?: undefined }
-  | { type: "RSVP"; RSVPstatus: "ACCEPTED" | "MAYBE" | "DECLINED" }
-);
+};
 
 const messageMap = {
   req: "sent you a friend request!",
@@ -55,20 +54,28 @@ function FriendRequestAction({
 }
 
 export default function Notification({
-  from,
-  type,
-  RSVPstatus,
+  notification,
   onAction,
 }: NotificationProps) {
+  const { from } = notification;
+
   return (
     <div className="flex gap-4 items-center p-4 cursor-pointer hover:bg-accent/10">
-      <ProfileImage firstName={"firstName"} lastName={"lastName"} />
+      {from.imageUrl ? (
+        <ProfileImage profileImgSrc={from.imageUrl} />
+      ) : (
+        <ProfileImage firstName={from.firstName} lastName={from.lastName} />
+      )}
       <div className="flex flex-col gap-2">
         <p className="flock-body">
-          <b>{from}</b>{" "}
-          {type === "RSVP" ? messageMap.RSVP[RSVPstatus] : messageMap[type]}
+          <b>{fullName(from)}</b>{" "}
+          {notification.type === "RSVP"
+            ? messageMap.RSVP[notification.RSVPstatus]
+            : messageMap[notification.type]}
         </p>
-        {type === "req" && <FriendRequestAction onAction={onAction} />}
+        {notification.type === "req" && (
+          <FriendRequestAction onAction={onAction} />
+        )}
       </div>
     </div>
   );

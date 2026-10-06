@@ -5,18 +5,22 @@ import EventPreview, {
 } from "@/features/dashboard/eventPrievew";
 import FriendPreview from "@/features/dashboard/friendPreview";
 import NotificationList from "@/features/dashboard/notificationList";
+import { getNotifications } from "@/features/dashboard/lib/api";
 import { getUpcomingEvents } from "@/features/event/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [nextEvent, ...upcomingEvents] = await getUpcomingEvents();
+  const [[nextEvent, ...upcomingEvents], notifications] = await Promise.all([
+    getUpcomingEvents(),
+    getNotifications(),
+  ]);
 
   return (
     <main className="flex flex-col md:flex-row gap-4 md:gap-16 flex-1 items-center md:items-start justify-center mx-auto w-full max-w-5xl">
       <div className="md:sticky md:top-24 w-full flex flex-col gap-4 md:gap-12 md:order-last">
         <FriendPreview />
-        <NotificationList />
+        <NotificationList notifications={notifications} />
       </div>
       <div className="w-full flex flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
