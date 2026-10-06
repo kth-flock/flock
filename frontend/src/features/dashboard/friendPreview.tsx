@@ -3,6 +3,7 @@ import { FaUserPlus } from "react-icons/fa6";
 import ProfileImage from "@/shared/components/profileImage";
 import { IconButton } from "@/shared/components/button";
 import type { PublicUser } from "@/shared/types/user";
+import Link from "next/link";
 
 export default function FriendPreview({ friends }: { friends: PublicUser[] }) {
   return (
@@ -15,14 +16,14 @@ export default function FriendPreview({ friends }: { friends: PublicUser[] }) {
         {friends.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">
             {friends.map((friend) => (
-              <span key={friend.id} title={`${friend.firstName} ${friend.lastName}`} className="group transition-all hover:scale-110 hover:-translate-y-0.5 hover:-rotate-5 cursor-pointer">
+              <Link key={friend.id} href={`/profile/${friend.id}`} title={`${friend.firstName} ${friend.lastName}`} className="group transition-all hover:scale-110 hover:-translate-y-0.5 hover:-rotate-5">
                 {friend.imageUrl ? (
                   <ProfileImage shadow profileImgSrc={friend.imageUrl} />
                 ) : (
                   <ProfileImage shadow firstName={friend.firstName} lastName={friend.lastName}
                   />
                 )}
-              </span>
+              </Link>
             ))}
           </div>
         ) : (
