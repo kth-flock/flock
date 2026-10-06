@@ -23,7 +23,7 @@ export default function NotificationList() {
       <div className="bg-primary text-white flock-h3 p-4 text-center w-full">
         Notifications
       </div>
-      <div className="flex flex-col p-4 gap-4 w-full">
+      <div className="flex flex-col w-full">
         <Notification
           from="Sandra Kåhre"
           type="req"

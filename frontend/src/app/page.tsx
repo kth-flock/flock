@@ -6,7 +6,7 @@ import NotificationList from "@/features/dashboard/notificationList";
 
 export default function Home() {
   return (
-    <main className="flex flex-col md:flex-row gap-4 md:gap-16 flex-1 items-center md:items-start justify-center w-full max-w-6xl">
+    <main className="flex flex-col md:flex-row gap-4 md:gap-16 flex-1 items-center md:items-start justify-center mx-auto w-full max-w-5xl">
       <div className="md:sticky md:top-24 w-full flex flex-col gap-4 md:gap-12 md:order-last">
         <FriendPreview />
         <NotificationList />
@@ -16,7 +16,6 @@ export default function Home() {
         <EventPreview />
         <h3 className="flock-h3">Upcoming</h3>
         <div className="flex flex-wrap gap-2 justify-between">
-          <SmallEventPreview />
           <SmallEventPreview />
         </div>
       </div>
