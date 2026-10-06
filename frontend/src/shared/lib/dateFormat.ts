@@ -15,10 +15,10 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
-export const formatDate = (iso: string) => dateFormatter.format(new Date(iso));
-export const formatTime = (iso: string) => timeFormatter.format(new Date(iso));
+export const formatDate = (iso: Date) => dateFormatter.format(new Date(iso));
+export const formatTime = (iso: Date) => timeFormatter.format(new Date(iso));
 
-export function formatDateTimeRange(startsAt: string, endsAt: string | null) {
+export function formatDateTimeRange(startsAt: Date, endsAt: Date | null) {
   const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
   if (!endsAt) return start;
 

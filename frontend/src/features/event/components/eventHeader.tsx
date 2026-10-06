@@ -6,7 +6,7 @@ import { formatDateTimeRange } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
 import { googleCalendarUrl } from "../lib/calendar";
-import type { EventDetails } from "../lib/types";
+import type { ExtendedEvent } from "@/shared/types/event";
 import RsvpButtons from "./rsvpButtons";
 
 function HostedBy({ host }: { host: PublicUser }) {
@@ -24,7 +24,13 @@ function HostedBy({ host }: { host: PublicUser }) {
   );
 }
 
-export default function EventHeader({ event }: { event: EventDetails }) {
+export default function EventHeader({
+  event,
+  isHost,
+}: {
+  event: ExtendedEvent;
+  isHost: boolean;
+}) {
   return (
     <header className="flex flex-col gap-6">
       {event.imageUrl ? (
@@ -60,7 +66,7 @@ export default function EventHeader({ event }: { event: EventDetails }) {
               className="size-5 shrink-0 fill-secondary"
               aria-hidden
             />
-            <time dateTime={event.startsAt}>
+            <time dateTime={String(event.startsAt)}>
               {formatDateTimeRange(event.startsAt, event.endsAt)}
             </time>
           </p>

@@ -8,6 +8,11 @@ export type PublicUser = {
   imageUrl?: string | null;
 };
 
+export type PrivateUser = PublicUser & {
+  email: string;
+  createdAt: string;
+};
+
 export type UserSearchResult = PublicUser & {
   friendshipStatus: FriendshipStatus;
 };
