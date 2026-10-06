@@ -2,14 +2,23 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EventHeader from "@/features/event/components/eventHeader";
 import AnnouncementList from "@/features/event/components/announcementList";
-import { getEvent } from "@/features/event/lib/api";
 // import { getEventByIdFetch } from "@/shared/lib/apiFetch"; add this fetch when services are hooked to correct services
+//import AnnouncementList from "@/features/event/components/announcementList";
+import { getEvent, getCurrentUser } from "@/shared/lib/apiFetch";
+import { idSchema } from "@flock/shared/schemas/common";
+import type { PrivateUser } from "@/shared/types/user";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/event/[eventId]">): Promise<Metadata> {
   const { eventId } = await params;
-  const event = await getEvent(eventId);
+
+  const parsedEventId = idSchema.safeParse(eventId);
+  if (!parsedEventId.success) {
+    notFound();
+  }
+
+  const event = await getEvent(parsedEventId.data);
   return {
     title: event ? `${event.title} • Flock` : "Event not found • Flock",
   };
@@ -18,15 +27,25 @@ export async function generateMetadata({
 export default async function EventPage({
   params,
 }: PageProps<"/event/[eventId]">) {
+  // ---- GET EVENT ----
   const { eventId } = await params;
-  const event = await getEvent(eventId);
-
+  const parsedEventId = idSchema.safeParse(eventId);
+  if (!parsedEventId.success) notFound();
+  const event = await getEvent(parsedEventId.data);
   if (!event) notFound();
+
+  // ---- GET CURRENT USER ----
+  //const user = await getCurrentUser();
+  //if (!user) notFound();
+
+  // ---- logic ----
+  //const isHost = event.createdById === user.id;
+  const isHost = true;
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
-      <EventHeader event={event} />
-      <AnnouncementList announcements={event.announcements} />
+      <EventHeader event={event} isHost={isHost} />
+      {/*<AnnouncementList announcements={event.announcements} /> */}
     </main>
   );
 }
