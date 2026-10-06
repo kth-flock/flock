@@ -2,7 +2,7 @@ import EventPreview, {
   NoNextEvent,
   NoUpcomingEvents,
   SmallEventPreview,
-} from "@/features/dashboard/eventPrievew";
+} from "@/features/dashboard/eventPreview";
 import FriendPreview from "@/features/dashboard/friendPreview";
 import NotificationList from "@/features/dashboard/notificationList";
 import { getFriends, getNotifications } from "@/features/dashboard/lib/api";
@@ -20,7 +20,7 @@ export default async function Home() {
         <FriendPreview friends={friends} />
         <NotificationList notifications={notifications} />
       </div>
-      <div className="w-full flex flex-col gap-4">
+      <div className="w-full min-w-0 flex flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
         {nextEvent ? <EventPreview event={nextEvent} /> : <NoNextEvent />}
         <h3 className="flock-h3">Upcoming</h3>
