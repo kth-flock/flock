@@ -25,6 +25,8 @@ const clara: PublicUser = {
   imageUrl: null,
 };
 
+export const exampleFriends: PublicUser[] = [alice, bob, clara];
+
 export const exampleEvent: EventDetails = {
   id: 1,
   createdById: alice.id,
