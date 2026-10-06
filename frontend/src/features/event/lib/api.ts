@@ -10,6 +10,5 @@ export async function getEvent(eventId: string): Promise<EventDetails | null> {
 
 // TODO: fetch from the backend. Returns the example events, soonest first.
 export async function getUpcomingEvents(): Promise<EventDetails[]> {
-  // return [];
   return exampleEvents.toSorted((a, b) => a.startsAt.localeCompare(b.startsAt));
 }

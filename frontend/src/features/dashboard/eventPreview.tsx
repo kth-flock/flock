@@ -19,7 +19,7 @@ export default function EventPreview({ event }: { event: EventDetails }) {
   return (
     <Link
       href={`/event/${event.id}`}
-      className="block rounded-2xl shadow-md bg-white w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
+      className="block rounded-2xl shadow-md bg-white dark:bg-white/10 w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
       <div className="relative bg-neutral w-full h-36">
         {event.imageUrl && (
@@ -33,10 +33,15 @@ export default function EventPreview({ event }: { event: EventDetails }) {
         )}
       </div>
       <div className="p-6 flex flex-col gap-2">
-        <div className="flex justify-between">
-          <span className="flock-h4">{event.title}</span>
+        <div className="flex justify-between items-start gap-4">
+          <span
+            className="flock-h4 min-w-0 line-clamp-2 break-words"
+            title={event.title}
+          >
+            {event.title}
+          </span>
           {/* TODO: Use real RSVP status here */}
-          <span className="inline-flex gap-2 items-center flock-body text-secondary">
+          <span className="inline-flex shrink-0 gap-2 items-center flock-body text-secondary">
             <FaCircleCheck />
             Going
           </span>
@@ -55,9 +60,14 @@ export default function EventPreview({ event }: { event: EventDetails }) {
           </span>
         </span>
         {event.locationName && (
-          <span className="inline-flex gap-2 items-center flock-body">
-            <FaLocationDot />
-            {event.locationName}
+          <span
+            className="flex gap-2 items-start flock-body"
+            title={event.locationName}
+          >
+            <FaLocationDot className="mt-1 shrink-0" />
+            <span className="min-w-0 line-clamp-2 break-words">
+              {event.locationName}
+            </span>
           </span>
         )}
       </div>
@@ -69,9 +79,9 @@ export function SmallEventPreview({ event }: { event: EventDetails }) {
   return (
     <Link
       href={`/event/${event.id}`}
-      className="flex h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/25 hover:shadow-lg hover:scale-[0.98] transition-all"
+      className="flex min-h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/25 hover:shadow-lg hover:scale-[0.98] transition-all"
     >
-      <div className="relative w-1/2 bg-primary">
+      <div className="relative w-1/2 shrink-0 bg-primary">
         {event.imageUrl && (
           <Image
             src={event.imageUrl}
@@ -83,11 +93,16 @@ export function SmallEventPreview({ event }: { event: EventDetails }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col justify-center gap-1 p-4">
-        <span className="flex justify-between">
-          <p className="flock-ui-label">{event.title}</p>
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
+        <span className="flex justify-between items-start gap-2">
+          <p
+            className="flock-ui-label min-w-0 line-clamp-2 break-words"
+            title={event.title}
+          >
+            {event.title}
+          </p>
           {/* TODO: Use the user's real RSVP status */}
-          <FaCircleCheck className="fill-secondary" />
+          <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
         </span>
 
         <span className="inline-flex items-center gap-1 flock-caption" title="Date">
@@ -98,9 +113,14 @@ export function SmallEventPreview({ event }: { event: EventDetails }) {
         </span>
 
         {event.locationName && (
-          <span className="inline-flex items-center gap-1 flock-caption text-nowrap">
-            <FaLocationDot />
-            {event.locationName}
+          <span
+            className="flex items-start gap-1 flock-caption"
+            title={event.locationName}
+          >
+            <FaLocationDot className="mt-0.5 shrink-0" />
+            <span className="min-w-0 line-clamp-2 break-words">
+              {event.locationName}
+            </span>
           </span>
         )}
       </div>

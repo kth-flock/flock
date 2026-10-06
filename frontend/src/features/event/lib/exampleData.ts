@@ -96,7 +96,7 @@ const hemmafest: EventDetails = {
 const boardGameNight: EventDetails = {
   id: 3,
   createdById: clara.id,
-  title: "Board game night",
+  title: "Board game night with lots of friends and some more friends and maybe perhaps even more friends than you can imagine",
   description: null,
   locationName: "Valhallavägen 79",
   googlePlaceId: null,
