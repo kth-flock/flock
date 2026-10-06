@@ -36,6 +36,9 @@ export async function getEventById(eventId: EventId) {
           },
         },
       },
+      invitees: {
+        include: { user: { select: publicUserInformationSelect } },
+      },
     },
   });
   return event;
