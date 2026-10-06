@@ -3,6 +3,7 @@ import {
   FaClock,
   FaLocationDot,
   FaCircleCheck,
+  FaCirclePlus,
 } from "react-icons/fa6";
 import {
   formatDate,
@@ -11,6 +12,7 @@ import {
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
 import Image from "next/image";
+import Button from "@/shared/components/button";
 import type { EventDetails } from "@/features/event/lib/types";
 
 export default function EventPreview({ event }: { event: EventDetails }) {
@@ -103,5 +105,33 @@ export function SmallEventPreview({ event }: { event: EventDetails }) {
         )}
       </div>
     </Link>
+  );
+}
+
+export function NoNextEvent() {
+  return (
+    <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-accent p-8 text-center">
+      <div className="flex flex-col gap-1">
+        <p className="flock-h4">No events coming up</p>
+        <p className="flock-body-sm text-(--color-text-muted)">
+          Create one and invite your friends!
+        </p>
+      </div>
+      <Button
+        href="/create-event"
+        icon={<FaCirclePlus />}
+        iconPlacement="left"
+      >
+        Create event
+      </Button>
+    </div>
+  );
+}
+
+export function NoUpcomingEvents() {
+  return (
+    <p className="w-full rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-(--color-text-muted)">
+      Nothing else planned yet.
+    </p>
   );
 }

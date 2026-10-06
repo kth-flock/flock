@@ -1,4 +1,6 @@
 import EventPreview, {
+  NoNextEvent,
+  NoUpcomingEvents,
   SmallEventPreview,
 } from "@/features/dashboard/eventPrievew";
 import FriendPreview from "@/features/dashboard/friendPreview";
@@ -18,12 +20,16 @@ export default async function Home() {
       </div>
       <div className="w-full flex flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
-        {nextEvent && <EventPreview event={nextEvent} />}
+        {nextEvent ? <EventPreview event={nextEvent} /> : <NoNextEvent />}
         <h3 className="flock-h3">Upcoming</h3>
         <div className="flex flex-wrap gap-2 justify-between">
-          {upcomingEvents.map((event) => (
-            <SmallEventPreview key={event.id} event={event} />
-          ))}
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map((event) => (
+              <SmallEventPreview key={event.id} event={event} />
+            ))
+          ) : (
+            <NoUpcomingEvents />
+          )}
         </div>
       </div>
     </main>
