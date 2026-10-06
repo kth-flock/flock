@@ -75,3 +75,37 @@ export const exampleEvent: EventDetails = {
     },
   ],
 };
+
+const hemmafest: EventDetails = {
+  id: 2,
+  createdById: bob.id,
+  title: "Hemmafest!",
+  description: null,
+  locationName: "Industrigatan 7A",
+  googlePlaceId: null,
+  startsAt: "2026-10-17T16:00:00.000Z",
+  endsAt: "2026-10-17T21:00:00.000Z",
+  imageUrl: null,
+  createdBy: bob,
+  announcements: [],
+};
+
+const boardGameNight: EventDetails = {
+  id: 3,
+  createdById: clara.id,
+  title: "Board game night",
+  description: null,
+  locationName: "Valhallavägen 79",
+  googlePlaceId: null,
+  startsAt: "2026-10-23T16:30:00.000Z",
+  endsAt: null,
+  imageUrl: null,
+  createdBy: clara,
+  announcements: [],
+};
+
+export const exampleEvents: EventDetails[] = [
+  exampleEvent,
+  hemmafest,
+  boardGameNight,
+];
