@@ -7,7 +7,7 @@ import {
 
 export default function EventPreview() {
   return (
-    <div className="rounded-2xl shadow-md bg-white w-full overflow-hidden">
+    <div className="rounded-2xl shadow-md bg-white w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all">
       <div className="bg-neutral w-full h-36" />
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between">
@@ -18,12 +18,12 @@ export default function EventPreview() {
           </span>
         </div>
 
-        <span className="flex gap-4">
-          <span className="inline-flex gap-2 items-center flock-body" title="Date">
+        <span className="flex flex-wrap gap-x-4 gap-y-2">
+          <span className="inline-flex gap-2 items-center flock-body text-nowrap" title="Date">
             <FaCalendar />
             Tomorrow
           </span>
-          <span className="inline-flex gap-2 items-center flock-body">
+          <span className="inline-flex gap-2 items-center flock-body text-nowrap">
             <FaClock />
             16:00 - 18:00
           </span>
@@ -39,7 +39,7 @@ export default function EventPreview() {
 
 export function SmallEventPreview() {
   return (
-    <div className="flex h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/50">
+    <div className="flex h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/50 hover:shadow-lg hover:scale-[0.98] transition-all">
       <div className="w-1/2 bg-primary" />
 
       <div className="flex flex-1 flex-col justify-center gap-1 p-4">
