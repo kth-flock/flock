@@ -3,6 +3,8 @@ import {
   ValidationError,
   NotFoundError,
   ForbiddenError,
+  ConflictError,
+  InvalidCredentialsError,
 } from "../utils/errors";
 
 export function errorHandler(
@@ -19,6 +21,13 @@ export function errorHandler(
     });
   }
 
+  if (error instanceof InvalidCredentialsError) {
+    return res.status(401).json({
+      status: "Error",
+      error: error.message,
+    });
+  }
+
   if (error instanceof NotFoundError) {
     return res.status(404).json({
       status: "Error",
@@ -28,6 +37,13 @@ export function errorHandler(
 
   if (error instanceof ForbiddenError) {
     return res.status(403).json({
+      status: "Error",
+      error: error.message,
+    });
+  }
+
+  if (error instanceof ConflictError) {
+    return res.status(409).json({
       status: "Error",
       error: error.message,
     });
