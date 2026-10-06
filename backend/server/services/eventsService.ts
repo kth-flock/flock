@@ -45,6 +45,9 @@ export async function getEventById(eventId: EventId, userId: UserId) {
           },
         },
       },
+      invitees: {
+        include: { user: { select: publicUserInformationSelect } },
+      },
     },
   });
 
