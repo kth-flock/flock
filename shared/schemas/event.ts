@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { idSchema } from "./common";
+import { UserId } from "./user";
 
 export type EventId = z.infer<typeof idSchema>;
 
 export const createEventSchema = z
   .object({
-    createdById: idSchema,
     title: z.string({ error: "Title is required." }).min(1),
     description: z.string().optional(),
     locationName: z.string().optional(),
@@ -41,7 +41,9 @@ export const createEventSchema = z
     },
   );
 
-export type CreateEventData = z.infer<typeof createEventSchema>;
+export type CreateEventData = z.infer<typeof createEventSchema> & {
+  createdById: UserId;
+};
 
 export const updateEventSchema = z.object({
   title: z.string().min(1).optional(),

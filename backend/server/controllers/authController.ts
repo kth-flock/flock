@@ -1,57 +1,53 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import generateToken from "../utils/generateToken";
 import * as authService from "../services/authService";
-import { loginUserSchema, registerUserSchema } from "@flock/shared/schemas/auth";
+import {
+  loginUserSchema,
+  registerUserSchema,
+} from "@flock/shared/schemas/auth";
+import { validate } from "../utils/validate";
 
 export async function register(req: Request, res: Response) {
-  try {
+  const registerRequest = validate(
+    registerUserSchema,
+    req.body,
+    "Invalid request body",
+  );
 
-    const result = registerUserSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ status: "Error", error: "Invalid request body", details: result.error.issues.map((issue) => issue.message).join(", ") });
-    }
-    const user = await authService.registerUser(result.data);
+  const user = await authService.registerUser(registerRequest);
 
-    //generate token
-    const token = generateToken(user.id, res);
+  //generate token
+  const token = generateToken(user.id, res);
 
-    // Don't return the password hash to the client
-    const { pwdHash: _, ...safeUser } = user;
-    res.status(201).json({ status: "Success", data: {safeUser, token} });
-  } catch (error) {
-    if (error instanceof authService.DuplicateEmailError) {
-      return res.status(400).json({ status: "Error", error: "Could not create account" }); //Intentionally vague error message to prevent enumeration attacks
-    }
-    throw error;
-  }
+  // Don't return the password hash to the client
+  const { pwdHash: _, ...safeUser } = user;
+  res.status(201).json({ status: "Success", data: { safeUser, token } });
 }
 
 export async function login(req: Request, res: Response) {
-  try {
-   
-    const result = loginUserSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ status: "Error", error: "Invalid request body", details: result.error.issues.map((issue) => issue.message).join(", ") });
-    }
-    const user = await authService.loginUser(result.data);
-    //generate token
-    const token = generateToken(user.id, res);
-    const { pwdHash: _, ...safeUser } = user; 
+  const loginRequest = validate(
+    loginUserSchema,
+    req.body,
+    "Invalid request body",
+  );
+  const user = await authService.loginUser(loginRequest);
 
-    res.status(200).json({ status: "Success", data: { user: safeUser, token } });
-  } catch (error) {
-    if (error instanceof authService.InvalidCredentialsError) {
-      return res.status(401).json({ status: "Error", error: "Invalid credentials" });
-    }
-    throw error;
-  }
+  //generate token
+  const token = generateToken(user.id, res);
+  const { pwdHash: _, ...safeUser } = user;
+
+  res.status(200).json({ status: "Success", data: { user: safeUser, token } });
 }
 
 export function logout(req: Request, res: Response) {
-  
   //logging out = removing the token from the user's cookie
-  res.cookie("token", "", {httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", expires: new Date(0)})
-  res.status(200).json({ status: "Success", data: { message: "Logged out successfully" } });
- 
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    expires: new Date(0),
+  });
+  res
+    .status(200)
+    .json({ status: "Success", data: { message: "Logged out successfully" } });
 }
-

@@ -5,6 +5,7 @@ import { STATUS } from "../../prisma/generated/enums";
 import { prisma } from "../prisma";
 import { publicUserInformationSelect } from "../utils/selectors";
 import { getUserById } from "./usersServices";
+import { ConflictError, NotFoundError, ValidationError } from "../utils/errors";
 
 export async function getAllFriends(userId: UserId) {
   const friendships = await prisma.friendship.findMany({
@@ -49,22 +50,17 @@ export async function getFriendRequests(userId: UserId, direction: Direction) {
   return friendshipRequests;
 }
 
-export class SelfFriendRequestError extends Error {}
-export class UserNotFoundError extends Error {}
-export class AlreadyFriendsError extends Error {}
-export class RequestPendingError extends Error {}
-
 export async function sendFriendRequest(
   requesterId: UserId,
   requesteeId: UserId,
 ) {
   if (requesteeId === requesterId) {
-    throw new SelfFriendRequestError();
+    throw new ValidationError("Cannot send a friend request to yourself");
   }
 
   const requestee = await getUserById(requesteeId);
   if (!requestee) {
-    throw new UserNotFoundError();
+    throw new NotFoundError("User not found");
   }
 
   const friendship = await prisma.friendship.findFirst({
@@ -77,10 +73,10 @@ export async function sendFriendRequest(
   });
 
   if (friendship?.status === "ACCEPTED") {
-    throw new AlreadyFriendsError();
+    throw new ConflictError("Users already friends");
   }
   if (friendship?.status === "PENDING") {
-    throw new RequestPendingError();
+    throw new ConflictError("Friend request already pending");
   }
 
   return prisma.friendship.create({

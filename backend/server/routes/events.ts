@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   getEvents,
   getEventById,
-  getEventsCreatedBy,
-  getInvitedEventsFor,
+  getCreatedEvents,
+  getInvitedEvents,
   createNewEvent,
   updateEventInfo,
   deleteEvent,
@@ -19,11 +19,11 @@ eventsRouter.get("/", getEvents);
 eventsRouter.get("/:eventId", getEventById);
 
 //Get surface level data for all events created by user (no annoncements, comments, or userData)
-eventsRouter.get("/createdBy/:userId", getEventsCreatedBy);
+eventsRouter.get("/created", getCreatedEvents);
 
 //Get surface level data for all events a user is invited to (no annoncements or comments)
 //Also includes userdata for user that created the event.
-eventsRouter.get("/invited/:userId", getInvitedEventsFor);
+eventsRouter.get("/invited", getInvitedEvents);
 
 //Post a new event
 eventsRouter.post("/", createNewEvent);
