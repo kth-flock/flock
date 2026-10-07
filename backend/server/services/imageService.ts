@@ -5,6 +5,7 @@ import { BUCKET, s3 } from "../s3";
 const EXTENSIONS: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
+  "image/gif": "gif",
 };
 
 export async function uploadImage(
