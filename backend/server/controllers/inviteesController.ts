@@ -39,7 +39,7 @@ export async function addInvitee( req : Request, res: Response){
         }
         if (error instanceof inviteesServices.InviteeNotFoundError) {
             return res.status(404).json({
-                error: "Invitee not found",
+                error: "Invitee is not a valid user",
             });
         }
         if (error instanceof inviteesServices.InviteeCannotInviteSelfError) {
@@ -60,5 +60,47 @@ export async function addInvitee( req : Request, res: Response){
 
 
 export async function removeInvitee( req : Request, res: Response){
+    try {
+        const eventId = req.params.eventId;
+        const inviteeId = req.params.inviteeId;
+
+        const eventIdResult = idSchema.safeParse(eventId); 
+        const inviteeIdResult = idSchema.safeParse(inviteeId); 
+
+        if (!eventIdResult.success || !inviteeIdResult.success) {
+            return res.status(400).json({
+                error: "Invalid event or invitee ID",
+            });
+        }
+
+        const invitee = await inviteesServices.removeInvitee(req.user.id, eventIdResult.data, inviteeIdResult.data);
+        res.status(200).json({
+            status: "Success",
+            data: invitee,
+        });
+    }
+    catch (error) {
+        if (error instanceof inviteesServices.NotAuthorizedError) {
+            return res.status(403).json({
+                error: "Only event host can remove invitees",
+            });
+        }
+        if (error instanceof inviteesServices.EventNotFoundError) {
+            return res.status(404).json({
+                error: "Event not found",
+            });
+        }
+        if (error instanceof inviteesServices.InviteeNotFoundError) {
+            return res.status(404).json({
+                error: "Invitee is not a valid user",
+            });
+        }
+        if (error instanceof inviteesServices.InviteeNotInvitedError) {
+            return res.status(404).json({
+                error: "Invitee is not invited to the event",
+            });
+        }
+        throw error;
+    }
 
 }
