@@ -1,4 +1,8 @@
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 import { BUCKET, s3 } from "../s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -13,18 +17,18 @@ export async function uploadImage(
   file: Express.Multer.File,
   folder: "events" | "profiles",
 ) {
-  const key = `${folder}/${randomUUID()}.${EXTENSIONS[file.mimetype]}`;
+  const imageKey = `${folder}/${randomUUID()}.${EXTENSIONS[file.mimetype]}`;
 
   await s3.send(
     new PutObjectCommand({
       Bucket: BUCKET,
-      Key: key,
+      Key: imageKey,
       Body: file.buffer,
       ContentType: file.mimetype,
     }),
   );
 
-  return key;
+  return imageKey;
 }
 
 export async function withSignedImgUrl<
@@ -46,4 +50,13 @@ export async function withSignedImgUrl<
     console.error(`Failed to sign image for record ${record.id}`, error);
     return { ...record, imageUrl: null, imageFailed: true }; // adds imageFailed true for frontend to know that error occured
   }
+}
+
+export async function deleteImageFromS3(imageKey: string) {
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: BUCKET,
+      Key: imageKey,
+    }),
+  );
 }

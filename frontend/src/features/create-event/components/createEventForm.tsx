@@ -6,12 +6,17 @@ import Button from "@/shared/components/button";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import type { CreateEventDraft } from "../types/eventTypes";
-import { createEventSchema } from "@flock/shared/schemas/event";
+import {
+  CreateEventData,
+  createEventSchema,
+} from "@flock/shared/schemas/event";
 const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
   ssr: false,
 });
-import { createEventFetch } from "@/shared/lib/apiFetch";
-
+import {
+  createEventFetch,
+  deleteImageFromS3Fetch,
+} from "@/shared/lib/apiFetch";
 import {
   FaHeading,
   FaCalendarDay,
@@ -19,10 +24,9 @@ import {
   FaFileLines,
   FaCamera,
 } from "react-icons/fa6";
+import { uploadSelectedImage } from "@/shared/lib/image";
 
 // TODO: make enddate optional
-
-// TODO: Wire up image-upload
 
 export default function CreateEventForm({
   onCreated,
@@ -32,6 +36,7 @@ export default function CreateEventForm({
   const [validationError, setValidationError] = useState<
     Record<string, string>
   >({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [eventDraft, setEventDraft] = useState<CreateEventDraft>({
     title: "",
@@ -76,7 +81,6 @@ export default function CreateEventForm({
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
-    // TODO: Upload image FIRST. If it fails, abort event creation
     e.preventDefault();
 
     const startsAt = combineDateTime(
@@ -99,9 +103,18 @@ export default function CreateEventForm({
     if (!payload) return;
 
     setSubmitError(null);
+
     try {
-      const createdEvent = await createEventFetch(payload);
-      onCreated(createdEvent.id);
+      // this code needs to be checked, nested try catches no bueno
+      // it's for deleting the image from the s3 bucket if the create event fails, but idk how to do it in a pretty way
+      const imageUrl = await uploadSelectedImage(imageFile);
+      try {
+        const createdEvent = await createEventFetch({ ...payload, imageUrl });
+        onCreated(createdEvent.id);
+      } catch (error) {
+        if (imageUrl) deleteImageFromS3Fetch(imageUrl).catch(() => {});
+        throw error;
+      }
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -115,7 +128,11 @@ export default function CreateEventForm({
 
   return (
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
-      <ImageUpload className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4">
+      <ImageUpload
+        onFileSelect={setImageFile}
+        onFileRemove={() => setImageFile(null)}
+        className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4"
+      >
         <span className="flex items-center gap-4">
           <FaCamera size={40} aria-hidden="true" />
           <span>Upload</span>

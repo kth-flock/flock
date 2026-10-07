@@ -15,3 +15,7 @@ export const imageSchema = z.object({
 
 export const imageFolderSchema = z.enum(["events", "profiles"]);
 export type ImageFolder = z.infer<typeof imageFolderSchema>;
+
+export const imageKeySchema = z
+  .string()
+  .regex(/^(events|profiles)\/[\w-]+\.(jpg|png|gif)$/);
