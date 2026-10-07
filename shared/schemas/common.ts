@@ -5,7 +5,7 @@ export type Direction = z.infer<typeof directionSchema>;
 export const idSchema = z.coerce.number().int().positive();
 export const directionSchema = z.enum(["sent", "received"]).optional();
 
-export const ALLOWED_IMG_TYPES = ["image/jpeg", "image/png"];
+export const ALLOWED_IMG_TYPES = ["image/jpeg", "image/png", "image/gif"];
 export const MAX_IMG_SIZE = 5 * 1024 * 1024;
 
 export const imageSchema = z.object({
