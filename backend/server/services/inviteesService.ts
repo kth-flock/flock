@@ -5,10 +5,11 @@ import { EventId } from "@flock/shared/schemas/event";
 export class InviteeNotFoundError extends Error {}
 export class EventNotFoundError extends Error {}
 export class InviteeAlreadyInvitedError extends Error {}
+export class NotAuthorizedError extends Error {}
 
-export async function addInvitee(userId: UserId, eventId: EventId) {
+export async function addInvitee(userId: UserId, eventId: EventId, inviteeId: UserId) {
     const inviteeExists = await prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: inviteeId },
     });
     if (!inviteeExists) {
         throw new InviteeNotFoundError();
@@ -21,17 +22,22 @@ export async function addInvitee(userId: UserId, eventId: EventId) {
         throw new EventNotFoundError();
     }
 
+    if(eventExists.createdById !== userId) {
+        throw new NotAuthorizedError();
+    }
+
     const inviteeAlreadyInvited = await prisma.invitee.findUnique({
-        where: { eventId_userId: { eventId, userId } },
+        where: { eventId_userId: { eventId, userId: inviteeId } },
     });
     if (inviteeAlreadyInvited) {
         throw new InviteeAlreadyInvitedError();
     }
 
+
     const invitee = await prisma.invitee.create({
         data:{
             eventId,
-            userId,
+            userId: inviteeId,
         },
     });
   
