@@ -7,8 +7,9 @@ import {
   createNewEvent,
   updateEventInfo,
   deleteEvent,
+  rsvpToEvent,
 } from "../controllers/eventsController";
-
+import { authMiddleware } from "../middleware/authMiddleware";
 import {inviteesRouter } from "./invitees";
 
 export const eventsRouter = Router();
@@ -37,3 +38,7 @@ eventsRouter.patch("/:eventId", updateEventInfo);
 
 //Delete event by eventId
 eventsRouter.delete("/:eventId", deleteEvent);
+
+
+//RSVP to an event only if current logged in user is invited to the event
+eventsRouter.post("/:eventId/rsvp", authMiddleware, rsvpToEvent); // TODO: middleware (might be applied to the entire event router but ill put it here for now //Elinor)

@@ -4,8 +4,10 @@ import {
   CreateEventData,
   EventId,
   UpdateEventData,
+  RsvpStatus,
 } from "@flock/shared/schemas/event";
 import { UserId } from "@flock/shared/schemas/user";
+import { EventNotFoundError } from "./inviteesService";
 
 export async function getEvents() {
   const events = await prisma.event.findMany();
@@ -94,3 +96,35 @@ export async function deleteEvent(eventId: EventId) {
     },
   });
 }
+
+export class EventEndedError extends Error {}
+export class InviteeNotInvitedError extends Error {}
+
+export async function rsvpToEvent(userId: UserId, eventId: EventId, rsvpStatus: RsvpStatus, comment?: string) {
+  const eventExists = await prisma.event.findUnique({
+      where: { id: eventId },
+  });
+
+  if (!eventExists) {
+      throw new EventNotFoundError();
+  }
+  if (eventExists.endsAt && new Date(eventExists.endsAt) < new Date()) {
+    throw new EventEndedError();
+  }
+  const inviteeExists = await prisma.invitee.findUnique({
+    where: { eventId_userId: { eventId, userId: userId } },
+  });
+  if (!inviteeExists) {
+    throw new InviteeNotInvitedError();
+  }
+
+  const rsvp = await prisma.invitee.update({
+    where: { eventId_userId: { eventId, userId: userId } },
+    data: {
+      rsvp: rsvpStatus,
+      rsvpComment: comment,
+    },
+  });
+  return rsvp;
+}
+
