@@ -52,11 +52,11 @@ export async function withSignedImageUrl<
   }
 }
 
-export async function deleteImageFromS3(imageKey: string) {
+export async function deleteImageFromS3(imageUrl: string) {
   await s3.send(
     new DeleteObjectCommand({
       Bucket: BUCKET,
-      Key: imageKey,
+      Key: imageUrl,
     }),
   );
 }
