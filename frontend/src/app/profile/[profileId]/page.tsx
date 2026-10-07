@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/profileHeader";
-import { getMyProfile, getProfile } from "@/features/profile/lib/api";
+import ProfileStats from "@/features/profile/components/profileContent";
+import {
+  getMyProfile,
+  getProfile,
+  getProfileFriends,
+} from "@/features/profile/lib/api";
 import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 import { fullName } from "@/shared/lib/user";
 
@@ -29,9 +34,12 @@ export default async function ProfilePage({
   // Change this? If you want to preview your public profile?
   if (profile.id === myProfile?.id) redirect("/profile");
 
+  const friends = await getProfileFriends(profile.id);
+
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <ProfileHeader profile={profile} bannerColor={randomBannerColor()} />
+      <ProfileStats friends={friends} />
     </main>
   );
 }

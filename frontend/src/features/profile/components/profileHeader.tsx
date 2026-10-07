@@ -22,9 +22,13 @@ export default function ProfileHeader({
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-6 text-white md:p-8">
           <div className="flex min-w-0 items-center gap-3 drop-shadow-md">
             {profile.imageUrl ? (
-              <ProfileImage profileImgSrc={profile.imageUrl} />
+              <ProfileImage className="size-16" profileImgSrc={profile.imageUrl} />
             ) : (
-              <ProfileImage firstName={profile.firstName} lastName={profile.lastName} />
+              <ProfileImage
+                className="size-16"
+                firstName={profile.firstName}
+                lastName={profile.lastName}
+              />
             )}
             <h1 className="flock-h1">{fullName(profile)}</h1>
           </div>

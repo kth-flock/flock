@@ -25,7 +25,12 @@ export default function ProfileImage({
   lastName,
 }: ProfileImageProps) {
   return (
-    <div className="rounded-full overflow-hidden h-8 w-8 shrink-0 group relative">
+    <div
+      className={twMerge(
+        "rounded-full overflow-hidden h-8 w-8 shrink-0 group relative",
+        className,
+      )}
+    >
       {profileImgSrc ? (
         <Image src={profileImgSrc} fill alt={`${firstName} ${lastName}`} />
       ) : (
@@ -33,7 +38,6 @@ export default function ProfileImage({
           className={twMerge(
             "@container group relative flex h-full w-full items-center justify-center bg-accent/40",
             shadow ? "drop-shadow-lg" : "",
-            className,
           )}
         >
           {firstName && (

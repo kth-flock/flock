@@ -25,9 +25,45 @@ const clara: PublicUser = {
   imageUrl: null,
 };
 
+const dave: PublicUser = {
+  id: 4,
+  firstName: "Johan",
+  lastName: "Berg",
+  imageUrl: null,
+};
+
+const erin: PublicUser = {
+  id: 5,
+  firstName: "Maja",
+  lastName: "Lind",
+  imageUrl: null,
+};
+
+const frank: PublicUser = {
+  id: 6,
+  firstName: "Oskar",
+  lastName: "Nyström",
+  imageUrl: null,
+};
+
+const grace: PublicUser = {
+  id: 7,
+  firstName: "Elsa",
+  lastName: "Holm",
+  imageUrl: null,
+};
+
 export const exampleFriends: PublicUser[] = [alice, bob, clara];
 
-export const exampleProfiles: PublicUser[] = [alice, bob, clara];
+export const exampleProfiles: PublicUser[] = [
+  alice,
+  bob,
+  clara,
+  dave,
+  erin,
+  frank,
+  grace,
+];
 
 export const exampleEvent: EventDetails = {
   id: 1,

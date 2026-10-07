@@ -1,4 +1,5 @@
 import { exampleProfiles } from "@/features/event/lib/exampleData";
+import type { PublicUser } from "@/shared/types/user";
 import type { ProfileDetails } from "./types";
 
 // TODO: fetch from the backend (GET /users/:userId), see shared/lib/apiFetch.ts.
@@ -17,4 +18,12 @@ export async function getProfile(
 // logged in.
 export async function getMyProfile(): Promise<ProfileDetails | null> {
   return exampleProfiles[0];
+}
+
+// TODO: fetch from the backend (GET /users/:userId/friends). Until then
+// everyone is friends with every other example profile.
+export async function getProfileFriends(
+  profileId: number,
+): Promise<PublicUser[]> {
+  return exampleProfiles.filter((profile) => profile.id !== profileId);
 }
