@@ -5,5 +5,5 @@ import { authMiddleware } from "../middleware/authMiddleware";
 import { addInvitee, removeInvitee } from "../controllers/inviteesController";
 
 
-inviteesRouter.post("/invite", authMiddleware, addInvitee); // TODO: invitees or invite?
-inviteesRouter.delete("/invitees", authMiddleware, removeInvitee);
+inviteesRouter.post("/:inviteeId", authMiddleware, addInvitee); // TODO: invitees or invite?
+inviteesRouter.delete("/:inviteeId", authMiddleware, removeInvitee);
