@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 import EventHeader from "@/features/event/components/eventHeader";
 import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent } from "@/features/event/lib/api";
-import { getEventByIdFetch } from "@/shared/lib/apiFetch";
+// import { getEventByIdFetch } from "@/shared/lib/apiFetch"; add this fetch when services are hooked to correct services
 
 export async function generateMetadata({
   params,
 }: PageProps<"/event/[eventId]">): Promise<Metadata> {
   const { eventId } = await params;
-  const event = await getEventByIdFetch(eventId);
+  const event = await getEvent(eventId);
   return {
     title: event ? `${event.title} • Flock` : "Event not found • Flock",
   };
@@ -19,7 +19,7 @@ export default async function EventPage({
   params,
 }: PageProps<"/event/[eventId]">) {
   const { eventId } = await params;
-  const event = await getEventByIdFetch(eventId);
+  const event = await getEvent(eventId);
 
   if (!event) notFound();
 
