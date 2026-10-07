@@ -3,12 +3,13 @@ import { notFound } from "next/navigation";
 import EventHeader from "@/features/event/components/eventHeader";
 import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent } from "@/features/event/lib/api";
+import { getEventByIdFetch } from "@/shared/lib/apiFetch";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/event/[eventId]">): Promise<Metadata> {
   const { eventId } = await params;
-  const event = await getEvent(eventId);
+  const event = await getEventByIdFetch(eventId);
   return {
     title: event ? `${event.title} • Flock` : "Event not found • Flock",
   };
@@ -18,7 +19,7 @@ export default async function EventPage({
   params,
 }: PageProps<"/event/[eventId]">) {
   const { eventId } = await params;
-  const event = await getEvent(eventId);
+  const event = await getEventByIdFetch(eventId);
 
   if (!event) notFound();
 
