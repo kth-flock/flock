@@ -1,12 +1,14 @@
-import type { EventDetails } from "./types";
-
+import { ExtendedEvent } from "@/shared/types/event";
 const DEFAULT_DURATION_MS = 60 * 60 * 1000;
 
 // Google Calendar wants UTC timestamps like 20260929T180000Z
 const toCalendarDate = (date: Date) =>
-  date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  date
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 
-export function googleCalendarUrl(event: EventDetails) {
+export function getGoogleCalendarUrl(event: ExtendedEvent) {
   const start = new Date(event.startsAt);
   // Events without an end time get a one hour slot
   const end = event.endsAt
