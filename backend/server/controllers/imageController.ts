@@ -29,9 +29,9 @@ export async function uploadImage(req: Request, res: Response) {
     });
   }
 
-  const imageURL = await imageServices.uploadImage(req.file, folderResult.data);
+  const imageUrl = await imageServices.uploadImage(req.file, folderResult.data);
 
-  res.status(201).json({ imageURL });
+  res.status(201).json({ imageUrl });
 }
 
 export async function deleteImageFromS3(req: Request, res: Response) {
