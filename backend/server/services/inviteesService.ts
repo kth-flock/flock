@@ -6,24 +6,29 @@ export class InviteeNotFoundError extends Error {}
 export class EventNotFoundError extends Error {}
 export class InviteeAlreadyInvitedError extends Error {}
 export class NotAuthorizedError extends Error {}
-
+export class InviteeCannotInviteSelfError extends Error {}
 export async function addInvitee(userId: UserId, eventId: EventId, inviteeId: UserId) {
-    const inviteeExists = await prisma.user.findUnique({
-        where: { id: inviteeId },
-    });
-    if (!inviteeExists) {
-        throw new InviteeNotFoundError();
-    }
 
     const eventExists = await prisma.event.findUnique({
         where: { id: eventId },
     });
+    
     if (!eventExists) {
         throw new EventNotFoundError();
     }
 
     if(eventExists.createdById !== userId) {
         throw new NotAuthorizedError();
+    }
+    const inviteeExists = await prisma.user.findUnique({
+        where: { id: inviteeId },
+    });
+    if (!inviteeExists) {
+        throw new InviteeNotFoundError();
+    }
+    
+    if(inviteeId == userId) {
+        throw new InviteeCannotInviteSelfError();
     }
 
     const inviteeAlreadyInvited = await prisma.invitee.findUnique({
