@@ -80,12 +80,12 @@ export async function uploadImageFetch(
 }
 
 // should maybe not live here?
-export async function deleteImageFromS3Fetch(imgKey: string) {
+export async function deleteImageFromS3Fetch(imageUrl: string) {
   await fetch(`${API_BASE_URL}/image`, {
     method: "DELETE",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ imgKey }),
+    body: JSON.stringify({ imageUrl }),
   });
 }
 

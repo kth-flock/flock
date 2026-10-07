@@ -31,21 +31,21 @@ export async function uploadImage(
   return imageKey;
 }
 
-export async function withSignedImgUrl<
+export async function withSignedImageUrl<
   T extends { id: number; imageUrl: string | null },
 >(record: T): Promise<T> {
   if (!record.imageUrl) return record;
   const expiresIn = 24 * 60 * 60; // Sets time limit to 24 hours
 
   try {
-    const signedImgUrl = await getSignedUrl(
+    const signedImageUrl = await getSignedUrl(
       s3,
       new GetObjectCommand({ Bucket: BUCKET, Key: record.imageUrl }),
       {
         expiresIn,
       },
     );
-    return { ...record, imageUrl: signedImgUrl };
+    return { ...record, imageUrl: signedImageUrl };
   } catch (error) {
     console.error(`Failed to sign image for record ${record.id}`, error);
     return { ...record, imageUrl: null, imageFailed: true }; // adds imageFailed true for frontend to know that error occured

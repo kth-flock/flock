@@ -29,21 +29,21 @@ export async function uploadImage(req: Request, res: Response) {
     });
   }
 
-  const imgKey = await imageServices.uploadImage(req.file, folderResult.data);
+  const imageURL = await imageServices.uploadImage(req.file, folderResult.data);
 
-  res.status(201).json({ imgKey });
+  res.status(201).json({ imageURL });
 }
 
 export async function deleteImageFromS3(req: Request, res: Response) {
-  const imgKey = imageKeySchema.safeParse(req.body?.imgKey);
+  const imageURL = imageKeySchema.safeParse(req.body?.imageURL);
 
-  if (!imgKey.success) {
+  if (!imageURL.success) {
     return res.status(400).json({
       error: "Invalid key",
     });
   }
 
-  await imageServices.deleteImageFromS3(imgKey.data);
+  await imageServices.deleteImageFromS3(imageURL.data);
 
   res.status(200).json({ status: "Success", message: "Image" });
 }
