@@ -6,7 +6,6 @@ import { idSchema } from "@flock/shared/schemas/common";
 export async function addInvitee( req : Request, res: Response){
 
     try {    
-
         const eventId = req.params.eventId;
         const inviteeId = req.params.inviteeId;
 
@@ -19,6 +18,7 @@ export async function addInvitee( req : Request, res: Response){
                 error: "Invalid event or invitee ID",
             });
         }
+
 
         const invite = await inviteesServices.addInvitee(req.user.id, eventIdResult.data, inviteeIdResult.data);
         res.status(201).json({
@@ -40,6 +40,11 @@ export async function addInvitee( req : Request, res: Response){
         if (error instanceof inviteesServices.InviteeNotFoundError) {
             return res.status(404).json({
                 error: "Invitee not found",
+            });
+        }
+        if (error instanceof inviteesServices.InviteeCannotInviteSelfError) {
+            return res.status(400).json({
+                error: "You cannot invite yourself to your own event",
             });
         }
         if (error instanceof inviteesServices.InviteeAlreadyInvitedError) {
