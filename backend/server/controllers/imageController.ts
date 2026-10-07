@@ -35,7 +35,7 @@ export async function uploadImage(req: Request, res: Response) {
 }
 
 export async function deleteImageFromS3(req: Request, res: Response) {
-  const imageURL = imageKeySchema.safeParse(req.body?.imageURL);
+  const imageURL = imageKeySchema.safeParse(req.body?.imageUrl);
 
   if (!imageURL.success) {
     return res.status(400).json({
@@ -45,5 +45,5 @@ export async function deleteImageFromS3(req: Request, res: Response) {
 
   await imageServices.deleteImageFromS3(imageURL.data);
 
-  res.status(200).json({ status: "Success", message: "Image" });
+  res.status(200).json({ status: "Success", message: "Image deleted" });
 }
