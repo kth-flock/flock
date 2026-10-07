@@ -2,7 +2,7 @@ import type { PublicUser } from "@/shared/types/user";
 import type { DashboardNotification } from "@/features/dashboard/lib/types";
 import type { EventDetails } from "./types";
 
-// Placeholder data used while the event page and dashboard aren't wired to the backend
+// Placeholder data used while frontend pages aren't wired to the backend
 
 const alice: PublicUser = {
   id: 1,
@@ -26,6 +26,8 @@ const clara: PublicUser = {
 };
 
 export const exampleFriends: PublicUser[] = [alice, bob, clara];
+
+export const exampleProfiles: PublicUser[] = [alice, bob, clara];
 
 export const exampleEvent: EventDetails = {
   id: 1,

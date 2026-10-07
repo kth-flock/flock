@@ -52,7 +52,7 @@ export default function Navbar() {
           <FaCalendarDays className={navIconStyle} />
         </Link>
         <Link
-          href="/"
+          href="/profile"
           className={`flex h-full ${navLinkStyle}`}
           aria-label="Profile"
         >
