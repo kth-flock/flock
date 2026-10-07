@@ -1,4 +1,6 @@
-import CreateEventFlow from "@/features/create-event/createEventFlow";
+import CreateEventFlow from "@/features/create-event/components/createEventFlow";
+
+// TODO: Add loading page
 
 export default function CreateEventPage() {
   return (

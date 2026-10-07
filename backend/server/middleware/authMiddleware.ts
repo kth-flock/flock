@@ -1,12 +1,12 @@
-import jwt, { type JwtPayload} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
 import { Request, Response, NextFunction } from "express";
 
+
 export const authMiddleware = async(req: Request, res: Response, next: NextFunction) => {
-    console.log("authMiddleware running...")
     let token;
 
-    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) { //TODO: can perhaps be removed if we only use cookies
         token = req.headers.authorization.split(" ")[1];
     }
     else if (req.cookies?.token) {
@@ -30,7 +30,7 @@ export const authMiddleware = async(req: Request, res: Response, next: NextFunct
             return res.status(401).json({ status: "Unauthorized", error: "Invalid token" });
           }
 
-        const user = await prisma.user.findUnique({ where: { id: decoded.id  }, });
+        const user = await prisma.user.findUnique({ where: { id: decoded.id  }, }); 
         if(!user) {
             return res.status(401).json({ status: "Unauthorized", error: "User no longer exists" });
         }

@@ -1,27 +1,47 @@
 "use client";
 import SearchBar from "@/shared/components/searchBar";
-import InviteFriendCard from "../invite-friends/inviteFriendCard";
-import { useState, useEffect } from "react";
+import InviteFriendCard from "../../invite-friends/inviteFriendCard";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
+import type { UserSearchResult } from "@/shared/types/user";
+import { searchUsersFetch } from "@/shared/lib/apiFetch";
+import { debounce } from "@/shared/lib/debounce";
 
 // TODO: Connect to API and make sure types and structures are correct
 
-type SearchResult = {
-  id: number;
-  name: string;
-  isFriend: boolean;
-};
-
-const allSuggestions: SearchResult[] = [
-  { id: 3, name: "Alice Cohen", isFriend: true },
-  { id: 4, name: "Sandra Kåhre", isFriend: false },
+const allSuggestions: UserSearchResult[] = [
+  {
+    firstName: "Sandra",
+    lastName: "Kåhre",
+    id: 1,
+    friendshipStatus: "FRIENDS",
+  },
+  {
+    firstName: "Alice",
+    lastName: "Cohen",
+    id: 2,
+    friendshipStatus: "NONE",
+  },
 ];
 
 export default function InviteFriends({ eventId }: { eventId: number | null }) {
-  const [searchResults, setSearchResults] = useState<SearchResult[] | null>(
+  const searchRequestRef = useRef(0);
+  const debouncedSearch = useRef(
+    debounce(async (query: string, requestId: number) => {
+      try {
+        const results = await searchUsersFetch(query);
+        if (requestId === searchRequestRef.current) setSearchResults(results);
+      } catch (error) {
+        if (requestId === searchRequestRef.current) {
+          console.error("User search failed:", error);
+        }
+      }
+    }),
+  ).current;
+  const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
-  const [invitees, setInvitees] = useState<SearchResult[]>([]);
+  const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState(allSuggestions);
 
   useEffect(() => {
@@ -31,16 +51,25 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     );
   }, [invitees]);
 
+  useEffect(
+    () => () => {
+      debouncedSearch.cancel();
+      searchRequestRef.current += 1;
+    },
+    [debouncedSearch],
+  );
+
   function onSearch(query: string) {
-    query.trim()
-      ? setSearchResults([
-          { id: 1, name: "Felix Larsson", isFriend: false },
-          { id: 2, name: "Elinor Selinder", isFriend: true },
-        ])
-      : setSearchResults(null);
+    const requestId = ++searchRequestRef.current;
+    if (!query.trim()) {
+      debouncedSearch.cancel();
+      setSearchResults(null);
+      return;
+    }
+    debouncedSearch(query, requestId);
   }
 
-  function handleInvite(user: SearchResult, action: "add" | "remove") {
+  function handleInvite(user: UserSearchResult, action: "add" | "remove") {
     setInvitees((prev) => {
       if (action === "add") {
         return prev.some((invitee) => invitee.id === user.id)
@@ -66,11 +95,10 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
               {searchResults.map((result) => (
                 <InviteFriendCard
                   key={result.id}
-                  name={result.name}
+                  user={result}
                   isInvited={invitees.some(
                     (invitee) => invitee.id === result.id,
                   )}
-                  isFriend={result.isFriend}
                   onInvite={() => handleInvite(result, "add")}
                   onRemove={() => handleInvite(result, "remove")}
                 />
@@ -82,11 +110,10 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
               {suggestions.map((suggestion) => (
                 <InviteFriendCard
                   key={suggestion.id}
-                  name={suggestion.name}
+                  user={suggestion}
                   isInvited={invitees.some(
                     (invitee) => invitee.id === suggestion.id,
                   )}
-                  isFriend={suggestion.isFriend}
                   onInvite={() => handleInvite(suggestion, "add")}
                   onRemove={() => handleInvite(suggestion, "remove")}
                 />
@@ -100,9 +127,8 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
           {invitees.map((invitee) => (
             <InviteFriendCard
               key={invitee.id}
-              name={invitee.name}
+              user={invitee}
               isInvited={true}
-              isFriend={invitee.isFriend}
               onRemove={() => handleInvite(invitee, "remove")}
             />
           ))}

@@ -4,39 +4,36 @@ import Input from "@/shared/components/formInputs";
 import { TextArea } from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import type { Location } from "@/shared/lib/nominatim";
-
+import { useState } from "react";
+import type { CreateEventDraft } from "../types/eventTypes";
+import { createEventSchema } from "@flock/shared/schemas/event";
 const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
   ssr: false,
 });
+import { createEventFetch } from "@/shared/lib/apiFetch";
 
 import {
   FaHeading,
   FaCalendarDay,
   FaClock,
   FaFileLines,
+  FaCamera,
 } from "react-icons/fa6";
 
-// TODO: Validation with zod + make sure data conforms to DB structure + connect to API
-// TODO: Mobile styling
+// TODO: make enddate optional
 
-type EventInfo = {
-  title: string;
-  description: string;
-  startDate: string;
-  startTime: string;
-  endDate: string;
-  endTime: string;
-  location: Location | null;
-};
+// TODO: Wire up image-upload
 
 export default function CreateEventForm({
   onCreated,
 }: {
   onCreated: (id: number) => void;
 }) {
-  const [eventDraft, setEventDraft] = useState<EventInfo>({
+  const [validationError, setValidationError] = useState<
+    Record<string, string>
+  >({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [eventDraft, setEventDraft] = useState<CreateEventDraft>({
     title: "",
     description: "",
     startDate: "",
@@ -46,26 +43,31 @@ export default function CreateEventForm({
     location: null,
   });
 
-  useEffect(() => {
-    const today = new Date();
-    const localDate = [
-      today.getFullYear(),
-      String(today.getMonth() + 1).padStart(2, "0"),
-      String(today.getDate()).padStart(2, "0"),
-    ].join("-");
-
-    setEventDraft((prev) => ({
-      ...prev,
-      startDate: prev.startDate || localDate,
-      startTime: prev.startTime || "17:00",
-    }));
-  }, []);
-
-  function handleInputChange<Key extends keyof EventInfo>(
+  function handleInputChange<Key extends keyof CreateEventDraft>(
     field: Key,
-    value: EventInfo[Key],
+    value: CreateEventDraft[Key],
   ) {
     setEventDraft((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function validateFields(payload: unknown) {
+    const result = createEventSchema.safeParse(payload);
+
+    if (!result.success) {
+      const fieldErrors = result.error.issues.reduce<Record<string, string>>(
+        (errors, issue) => {
+          const field = issue.path.join(".") || "form";
+          errors[field] ??= issue.message;
+          return errors;
+        },
+        {},
+      );
+      setValidationError(fieldErrors);
+      return null;
+    }
+
+    setValidationError({});
+    return result.data;
   }
 
   function combineDateTime(date: string, time: string): Date | null {
@@ -73,7 +75,8 @@ export default function CreateEventForm({
     return new Date(`${date}T${time}`);
   }
 
-  function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
+    // TODO: Upload image FIRST. If it fails, abort event creation
     e.preventDefault();
 
     const startsAt = combineDateTime(
@@ -82,32 +85,53 @@ export default function CreateEventForm({
     );
     const endsAt = combineDateTime(eventDraft.endDate, eventDraft.endTime);
 
-    if (!startsAt) return;
-
-    const payload = {
+    const payload = validateFields({
+      createdById: 1, // user ID should be connected in backend
       title: eventDraft.title,
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
-      startsAt: startsAt.toISOString(),
-      endsAt: endsAt?.toISOString(),
-    };
+      latitude: eventDraft.location?.lat,
+      longitude: eventDraft.location?.lng,
+      startsAt: startsAt ?? undefined,
+      endsAt: endsAt ?? undefined,
+    });
 
-    // TODO: connect to API and return actual event ID
-    console.log(payload);
-    onCreated(1);
+    if (!payload) return;
+
+    setSubmitError(null);
+    try {
+      const createdEvent = await createEventFetch(payload);
+      onCreated(createdEvent.id);
+    } catch (error) {
+      setSubmitError(
+        error instanceof TypeError
+          ? "Couldn't connect to the server. Check your connection and try again."
+          : error instanceof Error
+            ? error.message
+            : "Couldn't create the event. Please try again.",
+      );
+    }
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmitEvent}>
-      <ImageUpload />
+    <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
+      <ImageUpload className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4">
+        <span className="flex items-center gap-4">
+          <FaCamera size={40} aria-hidden="true" />
+          <span>Upload</span>
+        </span>
+      </ImageUpload>
+
       <span className="flex flex-1 max-sm:flex-wrap gap-2">
         <Input
-          icon={<FaHeading />}
+          icon={<FaHeading aria-hidden />}
           type="text"
           label="Event title"
+          required
           placeholder="Title"
           value={eventDraft.title}
           onChange={(e) => handleInputChange("title", e.target.value)}
+          error={validationError["title"] ?? ""}
         />
         <LocationPicker
           onSelect={(loc) => handleInputChange("location", loc)}
@@ -116,9 +140,10 @@ export default function CreateEventForm({
       <span className="flex flex-wrap gap-2">
         <span className="flex flex-1 max-sm:flex-wrap gap-2">
           <Input
-            icon={<FaCalendarDay />}
+            icon={<FaCalendarDay aria-hidden />}
             type="date"
             label="Startdate"
+            required
             value={eventDraft.startDate}
             onChange={(e) => {
               const startDate = e.target.value;
@@ -126,14 +151,16 @@ export default function CreateEventForm({
               setEventDraft((prev) => ({
                 ...prev,
                 startDate,
-                endDate: prev.endDate || startDate,
               }));
             }}
+            error={validationError["startDate"] ?? ""}
           />
+
           <Input
-            icon={<FaClock />}
+            icon={<FaClock aria-hidden />}
             type="time"
             label="Starttime"
+            required
             value={eventDraft.startTime}
             onChange={(e) => {
               const startTime = e.target.value;
@@ -141,33 +168,40 @@ export default function CreateEventForm({
               setEventDraft((prev) => ({
                 ...prev,
                 startTime,
-                endTime: prev.endTime || startTime,
               }));
             }}
+            error={validationError["startDate"] ?? ""}
           />
         </span>
         <span className="flex flex-1 max-sm:flex-wrap gap-2">
           <Input
-            icon={<FaCalendarDay />}
+            icon={<FaCalendarDay aria-hidden />}
             type="date"
             label="Enddate"
             value={eventDraft.endDate}
             onChange={(e) => handleInputChange("endDate", e.target.value)}
+            error={validationError["endDate"] ?? ""}
           />
           <Input
-            icon={<FaClock />}
+            icon={<FaClock aria-hidden />}
             type="time"
             label="Endtime"
             value={eventDraft.endTime}
             onChange={(e) => handleInputChange("endTime", e.target.value)}
+            error={validationError["endDate"] ?? ""}
           />
         </span>
       </span>
       <TextArea
-        icon={<FaFileLines />}
+        icon={<FaFileLines aria-hidden />}
         value={eventDraft.description}
         onChange={(e) => handleInputChange("description", e.target.value)}
       />
+      {submitError && (
+        <p className="flock-ui-label text-error" role="alert">
+          {submitError}
+        </p>
+      )}
       <div className="w-full flex justify-between">
         <Button type="button" variant="secondary" href="/">
           Cancel
