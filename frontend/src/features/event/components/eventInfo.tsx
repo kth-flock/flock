@@ -29,6 +29,7 @@ export default function EventInfo({
             >
               Edit
             </Button>
+            {/* TODO:  Wire up inviting*/}
             <Button
               icon={<FaUserPlus aria-hidden />}
               iconPlacement="right"
