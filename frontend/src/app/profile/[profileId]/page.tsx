@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/profileHeader";
 import ProfileContent from "@/features/profile/components/profileContent";
 import {
+  getFriendshipStatus,
   getHostedEvents,
   getInvitedEvents,
   getMyProfile,
@@ -36,15 +37,23 @@ export default async function ProfilePage({
   // Change this? If you want to preview your public profile?
   if (profile.id === myProfile?.id) redirect("/profile");
 
-  const [friends, hostedEvents, invitedEvents] = await Promise.all([
-    getProfileFriends(profile.id),
-    getHostedEvents(profile.id),
-    getInvitedEvents(profile.id),
-  ]);
+  const [friends, hostedEvents, invitedEvents, friendshipStatus] =
+    await Promise.all([
+      getProfileFriends(profile.id),
+      getHostedEvents(profile.id),
+      getInvitedEvents(profile.id),
+      myProfile
+        ? getFriendshipStatus(myProfile.id, profile.id)
+        : ("NONE" as const),
+    ]);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
-      <ProfileHeader profile={profile} bannerColor={randomBannerColor()} />
+      <ProfileHeader
+        profile={profile}
+        bannerColor={randomBannerColor()}
+        friendshipStatus={friendshipStatus}
+      />
       <ProfileContent
         profile={profile}
         friends={friends}

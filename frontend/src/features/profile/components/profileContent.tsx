@@ -13,8 +13,6 @@ import type { ProfileDetails } from "../lib/types";
 
 const MAX_FRIEND_IMAGES = 4;
 
-// Opaque backing so the stacked, see-through profile images don't show each other.
-// isolate keeps each backing directly under its own image when they overlap.
 const stackedImageStyle =
   "isolate rounded-full bg-background ring-2 ring-background";
 

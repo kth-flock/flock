@@ -10,6 +10,7 @@ import type {
   InvitedEvent,
 } from "@/features/event/lib/types";
 import type { PublicUser } from "@/shared/types/user";
+import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { ProfileDetails } from "./types";
 
 // TODO: fetch from the backend (GET /users/:userId), see shared/lib/apiFetch.ts.
@@ -88,4 +89,22 @@ export async function getInvitedEvents(
   return exampleEvents
     .filter((event) => eventIds.includes(event.id))
     .map(toInvitedEvent);
+}
+
+// TODO: fetch from the backend, which has no endpoint for this yet (only the
+// user search returns a friendship status). Until then it's worked out from
+// the example friendships, between the logged in user and the profile.
+export async function getFriendshipStatus(
+  myId: number,
+  profileId: number,
+): Promise<FriendshipStatus> {
+  const friendship = exampleFriendships.find(
+    ({ requesterId, requesteeId }) =>
+      (requesterId === myId && requesteeId === profileId) ||
+      (requesterId === profileId && requesteeId === myId),
+  );
+
+  if (!friendship) return "NONE";
+  if (friendship.status === "ACCEPTED") return "FRIENDS";
+  return friendship.requesterId === myId ? "REQUEST_SENT" : "REQUEST_RECEIVED";
 }

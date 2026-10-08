@@ -173,6 +173,8 @@ export const exampleFriendships: {
   { requesterId: bob.id, requesteeId: grace.id, status: "ACCEPTED" },
   { requesterId: dave.id, requesteeId: erin.id, status: "ACCEPTED" },
   { requesterId: clara.id, requesteeId: dave.id, status: "PENDING" },
+  { requesterId: alice.id, requesteeId: dave.id, status: "PENDING" },
+  { requesterId: erin.id, requesteeId: alice.id, status: "PENDING" },
 ];
 
 // Rows of the backend's Invitee table
