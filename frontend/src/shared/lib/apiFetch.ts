@@ -1,5 +1,8 @@
-import type { CreateEventData } from "@flock/shared/schemas/event";
 import { RegisterUser } from "@flock/shared/schemas/auth";
+import type {
+  CreateEventData,
+  UpdateEventData,
+} from "@flock/shared/schemas/event";
 import { UserSearchResult, PrivateUser } from "../types/user";
 import type { ExtendedEvent } from "../types/event";
 
@@ -33,6 +36,25 @@ export async function createEventFetch(
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
     throw new Error(response.error ?? "Failed to create event");
+  }
+
+  const response: { id: number } = await res.json();
+  return response;
+}
+
+export async function updateEventFetch(
+  eventId: number,
+  payload: UpdateEventData,
+): Promise<{ id: number }> {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to update event");
   }
 
   const response: { id: number } = await res.json();

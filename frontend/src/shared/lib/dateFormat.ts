@@ -17,8 +17,42 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
-export const formatDate = (iso: Date) => dateFormatter.format(new Date(iso));
-export const formatTime = (iso: Date) => timeFormatter.format(new Date(iso));
+const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+export const formatDate = (iso: Date | string) => dateFormatter.format(new Date(iso));
+export const formatTime = (iso: Date | string) => timeFormatter.format(new Date(iso));
+
+export function formatDateInput(date: Date | string) {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const parts = Object.fromEntries(
+    dateInputFormatter
+      .formatToParts(dateObj)
+      .map(({ type, value }) => [type, value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+export function formatTimeInput(date: Date | string) {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const parts = Object.fromEntries(
+    timeInputFormatter
+      .formatToParts(dateObj)
+      .map(({ type, value }) => [type, value]),
+  );
+  return `${parts.hour}:${parts.minute}`;
+}
 
 export function formatDateTimeRange(startsAt: Date, endsAt: Date | null) {
   const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
