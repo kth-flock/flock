@@ -17,7 +17,7 @@ export async function getUser(req: Request, res: Response) {
       error: "Invalid user ID",
     });
   }
-  const user = await usersServices.getUserById(result.data);
+  const user = await usersServices.getUserProfile(result.data);
 
   if (!user) {
     return res.status(404).json({ status: "Error", error: "User not found" });
