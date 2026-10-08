@@ -1,6 +1,6 @@
 import { ExtendedEvent } from "@/shared/types/event";
 
-const BASE_MAPS_URL = "https://www.google.com/maps/search/?api-1&";
+const BASE_MAPS_URL = "https://www.google.com/maps/search/?api=1&";
 
 export function getGoogleMapsUrl(event: ExtendedEvent) {
   const lat = event.latitude;
