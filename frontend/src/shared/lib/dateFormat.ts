@@ -15,7 +15,15 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
+const monthYearFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
+  month: "short",
+  year: "numeric",
+});
+
 export const formatDate = (iso: string) => dateFormatter.format(new Date(iso));
+export const formatMonthYear = (iso: string) =>
+  monthYearFormatter.format(new Date(iso));
 export const formatTime = (iso: string) => timeFormatter.format(new Date(iso));
 
 export function formatDateTimeRange(startsAt: string, endsAt: string | null) {

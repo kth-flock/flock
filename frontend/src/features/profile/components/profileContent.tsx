@@ -4,9 +4,12 @@ import {
   FaClock,
   FaUsers,
 } from "react-icons/fa6";
+import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import ProfileImage from "@/shared/components/profileImage";
+import { formatMonthYear } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
+import type { ProfileDetails } from "../lib/types";
 
 const MAX_FRIEND_IMAGES = 4;
 
@@ -53,23 +56,46 @@ function FriendStack({ friends }: { friends: PublicUser[] }) {
   );
 }
 
-export default function ProfileStats({ friends }: { friends: PublicUser[] }) {
-  // TODO: Replace the placeholder values with real profile data
-  const stats = [
+type ProfileContentProps = {
+  profile: ProfileDetails;
+  friends: PublicUser[];
+  hostedEvents: EventSummary[];
+  invitedEvents: InvitedEvent[];
+};
+
+export default function ProfileContent({
+  profile,
+  friends,
+  hostedEvents,
+  invitedEvents,
+}: ProfileContentProps) {
+  const content = [
     {
       icon: <FaUsers />,
       value: String(friends.length),
       label: "Friends",
       extra: friends.length > 0 && <FriendStack friends={friends} />,
     },
-    { icon: <FaHouseChimney />, value: "3", label: "Events hosted" },
-    { icon: <FaCalendarCheck />, value: "8", label: "Events attended" },
-    { icon: <FaClock />, value: "Oct 2026", label: "Member since" },
+    {
+      icon: <FaHouseChimney />,
+      value: String(hostedEvents.length),
+      label: "Events hosted",
+    },
+    {
+      icon: <FaClock />,
+      value: formatMonthYear(profile.createdAt),
+      label: "Member since",
+    },
+    {
+      icon: <FaCalendarCheck />,
+      value: String(invitedEvents.length),
+      label: "Invitations",
+    },
   ];
 
   return (
-    <section className="grid grid-cols-2 gap-6" aria-label="Profile stats">
-      {stats.map(({ icon, value, label, extra }) => (
+    <section className="grid grid-cols-2 gap-6" aria-label="Profile content">
+      {content.map(({ icon, value, label, extra }) => (
         <div
           key={label}
           className="flex flex-wrap items-center gap-4 rounded-2xl bg-accent/10 p-4 md:p-6"

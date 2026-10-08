@@ -1,61 +1,69 @@
 import type { PublicUser } from "@/shared/types/user";
 import type { DashboardNotification } from "@/features/dashboard/lib/types";
-import type { EventDetails } from "./types";
+import type { ProfileDetails } from "@/features/profile/lib/types";
+import type { EventDetails, Rsvp } from "./types";
 
 // Placeholder data used while frontend pages aren't wired to the backend
 
-const alice: PublicUser = {
+const alice: ProfileDetails = {
   id: 1,
   firstName: "Felix",
   lastName: "Larsson",
   imageUrl: null,
+  createdAt: "2026-09-16T13:31:00.000Z",
 };
 
-const bob: PublicUser = {
+const bob: ProfileDetails = {
   id: 2,
   firstName: "Sandra",
   lastName: "Kåhre",
   imageUrl: null,
+  createdAt: "2026-09-16T14:02:00.000Z",
 };
 
-const clara: PublicUser = {
+const clara: ProfileDetails = {
   id: 3,
   firstName: "Alice",
   lastName: "Cohen",
   imageUrl: null,
+  createdAt: "2026-09-22T09:15:00.000Z",
 };
 
-const dave: PublicUser = {
+const dave: ProfileDetails = {
   id: 4,
-  firstName: "Johan",
-  lastName: "Berg",
+  firstName: "John",
+  lastName: "Smith One",
   imageUrl: null,
+  createdAt: "2026-09-24T18:40:00.000Z",
 };
 
-const erin: PublicUser = {
+const erin: ProfileDetails = {
   id: 5,
-  firstName: "Maja",
-  lastName: "Lind",
+  firstName: "John",
+  lastName: "Smith Two",
   imageUrl: null,
+  createdAt: "2026-09-26T11:05:00.000Z",
 };
 
-const frank: PublicUser = {
+const frank: ProfileDetails = {
   id: 6,
-  firstName: "Oskar",
-  lastName: "Nyström",
+  firstName: "John",
+  lastName: "Smith Three",
   imageUrl: null,
+  createdAt: "2026-10-01T08:20:00.000Z",
 };
 
-const grace: PublicUser = {
+const grace: ProfileDetails = {
   id: 7,
-  firstName: "Elsa",
-  lastName: "Holm",
+  firstName: "John",
+  lastName: "Smith Four",
   imageUrl: null,
+  createdAt: "2026-10-03T20:45:00.000Z",
 };
 
 export const exampleFriends: PublicUser[] = [alice, bob, clara];
 
-export const exampleProfiles: PublicUser[] = [
+export const exampleProfiles: ProfileDetails[] = [
   alice,
   bob,
   clara,
@@ -149,6 +157,39 @@ export const exampleEvents: EventDetails[] = [
   exampleEvent,
   hemmafest,
   boardGameNight,
+];
+
+export const exampleFriendships: {
+  requesterId: number;
+  requesteeId: number;
+  status: "PENDING" | "ACCEPTED";
+}[] = [
+  { requesterId: alice.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: clara.id, requesteeId: alice.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: clara.id, status: "ACCEPTED" },
+  { requesterId: dave.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: erin.id, status: "ACCEPTED" },
+  { requesterId: frank.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: grace.id, status: "ACCEPTED" },
+  { requesterId: dave.id, requesteeId: erin.id, status: "ACCEPTED" },
+  { requesterId: clara.id, requesteeId: dave.id, status: "PENDING" },
+];
+
+// Rows of the backend's Invitee table
+export const exampleInvitees: {
+  eventId: number;
+  userId: number;
+  rsvp: Rsvp;
+  rsvpComment: string | null;
+}[] = [
+  { eventId: exampleEvent.id, userId: bob.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: exampleEvent.id, userId: clara.id, rsvp: "MAYBE", rsvpComment: null },
+  { eventId: exampleEvent.id, userId: dave.id, rsvp: "PENDING", rsvpComment: null },
+  { eventId: hemmafest.id, userId: alice.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: hemmafest.id, userId: clara.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: hemmafest.id, userId: erin.id, rsvp: "DECLINED", rsvpComment: null },
+  { eventId: boardGameNight.id, userId: alice.id, rsvp: "PENDING", rsvpComment: null },
+  { eventId: boardGameNight.id, userId: bob.id, rsvp: "ACCEPTED", rsvpComment: null },
 ];
 
 export const exampleNotifications: DashboardNotification[] = [

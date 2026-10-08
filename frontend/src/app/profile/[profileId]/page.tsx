@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/profileHeader";
-import ProfileStats from "@/features/profile/components/profileContent";
+import ProfileContent from "@/features/profile/components/profileContent";
 import {
+  getHostedEvents,
+  getInvitedEvents,
   getMyProfile,
   getProfile,
   getProfileFriends,
@@ -34,12 +36,21 @@ export default async function ProfilePage({
   // Change this? If you want to preview your public profile?
   if (profile.id === myProfile?.id) redirect("/profile");
 
-  const friends = await getProfileFriends(profile.id);
+  const [friends, hostedEvents, invitedEvents] = await Promise.all([
+    getProfileFriends(profile.id),
+    getHostedEvents(profile.id),
+    getInvitedEvents(profile.id),
+  ]);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <ProfileHeader profile={profile} bannerColor={randomBannerColor()} />
-      <ProfileStats friends={friends} />
+      <ProfileContent
+        profile={profile}
+        friends={friends}
+        hostedEvents={hostedEvents}
+        invitedEvents={invitedEvents}
+      />
     </main>
   );
 }
