@@ -2,6 +2,8 @@ import type { ExtendedEvent } from "@/shared/types/event";
 import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
+import Button from "@/shared/components/button";
+import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
 
 export default function EventInfo({
   event,
@@ -16,7 +18,29 @@ export default function EventInfo({
   return (
     <div className="flex flex-col gap-6">
       <EventHeader event={event} isHost={isHost} />
-      <RsvpButtons />
+      {!hasPassed &&
+        (isHost ? (
+          <div className="w-full flex gap-2 justify-center">
+            <Button
+              href={`/edit-event/${event.id}`}
+              icon={<FaPenToSquare aria-hidden />}
+              iconPlacement="right"
+              variant="secondary"
+            >
+              Edit
+            </Button>
+            <Button
+              icon={<FaUserPlus aria-hidden />}
+              iconPlacement="right"
+              variant="secondary"
+            >
+              Invite
+            </Button>
+          </div>
+        ) : (
+          <RsvpButtons />
+        ))}
+
       <EventDetails event={event} hasPassed={hasPassed} />
 
       {event.description && (

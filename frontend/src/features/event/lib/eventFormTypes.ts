@@ -1,6 +1,6 @@
 import type { Location } from "@/shared/lib/nominatim";
 
-export type CreateEventDraft = {
+export type EventFormValues = {
   title: string;
   description: string;
   startDate: string;
