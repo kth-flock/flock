@@ -20,7 +20,12 @@ function FriendStack({ friends }: { friends: PublicUser[] }) {
   const hiddenCount = friends.length - shownFriends.length;
 
   return (
-    <div className="ml-auto flex -space-x-2">
+    // TODO: open a popup with all friends
+    <button
+      type="button"
+      aria-label="Show all friends"
+      className="ml-auto flex -space-x-2 cursor-pointer rounded-full transition-transform hover:-translate-y-0.5"
+    >
       {shownFriends.map((friend) => (
         <span
           key={friend.id}
@@ -44,7 +49,7 @@ function FriendStack({ friends }: { friends: PublicUser[] }) {
           </span>
         </span>
       )}
-    </div>
+    </button>
   );
 }
 
