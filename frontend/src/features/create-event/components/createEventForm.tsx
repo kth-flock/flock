@@ -7,10 +7,13 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import type { CreateEventDraft } from "../types/eventTypes";
 import { createEventSchema } from "@flock/shared/schemas/event";
-const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
-  ssr: false,
-});
-import { createEventFetch } from "@/shared/lib/apiFetch";
+const LocationPicker = dynamic(
+  () => import("@/features/loaction/components/mapInput"),
+  {
+    ssr: false,
+  },
+);
+import { createEventFetch } from "@/shared/lib/api";
 
 import {
   FaHeading,

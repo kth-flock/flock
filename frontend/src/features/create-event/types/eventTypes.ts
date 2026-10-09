@@ -1,4 +1,4 @@
-import type { Location } from "@/shared/lib/nominatim";
+import type { Location } from "@/features/loaction/lib/geocoding";
 
 export type CreateEventDraft = {
   title: string;
