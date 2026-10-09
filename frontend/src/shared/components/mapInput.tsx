@@ -14,12 +14,8 @@ import { FieldWrapper } from "./formInputs";
 import { useFocusWithin } from "../hooks/useFocusWithin";
 import { renderToStaticMarkup } from "react-dom/server";
 import { debounce } from "../lib/debounce";
-import type { Location, NominatimResult } from "../lib/nominatim";
-import {
-  formatLocationName,
-  DEFAULT_CENTER,
-  DEFAULT_ZOOM,
-} from "../lib/nominatim";
+import type { Location } from "../lib/geocoding";
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from "../lib/geocoding";
 import { geocodeFetch } from "../lib/apiFetch";
 
 // ---------- CONSTANTS ----------
@@ -51,8 +47,8 @@ function ClickHandler({
 function RecenterOnSelect({ selected }: { selected: Location | null }) {
   const map = useMap();
   useEffect(() => {
-    if (selected?.lat !== undefined && selected.lng !== undefined) {
-      map.setView([selected.lat, selected.lng], map.getZoom());
+    if (selected?.lat !== undefined && selected.lon !== undefined) {
+      map.setView([selected.lat, selected.lon], map.getZoom());
     }
   }, [selected, map]);
   return null;
@@ -66,7 +62,7 @@ export default function LocationPicker({
   onSelect?: (location: Location | null) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<NominatimResult[]>([]);
+  const [results, setResults] = useState<Location[]>([]);
   const [selected, setSelected] = useState<Location | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -75,7 +71,7 @@ export default function LocationPicker({
     debounce(async (searchQuery: string, requestId: number) => {
       setLoading(true);
       try {
-        const data = await geocodeFetch<NominatimResult[]>("search", {
+        const data = await geocodeFetch<Location[]>("search", {
           q: searchQuery,
         });
         if (requestId === searchRequestRef.current) setResults(data);
@@ -133,42 +129,37 @@ export default function LocationPicker({
     };
   }, [query, debouncedSearch]);
 
-  function commitLocation(location: Location, displayText: string) {
+  function commitLocation(location: Location) {
     setSelected(location);
-    skipNextSearchRef.current = displayText !== query;
-    setQuery(displayText);
+    skipNextSearchRef.current = location.label !== query;
+    setQuery(location.label);
     onSelect?.(location);
   }
 
-  function chooseResult(result: NominatimResult) {
-    const location: Location = {
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon),
-      label: result.display_name,
-    };
-    commitLocation(location, formatLocationName(result));
+  function chooseResult(result: Location) {
+    commitLocation(result);
     setResults([]);
     setIsMapOpen(false);
   }
 
-  async function handleMapClick(lat: number, lng: number) {
-    setSelected({ lat, lng, label: `${lat.toFixed(5)}, ${lng.toFixed(5)}` });
+  async function handleMapClick(lat: number, lon: number) {
+    setSelected({ lat, lon, label: `${lat.toFixed(5)}, ${lon.toFixed(5)}` });
     setIsMapOpen(false);
     setLoading(true);
 
-    let label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    let label = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
     try {
-      const result = await geocodeFetch<NominatimResult>("reverse", {
+      const result = await geocodeFetch<Location>("reverse", {
         lat: String(lat),
-        lon: String(lng),
+        lon: String(lon),
       });
 
-      label = formatLocationName(result);
+      label = result.label;
     } catch (err) {
       console.error("Geocoding reverse lookup failed:", err);
     } finally {
-      const location = { lat, lng, label };
-      commitLocation(location, label);
+      const location = { lat, lon, label };
+      commitLocation(location);
       setLoading(false);
     }
   }
@@ -219,9 +210,9 @@ export default function LocationPicker({
 
           {results.length > 0 && (
             <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-white p-0 shadow-md">
-              {results.map((r) => (
+              {results.map((r, i) => (
                 <li
-                  key={r.place_id}
+                  key={i}
                   className="border-b border-primary/10 last:border-b-0"
                 >
                   <button
@@ -229,7 +220,7 @@ export default function LocationPicker({
                     onClick={() => chooseResult(r)}
                     className="flock-body-sm block w-full px-4 py-3 text-left text-primary hover:bg-secondary/20 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
                   >
-                    {formatLocationName(r)}
+                    {r.label}
                   </button>
                 </li>
               ))}
@@ -242,8 +233,8 @@ export default function LocationPicker({
         <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
           <MapContainer
             center={
-              selected?.lat !== undefined && selected.lng !== undefined
-                ? [selected.lat, selected.lng]
+              selected?.lat !== undefined && selected.lon !== undefined
+                ? [selected.lat, selected.lon]
                 : DEFAULT_CENTER
             }
             zoom={DEFAULT_ZOOM}
@@ -255,9 +246,9 @@ export default function LocationPicker({
             />
             <ClickHandler onClick={handleMapClick} />
             <RecenterOnSelect selected={selected} />
-            {selected?.lat !== undefined && selected.lng !== undefined && (
+            {selected?.lat !== undefined && selected.lon !== undefined && (
               <Marker
-                position={[selected.lat, selected.lng]}
+                position={[selected.lat, selected.lon]}
                 icon={markerIcon}
               />
             )}
