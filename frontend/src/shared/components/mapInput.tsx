@@ -61,13 +61,17 @@ function RecenterOnSelect({ selected }: { selected: Location | null }) {
 // ---------- COMPONENT ----------
 
 export default function LocationPicker({
+  initialValue,
   onSelect,
 }: {
+  initialValue?: Location | null;
   onSelect?: (location: Location | null) => void;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialValue?.label ?? "");
   const [results, setResults] = useState<NominatimResult[]>([]);
-  const [selected, setSelected] = useState<Location | null>(null);
+  const [selected, setSelected] = useState<Location | null>(
+    initialValue ?? null,
+  );
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const searchRequestRef = useRef(0);
@@ -88,7 +92,7 @@ export default function LocationPicker({
       }
     }, 1000),
   ).current;
-  const skipNextSearchRef = useRef(false);
+  const skipNextSearchRef = useRef(Boolean(initialValue?.label));
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();

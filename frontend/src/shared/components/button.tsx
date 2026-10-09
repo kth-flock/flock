@@ -10,6 +10,7 @@ type IconPlacement = "left" | "right" | "";
 
 type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
+  externalLink?: boolean;
 };
 
 type ButtonProps =
@@ -135,6 +136,7 @@ const getIconButtonClasses = ({
 
 export function ClickableItem({
   href,
+  externalLink,
   disabled,
   className,
   children,
@@ -145,6 +147,8 @@ export function ClickableItem({
   return href ? (
     <Link
       href={href}
+      target={externalLink ? "_blank" : undefined}
+      rel={externalLink ? "noopener noreferrer" : undefined}
       className={className}
       onClick={(event) => {
         if (disabled) {

@@ -43,14 +43,49 @@ export const createEventSchema = z
 
 export type CreateEventData = z.infer<typeof createEventSchema>;
 
-export const updateEventSchema = z.object({
-  title: z.string().min(1).optional(),
-  description: z.string().nullable().optional(),
-  locationName: z.string().optional(),
-  googlePlaceId: z.string().optional(),
-  startsAt: z.coerce.date().optional(),
-  endsAt: z.coerce.date().nullable().optional(),
-  imageUrl: z.string().nullable().optional(),
-});
+export const updateEventSchema = z
+  .object({
+    title: z.string({ error: "Title is required." }).min(1).optional(),
+    description: z.string().nullable().optional(),
+    locationName: z.string().nullable().optional(),
+    latitude: z.number().min(-90).max(90).nullable().optional(),
+    longitude: z.number().min(-180).max(180).nullable().optional(),
+    startsAt: z.coerce
+      .date()
+      .refine((date) => date.getTime() > Date.now(), {
+        error: "Start date must be in the future.",
+      })
+      .optional(),
+    endsAt: z
+      .coerce
+      .date()
+      .nullable()
+      .optional()
+      .refine((date) => date == null || date.getTime() > Date.now(), {
+        error: "End date must be in the future.",
+      }),
+    imageUrl: z.string().nullable().optional(),
+  })
+  .refine(
+    (event) =>
+      !event.startsAt ||
+      !(event.endsAt instanceof Date) ||
+      event.endsAt.getTime() > event.startsAt.getTime(),
+    {
+      path: ["endsAt"],
+      error: "End date must be after the start date.",
+    },
+  )
+  .refine(
+    (event) =>
+      (event.latitude === undefined && event.longitude === undefined) ||
+      (event.latitude === null && event.longitude === null) ||
+      (typeof event.latitude === "number" &&
+        typeof event.longitude === "number"),
+    {
+      path: ["latitude"],
+      error: "Latitude and longitude must be provided together.",
+    },
+  );
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;

@@ -4,38 +4,34 @@ import Button from "@/shared/components/button";
 import { useState } from "react";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
-import { createEventSchema } from "@flock/shared/schemas/event";
-import { createEventFetch } from "@/shared/lib/apiFetch";
-
-import {
-  FaHeading,
-  FaCalendarDay,
-  FaClock,
-  FaFileLines,
-  FaCamera,
-} from "react-icons/fa6";
+import { updateEventSchema } from "@flock/shared/schemas/event";
+import { updateEventFetch } from "@/shared/lib/apiFetch";
+import type { Event } from "@prisma/types";
+import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
+import { useRouter } from "next/navigation";
 
 // TODO: make enddate optional
 
 // TODO: Wire up image-upload
 
-export default function CreateEventForm({
-  onCreated,
-}: {
-  onCreated: (id: number) => void;
-}) {
+export default function EditEventForm({ event }: { event: Event }) {
+  const router = useRouter();
   const [validationError, setValidationError] = useState<
     Record<string, string>
   >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [eventDraft, setEventDraft] = useState<EventFormValues>({
-    title: "",
-    description: "",
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-    location: null,
+    title: event.title,
+    description: event.description ?? "",
+    startDate: formatDateInput(event.startsAt),
+    startTime: formatTimeInput(event.startsAt),
+    endDate: event.endsAt ? formatDateInput(event.endsAt) : "",
+    endTime: event.endsAt ? formatTimeInput(event.endsAt) : "",
+    location: {
+      label: event.locationName ?? "",
+      lat: event.latitude ?? undefined,
+      lng: event.longitude ?? undefined,
+    },
   });
 
   function handleInputChange<Key extends keyof EventFormValues>(
@@ -46,7 +42,7 @@ export default function CreateEventForm({
   }
 
   function validateFields(payload: unknown) {
-    const result = createEventSchema.safeParse(payload);
+    const result = updateEventSchema.safeParse(payload);
 
     if (!result.success) {
       const fieldErrors = result.error.issues.reduce<Record<string, string>>(
@@ -71,7 +67,6 @@ export default function CreateEventForm({
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
-    // TODO: Upload image FIRST. If it fails, abort event creation
     e.preventDefault();
 
     const startsAt = combineDateTime(
@@ -81,7 +76,6 @@ export default function CreateEventForm({
     const endsAt = combineDateTime(eventDraft.endDate, eventDraft.endTime);
 
     const payload = validateFields({
-      createdById: 1, // user ID should be connected in backend
       title: eventDraft.title,
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
@@ -95,8 +89,8 @@ export default function CreateEventForm({
 
     setSubmitError(null);
     try {
-      const createdEvent = await createEventFetch(payload);
-      onCreated(createdEvent.id);
+      await updateEventFetch(event.id, payload);
+      router.push(`/event/${event.id}`);
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -110,12 +104,7 @@ export default function CreateEventForm({
 
   return (
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
-      <ImageUpload className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4">
-        <span className="flex items-center gap-4">
-          <FaCamera size={40} aria-hidden="true" />
-          <span>Upload</span>
-        </span>
-      </ImageUpload>
+      <ImageUpload />
       <EventFormFields
         values={eventDraft}
         errors={validationError}
@@ -128,10 +117,10 @@ export default function CreateEventForm({
         </p>
       )}
       <div className="w-full flex justify-between">
-        <Button type="button" variant="secondary" href="/">
+        <Button type="button" variant="secondary" href={`event/${event.id}`}>
           Cancel
         </Button>
-        <Button type="submit">Create</Button>
+        <Button type="submit">Update</Button>
       </div>
     </form>
   );

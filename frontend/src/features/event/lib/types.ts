@@ -1,4 +1,5 @@
 import type { PublicUser } from "@/shared/types/user";
+import type { Event } from "@prisma/types";
 
 // Shapes returned by GET /events/:eventId (dates arrive as ISO strings)
 
@@ -21,16 +22,9 @@ export type EventAnnouncement = {
   comments: EventComment[];
 };
 
-export type EventDetails = {
-  id: number;
-  createdById: number;
-  title: string;
-  description: string | null;
-  locationName: string | null;
-  googlePlaceId: string | null;
+export type EventDetails = Omit<Event, "startsAt" | "endsAt"> & {
   startsAt: string;
   endsAt: string | null;
-  imageUrl: string | null;
   createdBy: PublicUser;
   announcements: EventAnnouncement[];
 };
