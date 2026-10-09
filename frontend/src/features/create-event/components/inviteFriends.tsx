@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
 import type { UserSearchResult } from "@/shared/types/user";
 import { searchUsersFetch } from "@/shared/lib/api";
-import { debounce } from "@/shared/lib/debounce";
+import { debounce } from "lodash";
 
 // TODO: Connect to API and make sure types and structures are correct
 
