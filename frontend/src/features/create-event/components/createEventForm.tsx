@@ -2,14 +2,8 @@
 import ImageUpload from "@/shared/components/imageUpload";
 import Button from "@/shared/components/button";
 import { useState } from "react";
-import {
-  CreateEventData,
-  createEventSchema,
-} from "@flock/shared/schemas/event";
-import {
-  createEventFetch,
-  deleteImageFromS3Fetch,
-} from "@/shared/lib/apiFetch";
+import { createEventSchema } from "@flock/shared/schemas/event";
+import { createEventFetch, deleteImageFromS3Fetch } from "@/shared/lib/api";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 
