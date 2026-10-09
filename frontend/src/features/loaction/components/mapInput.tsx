@@ -163,7 +163,7 @@ export default function LocationPicker({ onSelect }: LocationPickerProps) {
             <FaMapLocationDot aria-hidden className="fill-primary" />
           </button>
           {loading && (
-            <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary">
+            <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary bg-neutral px-1 py-0.5 rounded-md">
               Searching...
             </span>
           )}
