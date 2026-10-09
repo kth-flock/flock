@@ -9,7 +9,7 @@ import {
   RegisterUserDraft,
   registerUserFormSchema,
 } from "../types/registerTypes";
-import { registerFetch } from "@/shared/lib/apiFetch";
+import { registerFetch } from "@/shared/lib/api";
 
 export default function Register() {
   const [validationError, setValidationError] = useState<
