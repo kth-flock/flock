@@ -92,6 +92,7 @@ export default function EventFormFields({
         icon={<FaFileLines aria-hidden />}
         value={values.description}
         onChange={(e) => onChange("description", e.target.value)}
+        label="Description"
       />
     </>
   );
