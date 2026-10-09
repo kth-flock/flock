@@ -144,7 +144,7 @@ export default function Input({
 
 export function TextArea({
   icon,
-  label = "Description",
+  label,
   placeholder = "Add details",
   className,
   onFocus,
