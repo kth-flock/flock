@@ -1,15 +1,15 @@
-import type { EventAnnouncement } from "../lib/types";
 import PostMeta from "./postMeta";
 import ReplyForm from "./replyForm";
+import type { ExtendedAnnouncment } from "@/shared/types/event";
 
 export default function Announcement({
   announcement,
 }: {
-  announcement: EventAnnouncement;
+  announcement: ExtendedAnnouncment;
 }) {
   // Oldest first, replies read top to bottom
   const comments = [...announcement.comments].sort(
-    (a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt),
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
   );
 
   return (

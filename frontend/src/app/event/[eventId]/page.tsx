@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EventInfo from "@/features/event/components/eventInfo";
-//import AnnouncementList from "@/features/event/components/announcementList";
+import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent, getCurrentUser } from "@/shared/lib/apiFetch";
 import { idSchema } from "@flock/shared/schemas/common";
 
@@ -37,12 +37,16 @@ export default async function EventPage({
 
   // ---- logic ----
   //const isHost = event.createdById === user.id;
-  const isHost = true;
+  const isHost = false;
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <EventInfo event={event} isHost={isHost} />
-      {/*<AnnouncementList announcements={event.announcements} /> */}
+      <AnnouncementList
+        announcements={event.announcements}
+        eventId={event.id}
+        isHost={isHost}
+      />
     </main>
   );
 }
