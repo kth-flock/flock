@@ -1,93 +1,53 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMapEvents,
-  useMap,
-} from "react-leaflet";
-import L from "leaflet";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
-import { FieldWrapper } from "./formInputs";
-import { useFocusWithin } from "../hooks/useFocusWithin";
-import { renderToStaticMarkup } from "react-dom/server";
-import { debounce } from "../lib/debounce";
+import { FieldWrapper } from "../../../shared/components/formInputs";
+import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
 import type { Location } from "../lib/geocoding";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "../lib/geocoding";
-import { geocodeFetch } from "../lib/apiFetch";
+import { geocodeFetch } from "../lib/api";
+import { MarkerIcon } from "./mapMarker";
+import { ClickHandler } from "../lib/utils";
+import { RecenterOnSelect } from "../lib/utils";
+import debounce from "lodash/debounce";
 
-// ---------- CONSTANTS ----------
-
-const markerIcon = L.divIcon({
-  html: renderToStaticMarkup(
-    <FaLocationDot size={34} className="fill-primary" aria-hidden />,
-  ),
-  className: "custom-marker",
-  iconSize: [34, 34],
-  iconAnchor: [17, 34],
-});
-
-// ---------- HELPER FUNCTIONS ----------
-
-function ClickHandler({
-  onClick,
-}: {
-  onClick: (lat: number, lng: number) => void;
-}) {
-  useMapEvents({
-    click(e) {
-      onClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
-
-function RecenterOnSelect({ selected }: { selected: Location | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (selected?.lat !== undefined && selected.lon !== undefined) {
-      map.setView([selected.lat, selected.lon], map.getZoom());
-    }
-  }, [selected, map]);
-  return null;
-}
-
-// ---------- COMPONENT ----------
-
-export default function LocationPicker({
-  onSelect,
-}: {
+export type LocationPickerProps = {
   onSelect?: (location: Location | null) => void;
-}) {
+};
+
+export default function LocationPicker({ onSelect }: LocationPickerProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Location[]>([]);
   const [selected, setSelected] = useState<Location | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const searchRequestRef = useRef(0);
-  const debouncedSearch = useRef(
-    debounce(async (searchQuery: string, requestId: number) => {
-      setLoading(true);
-      try {
-        const data = await geocodeFetch<Location[]>("search", {
-          q: searchQuery,
-        });
-        if (requestId === searchRequestRef.current) setResults(data);
-      } catch (err) {
-        if (requestId === searchRequestRef.current) {
-          console.error("Geocoding search failed:", err);
-        }
-      } finally {
-        if (requestId === searchRequestRef.current) setLoading(false);
-      }
-    }, 1000),
-  ).current;
   const skipNextSearchRef = useRef(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (searchQuery: string, requestId: number) => {
+        setLoading(true);
+        try {
+          const data = await geocodeFetch<Location[]>("search", {
+            q: searchQuery,
+          });
+          if (requestId === searchRequestRef.current) setResults(data);
+        } catch (err) {
+          if (requestId === searchRequestRef.current) {
+            console.error("Geocoding search failed:", err);
+          }
+        } finally {
+          if (requestId === searchRequestRef.current) setLoading(false);
+        }
+      }, 400),
+    [],
+  );
 
   useEffect(() => {
     function handleOutsidePointer(event: PointerEvent) {
@@ -249,7 +209,7 @@ export default function LocationPicker({
             {selected?.lat !== undefined && selected.lon !== undefined && (
               <Marker
                 position={[selected.lat, selected.lon]}
-                icon={markerIcon}
+                icon={MarkerIcon}
               />
             )}
           </MapContainer>
