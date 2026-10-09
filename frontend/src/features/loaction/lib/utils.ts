@@ -1,6 +1,6 @@
 import { useMapEvents, useMap } from "react-leaflet";
 import { useEffect } from "react";
-import type { Location } from "./geocoding";
+import type { Location } from "@flock/shared/schemas/geocode";
 
 export function ClickHandler({
   onClick,

@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { FieldWrapper } from "../../../shared/components/formInputs";
 import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
-import type { Location } from "../lib/geocoding";
+import type { Location } from "@flock/shared/schemas/geocode";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "../lib/geocoding";
 import { geocodeFetch } from "../lib/api";
 import { MarkerIcon } from "./mapMarker";
