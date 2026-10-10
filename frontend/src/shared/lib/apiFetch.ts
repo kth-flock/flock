@@ -60,6 +60,7 @@ export async function searchUsersFetch(
 export async function registerFetch(data: RegisterUser) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -73,4 +74,27 @@ export async function registerFetch(data: RegisterUser) {
   }
 
   return response.json();
+}
+
+
+export type MeUser = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string | null;
+  createdAt: string;
+};
+
+export async function getMeFetch(){
+  const response = await fetch(`${API_BASE_URL}/me`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const json: { status: string; data: MeUser } = await response.json();
+  return json.data; 
 }
