@@ -8,7 +8,7 @@ function PublicHomePage(){
     return (
         <>
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#8bc596_0%,#ffffff_80%)]" aria-hidden />
-        <div className = "flex items-center justify-center flex-col gap-5 py-16 text-center">
+        <div className = "flex items-center justify-center flex-col gap-5 text-center">
                 <Image
                     src="/logo.svg"
                     alt="Flock"
@@ -25,8 +25,8 @@ function PublicHomePage(){
                 <li className = "flock-body">• party party party</li>
             </ul>
             <div className = "flex items-center justify-center w-full gap-4 mt-6">
-                <Button  className="w-full justify-center"variant="primary" size="lg">Sign Up</Button>
-                <Button className="w-full justify-center" variant="secondary" size="lg">Log In</Button>
+                <Button  className="w-full justify-center"variant="primary" size="lg" href="/register">Sign Up</Button>
+                <Button className="w-full justify-center" variant="secondary" size="lg" href="/login">Log In</Button>
             </div>
         </div>
         </>

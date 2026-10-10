@@ -25,11 +25,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col px-6 md:px-24 items-center">
+    <body className="flex flex-col px-6 md:px-24 items-center">
+      <div className="flex min-h-dvh w-full flex-col">
         <Navbar />
-        {children}
-        <Footer />
-      </body>
+        <main className="flex flex-1 flex-col items-center justify-center w-full">
+          {children}
+        </main>
+      </div>
+      <Footer />   {/* sibling after the min-h-dvh div */}
+    </body>
     </html>
   );
 }
