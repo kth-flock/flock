@@ -60,6 +60,7 @@ export async function searchUsersFetch(
 export async function registerFetch(data: RegisterUser) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -70,6 +71,19 @@ export async function registerFetch(data: RegisterUser) {
     const error = await response.json();
 
     throw new Error(error.error ?? "Couldn't register your account.");
+  }
+
+  return response.json();
+}
+
+export async function getMeFetch(){
+  const response = await fetch(`${API_BASE_URL}/users/me`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error ?? "Couldn't get your user info.");
   }
 
   return response.json();
