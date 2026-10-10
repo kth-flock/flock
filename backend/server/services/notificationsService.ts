@@ -101,14 +101,18 @@ async function getAnnouncementNotifications(
   }));
 }
 
-// Someone else commented on an announcement in an event I'm invited to
+// Someone else commented on an announcement on an event I'm invited to, or commented to an announcement on my event:
 async function getCommentNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
   const comments = await prisma.comment.findMany({
     where: {
       userId: { not: userId },
-      announcement: { event: { invitees: { some: { userId } } } },
+      announcement: {
+        event: {
+          OR: [{ createdById: userId }, { invitees: { some: { userId } } }],
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
     take: NOTIFICATIONS_PER_TYPE,
