@@ -1,6 +1,7 @@
 import type { CreateEventData } from "@flock/shared/schemas/event";
 import { UserSearchResult } from "../types/user";
 import { EventDetails } from "@/features/event/lib/types";
+import { RegisterUser } from "@flock/shared/schemas/auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -111,4 +112,21 @@ export async function getAllEventsFetch() {
   }
 
   return res.json();
+  
+export async function registerFetch(data: RegisterUser) {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+
+    throw new Error(error.error ?? "Couldn't register your account.");
+  }
+
+  return response.json();
 }

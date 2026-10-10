@@ -54,3 +54,24 @@ export const updateEventSchema = z.object({
 });
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
+
+export type RsvpStatus =
+  | "PENDING"
+  | "ACCEPTED"
+  | "MAYBE"
+  | "DECLINED";
+
+
+  export const rsvpStatusSchema = z.enum([
+    "PENDING",
+    "ACCEPTED",
+    "MAYBE",
+    "DECLINED",
+  ]);
+  
+
+  export const rsvpToEventSchema = z.object({
+    rsvp: rsvpStatusSchema,
+    rsvpComment: z.string().optional(),
+  });
+  export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;
