@@ -1,8 +1,11 @@
+"use client";
+
 import EventPreview from "../dashboard/eventPrievew"
 import NotificationList from "../dashboard/notificationList"
 import FriendPreview from "../dashboard/friendPreview"
 import Image from "next/image"
 import Button from "@/shared/components/button";
+import { useAuth } from "@/shared/auth/authContext";
 
 function PublicHomePage(){
     return (
@@ -15,7 +18,7 @@ function PublicHomePage(){
                     width={100}
                     height={100}
                     loading="eager"
-                    className="h-48 w-48"
+                    className="h-32 w-32 md:h-48 md:w-48"
                 />
             <h1 className = "flock-h1">Welcome to Flock</h1>
             <h2 className = "flock-h3">The independant event creator</h2>
@@ -53,10 +56,11 @@ function PrivateHomePage(){ //TODO: this prob will come from the dashboard branc
     )
 }
 
+
+
 export default function HomePage(){
-    return (
-    <div>
-        <PublicHomePage />
-    </div>
-    )
+    const { user } = useAuth();
+    if (user === undefined) return null;
+    if (user === null) return <PublicHomePage />;
+    return <PrivateHomePage />;
 }

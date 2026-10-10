@@ -76,15 +76,25 @@ export async function registerFetch(data: RegisterUser) {
   return response.json();
 }
 
+
+export type MeUser = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string | null;
+  createdAt: string;
+};
+
 export async function getMeFetch(){
-  const response = await fetch(`${API_BASE_URL}/users/me`, {
+  const response = await fetch(`${API_BASE_URL}/me`, {
     credentials: "include",
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error ?? "Couldn't get your user info.");
+    return null;
   }
 
-  return response.json();
+  const json: { status: string; data: MeUser } = await response.json();
+  return json.data; 
 }
