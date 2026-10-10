@@ -4,7 +4,7 @@ services:
   express-api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     container_name: flock_express_api
     restart: unless-stopped
     ports:
