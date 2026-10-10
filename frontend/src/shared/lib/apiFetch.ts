@@ -1,5 +1,6 @@
 import type { CreateEventData } from "@flock/shared/schemas/event";
 import { UserSearchResult } from "../types/user";
+import { EventDetails } from "@/features/event/lib/types";
 import { RegisterUser } from "@flock/shared/schemas/auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -57,6 +58,61 @@ export async function searchUsersFetch(
   return response.data;
 }
 
+export async function uploadImageFetch(
+  file: File,
+  folder: "events" | "profiles",
+) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
+
+  const res = await fetch(`${API_BASE_URL}/image/upload`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to upload image");
+  }
+
+  return res.json();
+}
+
+// should maybe not live here?
+export async function deleteImageFromS3Fetch(imageUrl: string) {
+  await fetch(`${API_BASE_URL}/image`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ imageUrl }),
+  });
+}
+
+export async function getEventByIdFetch(
+  eventId: string,
+): Promise<EventDetails> {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`);
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to load event");
+  }
+
+  return res.json();
+}
+
+export async function getAllEventsFetch() {
+  const res = await fetch(`${API_BASE_URL}/events/`);
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to load events");
+  }
+
+  return res.json();
+  
 export async function registerFetch(data: RegisterUser) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",

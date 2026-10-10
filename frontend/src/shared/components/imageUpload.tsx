@@ -71,9 +71,18 @@ export default function ImageUpload({
         )}
         aria-label={fileName ? `Change image, selected ${fileName}` : undefined}
       >
-        {previewUrl ? (
+        <span className={twMerge("contents", previewUrl && "invisible")}>
+          {children ?? (
+            <span className="flex items-center gap-4">
+              <FaCamera className="h-full aspect-square" aria-hidden="true" />
+              <span>Upload</span>
+            </span>
+          )}
+        </span>
+
+        {previewUrl && (
           <>
-            <div className="absolute inset-0 z-10 h-full w-full object cover bg-black/20 flex justify-center items-center">
+            <div className="absolute inset-0 z-10 h-full w-full object-cover bg-black/20 flex justify-center items-center">
               <span className="flex items-center rounded-full p-4 cursor-pointer bg-white/50 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
                 <FaPenToSquare size={40} aria-hidden="true" />
               </span>
@@ -85,13 +94,6 @@ export default function ImageUpload({
               className="absolute inset-0 z-0 h-full w-full object-cover"
             />
           </>
-        ) : (
-          (children ?? (
-            <span className="flex items-center gap-4">
-              <FaCamera className="h-full aspect-square" aria-hidden="true" />
-              <span>Upload</span>
-            </span>
-          ))
         )}
       </button>
       {fileName && (
