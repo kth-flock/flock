@@ -163,24 +163,42 @@ IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
 3. Stop the running of your Postgres database in Docker
    - If you don't, it will conflict with the new database container that will be created in the next step.
    - You could completely remove the first Postgres container if you want to
-4. Run `docker compose up --build -d` from root folder.
+4. Run the following line from root folder
+    ```
+    docker compose up --build -d
+    ```
    - Wait for the containers to be created and start
-5. Run `docker compose exec express-api npx prisma migrate deploy` from root folder.
-
-6. Now you should be able to open `http://localhost:4000/` and have a server that is running.
+6. Run from root folder.
+   ```
+   docker compose exec express-api npx prisma migrate deploy
+   ```
+   
+8. Now you should be able to open `http://localhost:4000/` and have a server that is running.
 
 ### After updating dependencies in server
 
-- After changing dependencies in the server, rebuild with `docker compose up --build --renew-anon-volumes -d`
+- After changing dependencies in the server, rebuild with
+  ```
+  docker compose up --build --renew-anon-volumes -d
+  ```
 - This is sthe same if someone else has updated the backend dependencies and you pull their changes from github.
 
 #### If there's a new migration and/or schema.prisma has been updated
 
-1. Run `docker compose exec express-api npx prisma migrate deploy`
-2. Run `docker compose exec express-api npx prisma generate`
-3. Run `docker compose restart express-api`
+1. Run
+   ```
+   docker compose exec express-api npx prisma migrate deploy
+   ```
+3. Run
+   ```
+   docker compose exec express-api npx prisma generate
+   ```
+5. Run
+   ```
+   docker compose restart express-api
+   ```
 
-##### Two .env files
+#### Two .env files
 
 We now have two .env files: one in the root folder and one in the /backend folder. Follow the example files to see what belongs in each.
 
