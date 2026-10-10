@@ -112,7 +112,8 @@ export async function getAllEventsFetch() {
   }
 
   return res.json();
-  
+}
+
 export async function registerFetch(data: RegisterUser) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
