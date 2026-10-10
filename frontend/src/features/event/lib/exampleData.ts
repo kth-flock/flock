@@ -1,7 +1,8 @@
 import type { PublicUser } from "@/shared/types/user";
+import type { DashboardNotification } from "@/features/dashboard/lib/types";
 import type { EventDetails } from "./types";
 
-// Placeholder data used while the event page isn't wired to the backend
+// Placeholder data used while the event page and dashboard aren't wired to the backend
 
 const alice: PublicUser = {
   id: 1,
@@ -23,6 +24,8 @@ const clara: PublicUser = {
   lastName: "Cohen",
   imageUrl: null,
 };
+
+export const exampleFriends: PublicUser[] = [alice, bob, clara];
 
 export const exampleEvent: EventDetails = {
   id: 1,
@@ -75,3 +78,61 @@ export const exampleEvent: EventDetails = {
     },
   ],
 };
+
+const hemmafest: EventDetails = {
+  id: 2,
+  createdById: bob.id,
+  title: "Hemmafest!",
+  description: null,
+  locationName: "Industrigatan 7A",
+  googlePlaceId: null,
+  startsAt: "2026-10-17T16:00:00.000Z",
+  endsAt: "2026-10-17T21:00:00.000Z",
+  imageUrl: null,
+  createdBy: bob,
+  announcements: [],
+};
+
+const boardGameNight: EventDetails = {
+  id: 3,
+  createdById: clara.id,
+  title: "Board game night with lots of friends and some more friends and maybe perhaps even more friends than you can imagine",
+  description: null,
+  locationName: "Valhallavägen 79",
+  googlePlaceId: null,
+  startsAt: "2026-10-23T16:30:00.000Z",
+  endsAt: null,
+  imageUrl: null,
+  createdBy: clara,
+  announcements: [],
+};
+
+export const exampleEvents: EventDetails[] = [
+  exampleEvent,
+  hemmafest,
+  boardGameNight,
+];
+
+export const exampleNotifications: DashboardNotification[] = [
+  {
+    id: 1,
+    type: "req",
+    from: bob,
+    createdAt: "2026-10-05T18:20:00.000Z",
+  },
+  {
+    id: 2,
+    type: "invite",
+    from: bob,
+    event: { id: hemmafest.id, title: hemmafest.title },
+    createdAt: "2026-10-04T12:00:00.000Z",
+  },
+  {
+    id: 3,
+    type: "RSVP",
+    from: bob,
+    event: { id: exampleEvent.id, title: exampleEvent.title },
+    RSVPstatus: "ACCEPTED",
+    createdAt: "2026-10-02T08:45:00.000Z",
+  },
+];

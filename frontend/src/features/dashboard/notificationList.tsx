@@ -1,10 +1,23 @@
 "use client";
+import { useState, Fragment } from "react";
+import { FaChevronDown } from "react-icons/fa6";
 import Notification, { NotificationAction } from "./notification";
+import type { DashboardNotification } from "./lib/types";
 
-// TODO: Fix mobile view
+const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
 
-export default function NotificationList() {
-  function handleAction(notifId: number, action: NotificationAction) {
+export default function NotificationList({
+  notifications,
+}: {
+  notifications: DashboardNotification[];
+}) {
+  // Only affects mobile - list is always shown from md and up
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleAction(
+    notif: DashboardNotification,
+    action: NotificationAction,
+  ) {
     switch (action) {
       case "ACCEPT":
         return;
@@ -20,28 +33,39 @@ export default function NotificationList() {
 
   return (
     <div className="flex flex-col rounded-2xl border border-primary overflow-hidden">
-      <div className="bg-primary text-white flock-h3 p-4 text-center w-full">
+      <div className={`hidden md:block text-center ${headerStyle}`}>
         Notifications
       </div>
-      <div className="flex flex-col p-4 gap-4 w-full">
-        <Notification
-          from="Sandra Kåhre"
-          type="req"
-          onAction={(type) => handleAction(1, type)}
+      <button
+        type="button"
+        className={`md:hidden flex items-center justify-between cursor-pointer ${headerStyle}`}
+        aria-expanded={isOpen}
+        aria-controls="notification-list"
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        Notifications
+        <FaChevronDown
+          className={`size-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
-        <div className="w-full border-b border-primary/20" />
-        <Notification
-          from="Sandra Kåhre"
-          type="invite"
-          onAction={(type) => handleAction(2, type)}
-        />
-        <div className="w-full border-b border-primary/20" />
-        <Notification
-          from="Sandra Kåhre"
-          type="RSVP"
-          RSVPstatus="ACCEPTED"
-          onAction={(type) => handleAction(3, type)}
-        />
+      </button>
+      <div
+        id="notification-list"
+        className={`${isOpen ? "flex" : "hidden"} md:flex flex-col w-full`}
+      >
+        {notifications.length === 0 && (
+          <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
+            No new notifications
+          </p>
+        )}
+        {notifications.map((notif, index) => (
+          <Fragment key={notif.id}>
+            {index > 0 && <div className="w-full border-b border-primary/20" />}
+            <Notification
+              notification={notif}
+              onAction={(action) => handleAction(notif, action)}
+            />
+          </Fragment>
+        ))}
       </div>
     </div>
   );
