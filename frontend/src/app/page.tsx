@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from "react";
 import EventPreview, {
   NoNextEvent,
   NoUpcomingEvents,
@@ -5,14 +7,47 @@ import EventPreview, {
 } from "@/features/dashboard/eventPreview";
 import FriendPreview from "@/features/dashboard/friendPreview";
 import NotificationList from "@/features/dashboard/notificationList";
-import { getFriends, getNotifications } from "@/features/dashboard/lib/api";
+import { getNotifications } from "@/features/dashboard/lib/api";
 import { getUpcomingEvents } from "@/features/event/lib/api";
+import { getMyFriends } from "@/shared/lib/friends";
 
-export const dynamic = "force-dynamic";
+import type { DashboardNotification } from "@/features/dashboard/lib/types";
+import type { EventDetails } from "@/features/event/lib/types";
+import type { PublicUser } from "@/shared/types/user";
 
-export default async function Home() {
-  const [[nextEvent, ...upcomingEvents], notifications, friends] =
-    await Promise.all([getUpcomingEvents(), getNotifications(), getFriends()]);
+type DashboardData = {
+  events: EventDetails[];
+  notifications: DashboardNotification[];
+  friends: PublicUser[];
+};
+
+export default function Home() {
+  const [data, setData] = useState<DashboardData | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+
+    Promise.all([getUpcomingEvents(), getNotifications(), getMyFriends()]).then(
+      ([events, notifications, friends]) => {
+        if (!ignore) setData({ events, notifications, friends });
+      },
+    );
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  if (!data) {
+    return (
+      <main className="flex flex-1 items-center justify-center">
+        <p className="flock-body text-(--color-text-muted)">Loading…</p>
+      </main>
+    );
+  }
+
+  const { notifications, friends } = data;
+  const [nextEvent, ...upcomingEvents] = data.events;
 
   return (
     <main className="flex flex-col md:flex-row gap-4 md:gap-16 flex-1 items-center md:items-start justify-center mx-auto w-full max-w-5xl">
