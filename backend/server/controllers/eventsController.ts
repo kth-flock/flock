@@ -4,8 +4,11 @@ import { idSchema } from "@flock/shared/schemas/common";
 import {
   createEventSchema,
   updateEventSchema,
+  rsvpStatusSchema,
+  rsvpToEventSchema,
 } from "@flock/shared/schemas/event";
 import { getUserById } from "../services/usersServices";
+import { EventNotFoundError } from "../services/inviteesService";
 
 export async function getEvents(req: Request, res: Response) {
   const events = await eventsService.getEvents();
@@ -151,4 +154,46 @@ export async function deleteEvent(req: Request, res: Response) {
   await eventsService.deleteEvent(eventId);
 
   res.status(204).send();
+}
+
+export async function rsvpToEvent(req: Request, res: Response) {
+
+  try{
+  const eventId = req.params.eventId;
+  const eventIdResult = idSchema.safeParse(eventId); 
+  if (!eventIdResult.success) {
+      return res.status(400).json({
+          error: "Invalid event ID",
+      });
+  }
+  
+  const rsvpData = rsvpToEventSchema.safeParse(req.body);
+  if (!rsvpData.success) {
+    return res.status(400).json({
+      error: "Invalid rsvp data",
+    });
+  }
+
+  const rsvp = await eventsService.rsvpToEvent(req.user.id, eventIdResult.data, rsvpData.data.rsvp, rsvpData.data.rsvpComment);
+  res.status(200).json({ status: "Success", data: rsvp });
+}
+catch (error) {
+  if (error instanceof EventNotFoundError) {
+    return res.status(404).json({
+      error: "Event not found, you cannot RSVP to it",
+    });
+  }
+  if (error instanceof eventsService.InviteeNotInvitedError) {
+    return res.status(400).json({
+      error: "You are not invited to this event, you cannot RSVP to it",
+    });
+  }
+  if (error instanceof eventsService.EventEndedError) {
+    return res.status(400).json({
+      error: "Event has ended, you cannot RSVP to it",
+    });
+  }
+  throw error;
+}
+
 }
