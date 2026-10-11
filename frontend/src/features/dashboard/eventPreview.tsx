@@ -15,6 +15,15 @@ import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { EventDetails } from "@/features/event/lib/types";
 
+function ImagePlaceholder({ title, className }: 
+  { title: string; className: string; }) {
+  return (
+    <span aria-hidden className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}>
+      <span className="truncate">{title}</span>
+    </span>
+  );
+}
+
 export default function EventPreview({ event }: { event: EventDetails }) {
   return (
     <Link
@@ -22,13 +31,18 @@ export default function EventPreview({ event }: { event: EventDetails }) {
       className="block rounded-2xl shadow-md bg-white dark:bg-white/10 w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
       <div className="relative bg-neutral w-full h-36">
-        {event.imageUrl && (
+        {event.imageUrl ? (
           <Image
             src={event.imageUrl}
-            alt=""
+            alt={event.title}
             fill
             sizes="(min-width: 48rem) 32rem, 100vw"
             className="object-cover"
+          />
+        ) : (
+          <ImagePlaceholder
+            title={event.title}
+            className="text-3xl text-primary/50"
           />
         )}
       </div>
@@ -82,13 +96,18 @@ export function SmallEventPreview({ event }: { event: EventDetails }) {
       className="flex min-h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/25 hover:shadow-lg hover:scale-[0.98] transition-all"
     >
       <div className="relative w-1/2 shrink-0 bg-primary">
-        {event.imageUrl && (
+        {event.imageUrl ? (
           <Image
             src={event.imageUrl}
-            alt=""
+            alt={event.title}
             fill
             sizes="(min-width: 48rem) 16rem, 50vw"
             className="object-cover"
+          />
+        ) : (
+          <ImagePlaceholder
+            title={event.title}
+            className="text-lg text-white/70"
           />
         )}
       </div>
