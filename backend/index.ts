@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/geocode", geocodeRouter);
-app.use("/events", eventsRouter);
+app.use("/events", authMiddleware, eventsRouter);
 app.use("/me", authMiddleware, meRouter);
 app.use("/image", authMiddleware, imageRouter);
 
