@@ -6,6 +6,8 @@ import {
   ConflictError,
   InvalidCredentialsError,
 } from "../utils/errors";
+import multer from "multer";
+import { ZodError } from "zod";
 
 export function errorHandler(
   error: unknown,
@@ -13,6 +15,10 @@ export function errorHandler(
   res: Response,
   next: NextFunction,
 ) {
+  if (error instanceof multer.MulterError) {
+    return res.status(400).json({ status: "Error", error: error.message });
+  }
+
   console.log(error);
   if (error instanceof ValidationError) {
     return res.status(400).json({

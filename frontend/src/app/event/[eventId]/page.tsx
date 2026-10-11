@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import EventHeader from "@/features/event/components/eventHeader";
 import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent } from "@/features/event/lib/api";
+// import { getEventByIdFetch } from "@/shared/lib/apiFetch"; add this fetch when services are hooked to correct services
 
 export async function generateMetadata({
   params,

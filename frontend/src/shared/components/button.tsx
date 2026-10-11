@@ -34,7 +34,7 @@ type IconButtonProps = ClickableItemProps & {
 // ---------- STYLE CLASSES ----------
 
 const baseStyle =
-  "flex gap-1 items-center rounded-full cursor-pointer disabled:pointer-events-none w-fit";
+  "flex gap-1 items-center rounded-full cursor-pointer disabled:pointer-events-none w-fit h-fit";
 
 const buttonStyles: Record<ButtonVariant, string> = {
   primary:

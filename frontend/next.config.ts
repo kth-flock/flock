@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@flock/shared"],
   images: {
     // Hosts next/image may load from. Add the real image host once uploads exist. Unsplash is temp for testing.
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "*.s3.*.amazonaws.com" },
+    ],
   },
 };
 
