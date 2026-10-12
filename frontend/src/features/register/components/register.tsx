@@ -4,12 +4,11 @@ import { useState } from "react";
 
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
-import ImageUpload from "@/shared/components/imageUpload";
 import {
   RegisterUserDraft,
   registerUserFormSchema,
 } from "../types/registerTypes";
-import { registerFetch } from "@/shared/lib/apiFetch";
+import { registerFetch } from "@/shared/lib/api";
 
 export default function Register() {
   const [validationError, setValidationError] = useState<

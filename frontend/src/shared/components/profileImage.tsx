@@ -5,7 +5,7 @@ type ProfileImageProps =
   | {
       className?: string;
       shadow?: boolean;
-      profileImgSrc?: undefined;
+      profileImgSrc?: string;
       firstName: string;
       lastName: string;
     }
@@ -13,8 +13,8 @@ type ProfileImageProps =
       className?: string;
       shadow?: boolean;
       profileImgSrc: string;
-      firstName?: undefined;
-      lastName?: undefined;
+      firstName?: string;
+      lastName?: string;
     };
 
 export default function ProfileImage({
@@ -36,7 +36,7 @@ export default function ProfileImage({
             className,
           )}
         >
-          {firstName && (
+          {firstName && lastName && (
             <span className="text-[40cqw]! flock-ui-label leading-none">
               {firstName[0]}
               {lastName[0]}

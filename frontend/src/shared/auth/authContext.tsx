@@ -7,26 +7,25 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getMeFetch, type MeUser } from "@/shared/lib/apiFetch";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+import { API_BASE_URL, getCurrentUser } from "@/shared/lib/api";
+import type { PrivateUser } from "@/shared/types/user";
 
 // What every consumer can read from the “whiteboard”
 type AuthContextValue = {
-  user: MeUser | null | undefined; // undefined = still loading
+  user: PrivateUser | null | undefined; // undefined = still loading
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
-  setUser: (user: MeUser | null) => void;
+  setUser: (user: PrivateUser | null) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   // undefined = we haven't finished GET /me yet
-  const [user, setUser] = useState<MeUser | null | undefined>(undefined);
+  const [user, setUser] = useState<PrivateUser | null | undefined>(undefined);
 
   async function refresh() {
-    const me = await getMeFetch(); // MeUser | null
+    const me = await getCurrentUser(); // PrivateUser | null
     setUser(me);
   }
 

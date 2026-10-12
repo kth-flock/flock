@@ -1,7 +1,7 @@
+"use client";
+
 import { PrivateHomePage, PublicHomePage } from "@/features/home/homePage";
 import { useAuth } from "@/shared/auth/authContext";
-
-
 
 export default function Home() {
   const { user } = useAuth();

@@ -1,6 +1,6 @@
-import type { Location } from "@/shared/lib/nominatim";
+import type { Location } from "@flock/shared/schemas/geocode";
 
-export type CreateEventDraft = {
+export type EventFormValues = {
   title: string;
   description: string;
   startDate: string;
