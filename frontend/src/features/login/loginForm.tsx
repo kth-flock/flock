@@ -1,9 +1,8 @@
 "use client";
 import Input from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { loginUserSchema, LoginUser } from "@flock/shared/schemas/auth";
-import { loginFetch } from "@/shared/lib/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
 
@@ -81,7 +80,7 @@ export default function LoginForm() {
             id="email"
             name="email"
             label="Email"
-            placeholder="example@example.com"
+            placeholder="email@example.com"
             required
             autoComplete="email"
             value={email}
@@ -94,7 +93,7 @@ export default function LoginForm() {
             name="password"
             label="Password"
             type="password"
-            placeholder="********"
+            placeholder="••••••••"
             required
             autoComplete="current-password"
             value={password}

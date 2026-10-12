@@ -1,4 +1,4 @@
-import RegisterForm from "@/features/register/components/register";
+import RegisterForm from "@/features/register/components/registerForm";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
