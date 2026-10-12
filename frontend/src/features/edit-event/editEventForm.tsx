@@ -9,6 +9,7 @@ import { updateEventFetch } from "@/shared/lib/apiFetch";
 import type { Event } from "@prisma/types";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { useRouter } from "next/navigation";
+import { FaCamera } from "react-icons/fa6";
 
 // TODO: make enddate optional
 
@@ -104,7 +105,12 @@ export default function EditEventForm({ event }: { event: Event }) {
 
   return (
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
-      <ImageUpload />
+      <ImageUpload className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4">
+        <span className="flex items-center gap-4">
+          <FaCamera size={40} aria-hidden="true" />
+          <span>Upload</span>
+        </span>
+      </ImageUpload>
       <EventFormFields
         values={eventDraft}
         errors={validationError}
@@ -117,7 +123,7 @@ export default function EditEventForm({ event }: { event: Event }) {
         </p>
       )}
       <div className="w-full flex justify-between">
-        <Button type="button" variant="secondary" href={`event/${event.id}`}>
+        <Button type="button" variant="secondary" href={`/event/${event.id}`}>
           Cancel
         </Button>
         <Button type="submit">Update</Button>

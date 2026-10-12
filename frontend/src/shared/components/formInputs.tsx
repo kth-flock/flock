@@ -60,11 +60,11 @@ export function FieldWrapper({
             {icon}
           </span>
         )}
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col ">
           {label && (
             <label
               htmlFor={htmlFor}
-              className="flock-h6 font-bold! leading-none text-primary w-fit"
+              className="flock-h6 font-bold! leading-none text-primary w-fit text-nowrap"
             >
               {label}
               {required && <span className="text-error"> *</span>}
