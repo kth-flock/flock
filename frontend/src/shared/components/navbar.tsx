@@ -51,7 +51,7 @@ export default function Navbar() {
             <FaCirclePlus className={navIconStyle} />
           </Link>
           <Link
-            href="/"
+            href="/calendar"
             className={`flex h-[50%] ${navLinkStyle}`}
             aria-label="Calendar"
           >
