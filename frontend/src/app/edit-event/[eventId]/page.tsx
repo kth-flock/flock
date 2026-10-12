@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { idSchema } from "@flock/shared/schemas/common";
-import { getEvent } from "@/shared/lib/apiFetch";
+import { getEvent } from "@/shared/lib/api";
 import EditEventForm from "@/features/edit-event/editEventForm";
 
 export default async function EditEventPage({

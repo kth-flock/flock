@@ -4,9 +4,9 @@ import EventPreview, {
   NoNextEvent,
   NoUpcomingEvents,
   SmallEventPreview,
-} from "@/features/dashboard/eventPreview";
-import FriendPreview from "@/features/dashboard/friendPreview";
-import NotificationList from "@/features/dashboard/notificationList";
+} from "@/features/dashboard/components/eventPreview";
+import FriendPreview from "@/features/dashboard/components/friendPreview";
+import NotificationList from "@/features/dashboard/components/notificationList";
 import { getNotifications } from "@/features/dashboard/lib/api";
 import { getUpcomingEvents } from "@/features/event/lib/api";
 import { getMyFriends } from "@/shared/lib/friends";
@@ -38,6 +38,7 @@ export default function Home() {
     };
   }, []);
 
+  // TODO: Replace with proper loading page
   if (!data) {
     return (
       <main className="flex flex-1 items-center justify-center">

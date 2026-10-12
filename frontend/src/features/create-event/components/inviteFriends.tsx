@@ -15,12 +15,14 @@ const allSuggestions: UserSearchResult[] = [
     lastName: "Kåhre",
     id: 1,
     friendshipStatus: "FRIENDS",
+    createdAt: "",
   },
   {
     firstName: "Alice",
     lastName: "Cohen",
     id: 2,
     friendshipStatus: "NONE",
+    createdAt: "",
   },
 ];
 

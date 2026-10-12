@@ -2,14 +2,74 @@ import { Prisma } from "@prisma/types";
 
 export type ExtendedEvent = Prisma.EventGetPayload<{
   include: {
-    createdBy: true;
-    invitees: { include: { user: true } };
+    createdBy: {
+      select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        imageUrl: true;
+      };
+    };
+    invitees: {
+      include: {
+        user: {
+          select: {
+            id: true;
+            firstName: true;
+            lastName: true;
+            imageUrl: true;
+          };
+        };
+      };
+    };
     announcements: {
-      include: { user: true; comments: { include: { user: true } } };
+      include: {
+        user: {
+          select: {
+            id: true;
+            firstName: true;
+            lastName: true;
+            imageUrl: true;
+          };
+        };
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true;
+                firstName: true;
+                lastName: true;
+                imageUrl: true;
+              };
+            };
+          };
+        };
+      };
     };
   };
 }>;
 
 export type ExtendedAnnouncment = Prisma.AnnouncementGetPayload<{
-  include: { user: true; comments: { include: { user: true } } };
+  include: {
+    user: {
+      select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        imageUrl: true;
+      };
+    };
+    comments: {
+      include: {
+        user: {
+          select: {
+            id: true;
+            firstName: true;
+            lastName: true;
+            imageUrl: true;
+          };
+        };
+      };
+    };
+  };
 }>;

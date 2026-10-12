@@ -5,7 +5,7 @@ export type PublicUser = {
   id: number;
   firstName: string;
   lastName: string;
-  imageUrl?: string | null;
+  imageUrl: string | null;
   createdAt: string;
 };
 

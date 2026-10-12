@@ -1,4 +1,4 @@
-import type { Location } from "@/features/loaction/lib/geocoding";
+import type { Location } from "@flock/shared/schemas/geocode";
 
 export type EventFormValues = {
   title: string;

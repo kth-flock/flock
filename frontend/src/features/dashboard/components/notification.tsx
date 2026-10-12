@@ -2,7 +2,7 @@
 import ProfileImage from "@/shared/components/profileImage";
 import Button from "@/shared/components/button";
 import { fullName } from "@/shared/lib/user";
-import type { DashboardNotification } from "./lib/types";
+import type { DashboardNotification } from "../lib/types";
 
 export type FriendRequestActionType = "ACCEPT" | "DECLINE";
 export type NotificationAction = FriendRequestActionType | "VIEW";

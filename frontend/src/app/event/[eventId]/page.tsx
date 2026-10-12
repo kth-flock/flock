@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import EventHeader from "@/features/event/components/eventHeader";
-// import { getEventByIdFetch } from "@/shared/lib/apiFetch"; add this fetch when services are hooked to correct services
 import EventInfo from "@/features/event/components/eventInfo";
 import AnnouncementList from "@/features/event/components/announcementList";
-import { getEvent, getCurrentUser } from "@/shared/lib/apiFetch";
+import { getEvent } from "@/shared/lib/api";
 import { idSchema } from "@flock/shared/schemas/common";
 
 export async function generateMetadata({

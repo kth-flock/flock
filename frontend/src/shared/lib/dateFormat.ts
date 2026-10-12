@@ -56,7 +56,10 @@ export function formatTimeInput(date: Date | string) {
   return `${parts.hour}:${parts.minute}`;
 }
 
-export function formatDateTimeRange(startsAt: Date, endsAt: Date | null) {
+export function formatDateTimeRange(
+  startsAt: Date | string,
+  endsAt: Date | string | null,
+) {
   const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
   if (!endsAt) return start;
 
@@ -91,7 +94,10 @@ export function formatRelativeDate(iso: string) {
   return `In ${days} days`;
 }
 
-export function formatTimeRange(startsAt: Date, endsAt: Date | null) {
+export function formatTimeRange(
+  startsAt: Date | string,
+  endsAt: Date | string | null,
+) {
   const start = `${formatTime(startsAt)}`;
   if (!endsAt) return start;
 

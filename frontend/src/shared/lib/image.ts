@@ -1,4 +1,4 @@
-import { uploadImageFetch } from "./apiFetch";
+import { uploadImageFetch } from "./api";
 
 export async function uploadSelectedImage(
   imageFile: File | null,

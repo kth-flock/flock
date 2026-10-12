@@ -2,7 +2,7 @@
 import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import Notification, { NotificationAction } from "./notification";
-import type { DashboardNotification } from "./lib/types";
+import type { DashboardNotification } from "../lib/types";
 
 const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
 

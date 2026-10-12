@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 import { updateEventSchema } from "@flock/shared/schemas/event";
-import { updateEventFetch } from "@/shared/lib/apiFetch";
+import { updateEventFetch } from "@/shared/lib/api";
 import type { Event } from "@prisma/types";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ export default function EditEventForm({ event }: { event: Event }) {
     location: {
       label: event.locationName ?? "",
       lat: event.latitude ?? undefined,
-      lng: event.longitude ?? undefined,
+      lon: event.longitude ?? undefined,
     },
   });
 
@@ -81,7 +81,7 @@ export default function EditEventForm({ event }: { event: Event }) {
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
       latitude: eventDraft.location?.lat,
-      longitude: eventDraft.location?.lng,
+      longitude: eventDraft.location?.lon,
       startsAt: startsAt ?? undefined,
       endsAt: endsAt ?? undefined,
     });

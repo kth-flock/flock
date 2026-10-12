@@ -1,5 +1,7 @@
 import Button from "@/shared/components/button";
 
+// TODO: Make a shared not-found page component instead? with variable messages
+
 export default function EventNotFound() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 text-center">

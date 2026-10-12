@@ -7,13 +7,7 @@ import { createEventFetch, deleteImageFromS3Fetch } from "@/shared/lib/api";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 
-import {
-  FaHeading,
-  FaCalendarDay,
-  FaClock,
-  FaFileLines,
-  FaCamera,
-} from "react-icons/fa6";
+import { FaCamera } from "react-icons/fa6";
 import { uploadSelectedImage } from "@/shared/lib/image";
 
 // TODO: make enddate optional
@@ -84,7 +78,7 @@ export default function CreateEventForm({
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
       latitude: eventDraft.location?.lat,
-      longitude: eventDraft.location?.lng,
+      longitude: eventDraft.location?.lon,
       startsAt: startsAt ?? undefined,
       endsAt: endsAt ?? undefined,
     });

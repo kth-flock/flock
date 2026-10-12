@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
-import ImageUpload from "@/shared/components/imageUpload";
 import {
   RegisterUserDraft,
   registerUserFormSchema,
