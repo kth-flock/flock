@@ -31,8 +31,10 @@ const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
   hourCycle: "h23",
 });
 
-export const formatDate = (iso: Date | string) => dateFormatter.format(new Date(iso));
-export const formatTime = (iso: Date | string) => timeFormatter.format(new Date(iso));
+export const formatDate = (iso: Date | string) =>
+  dateFormatter.format(new Date(iso));
+export const formatTime = (iso: Date | string) =>
+  timeFormatter.format(new Date(iso));
 
 export function formatDateInput(date: Date | string) {
   const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -64,12 +66,6 @@ export function formatDateTimeRange(startsAt: Date, endsAt: Date | null) {
     : `${formatDate(endsAt)}, ${formatTime(endsAt)}`;
 
   return `${start} - ${end}`;
-}
-
-export function formatTimeRange(startsAt: string, endsAt: string | null) {
-  return endsAt && formatDate(startsAt) === formatDate(endsAt)
-    ? `${formatTime(startsAt)} - ${formatTime(endsAt)}`
-    : formatTime(startsAt);
 }
 
 const calendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
