@@ -6,6 +6,7 @@ export async function geocodeFetch<T>(
 ): Promise<T> {
   const res = await fetch(
     `${API_BASE_URL}/geocode/${path}?${new URLSearchParams(params)}`,
+    { credentials: "include" },
   );
   if (!res.ok) throw new Error(`Geocoding ${path} failed`);
 
