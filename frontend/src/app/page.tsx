@@ -1,6 +1,7 @@
 "use client";
 
-import { PrivateHomePage, PublicHomePage } from "@/features/home/homePage";
+import { PublicHomePage } from "@/features/home/publicHomePage";
+import PrivateHomePage from "@/features/home/privateHomePage";
 import { useAuth } from "@/shared/auth/authContext";
 
 export default function Home() {

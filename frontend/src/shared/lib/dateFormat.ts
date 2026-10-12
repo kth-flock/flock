@@ -78,7 +78,7 @@ const calendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RELATIVE_DAYS_AHEAD = 14;
 
-const daysFromToday = (iso: string) =>
+const daysFromToday = (iso: Date | string) =>
   Math.round(
     (Date.parse(calendarDayFormatter.format(new Date(iso))) -
       Date.parse(calendarDayFormatter.format(new Date()))) /
@@ -86,7 +86,7 @@ const daysFromToday = (iso: string) =>
   );
 
 // Relative date formatting
-export function formatRelativeDate(iso: string) {
+export function formatRelativeDate(iso: Date | string) {
   const days = daysFromToday(iso);
   if (days < 0 || days > RELATIVE_DAYS_AHEAD) return formatDate(iso);
   if (days === 0) return "Today";

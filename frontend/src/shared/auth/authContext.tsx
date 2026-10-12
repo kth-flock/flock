@@ -25,8 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PrivateUser | null | undefined>(undefined);
 
   async function refresh() {
-    const me = await getCurrentUser(); // PrivateUser | null
-    setUser(me);
+    try {
+      const me = await getCurrentUser(); // PrivateUser | null
+      setUser(me);
+    } catch {
+      // Network/CORS/extension failures — treat as logged out so UI can render
+      setUser(null);
+    }
   }
 
   // Run once when the app loads
