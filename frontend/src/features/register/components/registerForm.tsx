@@ -9,7 +9,6 @@ import {
   RegisterUserDraft,
   registerUserFormSchema,
 } from "../types/registerTypes";
-import { registerFetch } from "@/shared/lib/api";
 import { useAuth } from "@/shared/auth/authContext";
 
 export default function RegisterForm() {
@@ -139,7 +138,7 @@ export default function RegisterForm() {
           name="email"
           type="email"
           label="Email"
-          placeholder="Email"
+          placeholder="email@example.com"
           required
           autoComplete="email"
           value={registerDraft.email}
@@ -153,9 +152,9 @@ export default function RegisterForm() {
             name="password"
             type="password"
             label="Password"
-            placeholder="Password"
+            placeholder="••••••••"
             required
-            autoComplete="new-password"
+            autoComplete="off"
             value={registerDraft.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             error={validationError["password"] ?? ""}
@@ -166,9 +165,9 @@ export default function RegisterForm() {
             name="confirmPassword"
             type="password"
             label="Confirm password"
-            placeholder="Confirm password"
+            placeholder="••••••••"
             required
-            autoComplete="new-password"
+            autoComplete="off"
             value={registerDraft.confirmPassword}
             onChange={(e) =>
               handleInputChange("confirmPassword", e.target.value)
