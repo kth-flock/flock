@@ -11,9 +11,12 @@ import {
   FaHeading,
 } from "react-icons/fa6";
 
-const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
-  ssr: false,
-});
+const LocationPicker = dynamic(
+  () => import("@/features/location/components/mapInput"),
+  {
+    ssr: false,
+  },
+);
 
 export default function EventFormFields({
   values,
