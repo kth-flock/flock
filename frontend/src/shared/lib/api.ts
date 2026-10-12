@@ -124,6 +124,7 @@ export async function getAllEventsFetch() {
 export async function registerFetch(data: RegisterUser) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -139,10 +140,12 @@ export async function registerFetch(data: RegisterUser) {
   return response.json();
 }
 
-export async function getCurrentUser(): Promise<PrivateUser> {
+export async function getCurrentUser(): Promise<PrivateUser | null> {
   const res = await fetch(`${API_BASE_URL}/me`, {
     credentials: "include",
   });
+
+  if (res.status === 401) return null;
 
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
