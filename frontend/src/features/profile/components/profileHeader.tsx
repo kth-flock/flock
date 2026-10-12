@@ -1,4 +1,5 @@
 import {
+  FaRightFromBracket,
   FaUserCheck,
   FaUserClock,
   FaUserGroup,
@@ -8,6 +9,7 @@ import Button from "@/shared/components/button";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
 import type { ProfileDetails } from "../lib/types";
+import ProfileSettings from "./profileSettings";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
 type ProfileHeaderProps = {
@@ -50,6 +52,20 @@ export default function ProfileHeader({
             )}
             <h1 className="flock-h1">{fullName(profile)}</h1>
           </div>
+
+          {/* TODO: log out (POST /auth/logout) when clicked */}
+          {isOwnProfile && (
+            <div className="flex shrink-0 items-center gap-2">
+              <ProfileSettings profile={profile} />
+              <Button
+                icon={<FaRightFromBracket />}
+                iconPlacement="left"
+                className="bg-error/60 text-white hover:bg-error/40"
+              >
+                Log out
+              </Button>
+            </div>
+          )}
 
           {!isOwnProfile && (
             <div className="flex shrink-0 items-center gap-2">

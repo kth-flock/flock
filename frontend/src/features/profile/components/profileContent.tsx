@@ -59,6 +59,7 @@ type ProfileContentProps = {
   friends: PublicUser[];
   hostedEvents: EventSummary[];
   invitedEvents: InvitedEvent[];
+  className?: string;
 };
 
 export default function ProfileContent({
@@ -66,8 +67,14 @@ export default function ProfileContent({
   friends,
   hostedEvents,
   invitedEvents,
+  className = "grid-cols-2",
 }: ProfileContentProps) {
   const content = [
+    {
+      icon: <FaClock />,
+      value: formatMonthYear(profile.createdAt),
+      label: "Member since",
+    },
     {
       icon: <FaUsers />,
       value: String(friends.length),
@@ -80,11 +87,6 @@ export default function ProfileContent({
       label: "Events hosted",
     },
     {
-      icon: <FaClock />,
-      value: formatMonthYear(profile.createdAt),
-      label: "Member since",
-    },
-    {
       icon: <FaCalendarCheck />,
       value: String(invitedEvents.length),
       label: "Invitations",
@@ -92,7 +94,7 @@ export default function ProfileContent({
   ];
 
   return (
-    <section className="grid grid-cols-2 gap-6" aria-label="Profile content">
+    <section className={`grid gap-6 ${className}`} aria-label="Profile content">
       {content.map(({ icon, value, label, extra }) => (
         <div
           key={label}

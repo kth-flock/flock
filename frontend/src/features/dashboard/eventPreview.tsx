@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
-import type { EventDetails } from "@/features/event/lib/types";
+import type { EventDetails, EventSummary } from "@/features/event/lib/types";
 
 function ImagePlaceholder({ title, className }: 
   { title: string; className: string; }) {
@@ -89,7 +89,7 @@ export default function EventPreview({ event }: { event: EventDetails }) {
   );
 }
 
-export function SmallEventPreview({ event }: { event: EventDetails }) {
+export function SmallEventPreview({ event }: { event: EventSummary }) {
   return (
     <Link
       href={`/event/${event.id}`}
