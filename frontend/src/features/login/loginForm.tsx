@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { loginUserSchema, LoginUser } from "@flock/shared/schemas/auth";
 import { loginFetch } from "@/shared/lib/api";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/shared/auth/authContext";
 
 export default function LoginForm() {
   const [validationError, setValidationError] = useState<
@@ -15,6 +16,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   function validateFields(payload: LoginUser) {
     const result = loginUserSchema.safeParse(payload);
@@ -55,7 +57,7 @@ export default function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      await loginFetch(payload);
+      await login(payload);
       router.push("/");
     } catch (error) {
       setSubmitError(

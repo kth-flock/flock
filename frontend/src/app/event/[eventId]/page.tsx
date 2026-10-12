@@ -4,7 +4,9 @@ import EventInfo from "@/features/event/components/eventInfo";
 import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent, getCurrentUser } from "@/shared/lib/api";
 import { idSchema } from "@flock/shared/schemas/common";
+import { cookies } from "next/headers";
 
+/* 
 export async function generateMetadata({
   params,
 }: PageProps<"/event/[eventId]">): Promise<Metadata> {
@@ -20,34 +22,37 @@ export async function generateMetadata({
     title: event ? `${event.title} • Flock` : "Event not found • Flock",
   };
 }
+  */
 
 export default async function EventPage({
   params,
 }: PageProps<"/event/[eventId]">) {
-  // ---- GET CURRENT USER ----
-  const user = await getCurrentUser();
-  if (!user) notFound();
-  console.log(user);
+  const cookie = (await cookies()).toString();
 
-  // ---- GET EVENT ----
+  // ---- GET EVENT AND USER ----
   const { eventId } = await params;
   const parsedEventId = idSchema.safeParse(eventId);
   if (!parsedEventId.success) notFound();
-  const event = await getEvent(parsedEventId.data);
-  if (!event) notFound();
 
-  // ---- logic ----
+  const [user, event] = await Promise.all([
+    getCurrentUser(cookie),
+    getEvent(parsedEventId.data, cookie),
+  ]);
+
+  if (!event) notFound();
+  if (!user) notFound();
+
+  // ---- CHECK PERMISSIONS ----
   const isHost = event.createdById === user.id;
-  //const isHost = false;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <EventInfo event={event} isHost={isHost} />
       <AnnouncementList
         announcements={event.announcements}
         eventId={event.id}
         isHost={isHost}
       />
-    </main>
+    </div>
   );
 }

@@ -175,9 +175,12 @@ export async function loginFetch(data: LoginUser) {
   return response.data;
 }
 
-export async function getCurrentUser(): Promise<PrivateUser | null> {
+export async function getCurrentUser(
+  cookie?: string,
+): Promise<PrivateUser | null> {
   const res = await fetch(`${API_BASE_URL}/me`, {
     credentials: "include",
+    headers: cookie ? { cookie } : {},
   });
 
   if (res.status === 401) return null;
@@ -192,9 +195,13 @@ export async function getCurrentUser(): Promise<PrivateUser | null> {
   return response.data;
 }
 
-export async function getEvent(eventId: number): Promise<ExtendedEvent> {
+export async function getEvent(
+  eventId: number,
+  cookie?: string,
+): Promise<ExtendedEvent> {
   const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
     credentials: "include",
+    headers: cookie ? { cookie } : {},
   });
 
   if (!res.ok) {

@@ -10,8 +10,9 @@ import {
   registerUserFormSchema,
 } from "../types/registerTypes";
 import { registerFetch } from "@/shared/lib/api";
+import { useAuth } from "@/shared/auth/authContext";
 
-export default function Register() {
+export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
     Record<string, string>
   >({});
@@ -29,6 +30,7 @@ export default function Register() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { register } = useAuth();
 
   function handleInputChange<Key extends keyof RegisterUserDraft>(
     field: Key,
@@ -82,12 +84,13 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      await registerFetch({
+      await register({
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
         password: payload.password,
       });
+
       router.push("/");
     } catch (error) {
       setSubmitError(
