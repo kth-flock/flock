@@ -1,7 +1,7 @@
 "use client";
 import Input from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginUserSchema, LoginUser } from "@flock/shared/schemas/auth";
 import { loginFetch } from "@/shared/lib/api";
 import { useRouter } from "next/navigation";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
@@ -27,6 +28,7 @@ export default function Register() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   function handleInputChange<Key extends keyof RegisterUserDraft>(
     field: Key,
@@ -86,8 +88,7 @@ export default function Register() {
         email: payload.email,
         password: payload.password,
       });
-
-      //TODO: what happens when you successfully register
+      router.push("/");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError

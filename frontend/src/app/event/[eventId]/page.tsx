@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EventInfo from "@/features/event/components/eventInfo";
 import AnnouncementList from "@/features/event/components/announcementList";
-import { getEvent } from "@/shared/lib/api";
+import { getEvent, getCurrentUser } from "@/shared/lib/api";
 import { idSchema } from "@flock/shared/schemas/common";
 
 export async function generateMetadata({
@@ -24,6 +24,11 @@ export async function generateMetadata({
 export default async function EventPage({
   params,
 }: PageProps<"/event/[eventId]">) {
+  // ---- GET CURRENT USER ----
+  const user = await getCurrentUser();
+  if (!user) notFound();
+  console.log(user);
+
   // ---- GET EVENT ----
   const { eventId } = await params;
   const parsedEventId = idSchema.safeParse(eventId);
@@ -31,13 +36,9 @@ export default async function EventPage({
   const event = await getEvent(parsedEventId.data);
   if (!event) notFound();
 
-  // ---- GET CURRENT USER ----
-  //const user = await getCurrentUser();
-  //if (!user) notFound();
-
   // ---- logic ----
-  //const isHost = event.createdById === user.id;
-  const isHost = false;
+  const isHost = event.createdById === user.id;
+  //const isHost = false;
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
