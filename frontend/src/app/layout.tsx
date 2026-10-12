@@ -26,17 +26,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-    <body className="flex flex-col px-6 md:px-24 items-center">
-      <AuthProvider>
-      <div className="flex min-h-dvh w-full flex-col">
-        <Navbar />
-        <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
-          {children}
-        </main>
-      </div>
-      <Footer />   {/* sibling after the min-h-dvh div */}
-      </AuthProvider>
-    </body>
+      <body className="flex flex-col px-6 md:px-24 items-center">
+        <AuthProvider>
+          <div className="flex min-h-dvh w-full flex-col">
+            <Navbar />
+            <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
+              {children}
+            </main>
+          </div>
+          <Footer /> {/* sibling after the min-h-dvh div */}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

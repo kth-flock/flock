@@ -7,13 +7,22 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { API_BASE_URL, getCurrentUser } from "@/shared/lib/api";
+import {
+  API_BASE_URL,
+  getCurrentUser,
+  loginFetch,
+  registerFetch,
+} from "@/shared/lib/api";
 import type { PrivateUser } from "@/shared/types/user";
+import { LoginUser, RegisterUser } from "@flock/shared/schemas/auth";
+import { useRouter } from "next/navigation";
 
 // What every consumer can read from the “whiteboard”
 type AuthContextValue = {
   user: PrivateUser | null | undefined; // undefined = still loading
   refresh: () => Promise<void>;
+  register: (data: RegisterUser) => Promise<void>;
+  login: (data: LoginUser) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: PrivateUser | null) => void;
 };
@@ -23,6 +32,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   // undefined = we haven't finished GET /me yet
   const [user, setUser] = useState<PrivateUser | null | undefined>(undefined);
+  const router = useRouter();
 
   async function refresh() {
     try {
@@ -47,8 +57,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
+  async function login(data: LoginUser) {
+    const { user } = await loginFetch(data);
+    setUser(user);
+    router.refresh();
+  }
+
+  async function register(data: RegisterUser) {
+    const { user } = await registerFetch(data);
+    setUser(user);
+    router.refresh();
+  }
+
   return (
-    <AuthContext.Provider value={{ user, refresh, logout, setUser }}>
+    <AuthContext.Provider
+      value={{ user, refresh, register, login, logout, setUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
