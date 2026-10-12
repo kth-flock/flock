@@ -1,4 +1,4 @@
-import { RegisterUser } from "@flock/shared/schemas/auth";
+import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
 import type {
   CreateEventData,
   UpdateEventData,
@@ -135,6 +135,24 @@ export async function registerFetch(data: RegisterUser) {
     const error = await response.json();
 
     throw new Error(error.error ?? "Couldn't register your account.");
+  }
+
+  return response.json();
+}
+
+export async function loginFetch(data: LoginUser) {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+
+    throw new Error(error.error ?? "Couldn't login");
   }
 
   return response.json();
