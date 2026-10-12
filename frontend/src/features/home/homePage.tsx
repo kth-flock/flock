@@ -5,9 +5,8 @@ import NotificationList from "../dashboard/notificationList"
 import FriendPreview from "../dashboard/friendPreview"
 import Image from "next/image"
 import Button from "@/shared/components/button";
-import { useAuth } from "@/shared/auth/authContext";
 
-function PublicHomePage(){
+export function PublicHomePage(){
     return (
         <>
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#8bc596_0%,#ffffff_80%)]" aria-hidden />
@@ -36,7 +35,7 @@ function PublicHomePage(){
     )
 }
 
-function PrivateHomePage(){ //TODO: this prob will come from the dashboard branch so i wont touch it for now //Elinor
+export function PrivateHomePage(){ //TODO: this prob will come from the dashboard branch so i wont touch it for now //Elinor
     return (
         <main className="flex flex-col md:flex-row gap-4 md:gap-16 flex-1 items-center md:items-start justify-center w-full max-w-6xl">
         <div className="md:sticky md:top-24 w-full flex flex-col gap-4 md:gap-12 md:order-last">
@@ -54,13 +53,4 @@ function PrivateHomePage(){ //TODO: this prob will come from the dashboard branc
         </div>
       </main>
     )
-}
-
-
-
-export default function HomePage(){
-    const { user } = useAuth();
-    if (user === undefined) return null;
-    if (user === null) return <PublicHomePage />;
-    return <PrivateHomePage />;
 }

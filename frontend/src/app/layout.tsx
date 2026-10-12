@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <AuthProvider>
       <div className="flex min-h-dvh w-full flex-col">
         <Navbar />
-        <main className="flex flex-1 flex-col items-center justify-center w-full">
+        <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
           {children}
         </main>
       </div>
