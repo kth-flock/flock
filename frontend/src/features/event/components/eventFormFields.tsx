@@ -34,15 +34,14 @@ export default function EventFormFields({
   ) => void;
   onLocationChange: (location: EventFormValues["location"]) => void;
 }) {
-  const [showEnd, setShowEnd] = useState(Boolean(values.endDate));
+  const [showEndFields, setShowEndFields] = useState(Boolean(values.endDate));
 
-  function toggleEnd() {
-    if (showEnd) {
-      // closing removes the end date so it isn't submitted by accident
+  function toggleEndFields() {
+    if (showEndFields) {
       onChange("endDate", "");
       onChange("endTime", "");
     }
-    setShowEnd(!showEnd);
+    setShowEndFields(!showEndFields);
   }
 
   return (
@@ -83,7 +82,7 @@ export default function EventFormFields({
         error={errors["startDate"] ?? ""}
       />
 
-      {showEnd && (
+      {showEndFields && (
         <>
           <Input
             icon={<FaCalendarDay aria-hidden />}
@@ -106,8 +105,13 @@ export default function EventFormFields({
       )}
 
       <div className="md:col-span-2">
-        <Button type="button" variant="tertiary" size="sm" onClick={toggleEnd}>
-          {showEnd ? "Remove end date" : "Add end date"}
+        <Button
+          type="button"
+          variant="tertiary"
+          size="sm"
+          onClick={toggleEndFields}
+        >
+          {showEndFields ? "Remove end date" : "Add end date"}
         </Button>
       </div>
 
