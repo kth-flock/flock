@@ -138,6 +138,31 @@ npx prisma generate
 
 to get your local database up to date
 
+## Production Database in Neon
+
+### Point db to production
+1. Go to neon flock project --> connect
+2. turn connection pooling OFF
+3. copy the URL from .env section
+4. Paste it into your local .env, replacing your local db connection string
+5. Run: 
+
+```bash
+npx prisma migrate deploy
+```
+
+
+### View database tables in Neon
+Go to the neon flock project --> Postgress database --> Tables
+
+### When someone else has updated a schema
+
+If someone else has updated a schema, you need to run
+
+```bash
+npx prisma migrate deploy
+```
+
 ### Prisma Studio
 
 If you want a visual representation of the database and tables, open prisma studio:

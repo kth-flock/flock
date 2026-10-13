@@ -17,11 +17,11 @@ export async function register(req: Request, res: Response) {
   const user = await authService.registerUser(registerRequest);
 
   //generate token
-  const token = generateToken(user.id, res);
+  generateToken(user.id, res);
 
   // Don't return the password hash to the client
   const { pwdHash: _, ...safeUser } = user;
-  res.status(201).json({ status: "Success", data: { safeUser, token } });
+  res.status(201).json({ status: "Success", data: { user: safeUser } });
 }
 
 export async function login(req: Request, res: Response) {
@@ -33,10 +33,10 @@ export async function login(req: Request, res: Response) {
   const user = await authService.loginUser(loginRequest);
 
   //generate token
-  const token = generateToken(user.id, res);
+  generateToken(user.id, res);
   const { pwdHash: _, ...safeUser } = user;
 
-  res.status(200).json({ status: "Success", data: { user: safeUser, token } });
+  res.status(200).json({ status: "Success", data: { user: safeUser } });
 }
 
 export function logout(req: Request, res: Response) {

@@ -2,7 +2,6 @@ import Link from "next/link";
 
 const footerLinks = [
   { href: "/", label: "Home" },
-  { href: "/create-event", label: "Create event" },
   { href: "/about", label: "About" },
   { href: "/terms", label: "Terms of Service" },
 ];
@@ -21,7 +20,10 @@ export default function Footer() {
             <ul className="flex flex-wrap gap-x-6 gap-y-2">
               {footerLinks.map(({ href, label }) => (
                 <li key={href}>
-                  <Link href={href} className="flock-body-sm text-primary underline-offset-4 hover:underline">
+                  <Link
+                    href={href}
+                    className="flock-body-sm text-primary underline-offset-4 hover:underline"
+                  >
                     {label}
                   </Link>
                 </li>
@@ -31,7 +33,8 @@ export default function Footer() {
         </div>
 
         <p className="flock-caption">
-          © {new Date().getFullYear()} Flock. A project for <b>DH2643 Advanced Interaction Programming</b>.
+          © {new Date().getFullYear()} Flock. A project for{" "}
+          <b>DH2643 Advanced Interaction Programming</b>.
         </p>
       </div>
     </footer>

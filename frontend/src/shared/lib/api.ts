@@ -1,4 +1,4 @@
-import { RegisterUser } from "@flock/shared/schemas/auth";
+import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
 import type {
   CreateEventData,
   UpdateEventData,
@@ -14,6 +14,7 @@ export async function createEventFetch(
 ): Promise<{ id: number }> {
   const res = await fetch(`${API_BASE_URL}/events`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
@@ -33,6 +34,7 @@ export async function updateEventFetch(
 ): Promise<{ id: number }> {
   const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
     method: "PATCH",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
@@ -100,7 +102,9 @@ export async function deleteImageFromS3Fetch(imageUrl: string) {
 export async function getEventByIdFetch(
   eventId: string,
 ): Promise<ExtendedEvent> {
-  const res = await fetch(`${API_BASE_URL}/events/${eventId}`);
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    credentials: "include",
+  });
 
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
@@ -111,7 +115,9 @@ export async function getEventByIdFetch(
 }
 
 export async function getAllEventsFetch() {
-  const res = await fetch(`${API_BASE_URL}/events/`);
+  const res = await fetch(`${API_BASE_URL}/events/`, {
+    credentials: "include",
+  });
 
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
@@ -122,7 +128,7 @@ export async function getAllEventsFetch() {
 }
 
 export async function registerFetch(data: RegisterUser) {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -131,18 +137,50 @@ export async function registerFetch(data: RegisterUser) {
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    const error = await response.json();
+  if (!res.ok) {
+    const error = await res.json();
 
     throw new Error(error.error ?? "Couldn't register your account.");
   }
 
-  return response.json();
+  const response: {
+    status: string;
+    data: { user: PrivateUser };
+  } = await res.json();
+
+  return response.data;
 }
 
-export async function getCurrentUser(): Promise<PrivateUser | null> {
+export async function loginFetch(data: LoginUser) {
+  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+
+    throw new Error(error.error ?? "Couldn't login");
+  }
+
+  const response: {
+    status: string;
+    data: { user: PrivateUser };
+  } = await res.json();
+
+  return response.data;
+}
+
+export async function getCurrentUser(
+  cookie?: string,
+): Promise<PrivateUser | null> {
   const res = await fetch(`${API_BASE_URL}/me`, {
     credentials: "include",
+    headers: cookie ? { cookie } : {},
   });
 
   if (res.status === 401) return null;
@@ -157,8 +195,14 @@ export async function getCurrentUser(): Promise<PrivateUser | null> {
   return response.data;
 }
 
-export async function getEvent(eventId: number): Promise<ExtendedEvent> {
-  const res = await fetch(`${API_BASE_URL}/events/${eventId}`);
+export async function getEvent(
+  eventId: number,
+  cookie?: string,
+): Promise<ExtendedEvent> {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    credentials: "include",
+    headers: cookie ? { cookie } : {},
+  });
 
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
