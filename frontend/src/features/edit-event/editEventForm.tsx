@@ -135,7 +135,7 @@ export default function EditEventForm({ event }: { event: Event }) {
             className="self-center hover:bg-primary-light"
             onClick={() => setIsEditingImage(false)}
           >
-            Cancel image editiing
+            Cancel image editing
           </Button>
         </div>
       ) : (
