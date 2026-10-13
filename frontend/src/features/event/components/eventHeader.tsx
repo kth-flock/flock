@@ -65,7 +65,7 @@ export default function EventHeader({
               {[...event.invitees].slice(0, 3)?.map(({ user }) => (
                 <div
                   key={user.id}
-                  className="-mr-3 relative rounded-full shadow-sm"
+                  className="not-last:-mr-3 relative rounded-full shadow-sm"
                 >
                   <ProfileImage
                     profileImgSrc={user.imageUrl ?? ""}
