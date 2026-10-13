@@ -3,7 +3,7 @@ import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
-import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
+import { FaPenToSquare } from "react-icons/fa6";
 import InviteButton from "./inviteModal";
 
 export default function EventInfo({
