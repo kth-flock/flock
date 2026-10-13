@@ -9,8 +9,13 @@ import type { ProfileDetails } from "../lib/types";
 
 // TODO: none of the forms are connected to the backend yet.
 // - Picture: upload with uploadImageFetch(file, "profiles"), then PATCH /me { imageUrl }
+// - Name: PATCH /me { firstName, lastName }
 // - Email and password: the backend has no endpoints for these yet
 // - Delete account: DELETE /me, then send the user to the start page
+
+const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";
+// Lines the small buttons up with the middle of the inputs beside them
+const rowButtonStyle = "shrink-0 md:mt-3.5";
 
 function SettingsSection({
   title,
@@ -20,8 +25,8 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-3 border-t border-primary/20 pt-6">
-      <h3 className="flock-h4 text-primary">{title}</h3>
+    <section className="flex flex-col gap-2 border-t border-primary/20 pt-4">
+      <h3 className="flock-h5 text-primary">{title}</h3>
       {children}
     </section>
   );
@@ -35,6 +40,8 @@ export default function ProfileSettings({
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const [picture, setPicture] = useState<File | null>(null);
+  const [firstName, setFirstName] = useState(profile.firstName);
+  const [lastName, setLastName] = useState(profile.lastName);
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -43,6 +50,10 @@ export default function ProfileSettings({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   function handlePictureSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
+  function handleNameSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
   }
 
@@ -73,14 +84,14 @@ export default function ProfileSettings({
       <dialog
         ref={dialogRef}
         aria-labelledby="settings-title"
-        className="m-auto w-full max-w-lg rounded-3xl bg-background p-6 text-foreground shadow-lg backdrop:bg-black/50 md:p-8"
+        className="m-auto w-full max-w-2xl rounded-3xl bg-background p-6 text-foreground shadow-lg backdrop:bg-black/50 md:p-8"
         onClose={() => setIsConfirmingDelete(false)}
         // Clicks on the backdrop land on the dialog element itself
         onClick={(e) => {
           if (e.target === e.currentTarget) e.currentTarget.close();
         }}
       >
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <h2 id="settings-title" className="flock-h2 text-primary">
               Settings
@@ -116,24 +127,67 @@ export default function ProfileSettings({
                   <FaCamera className="size-6" aria-hidden />
                 )}
               </ImageUpload>
-              <Button type="submit" variant="secondary" disabled={!picture}>
+              <Button
+                type="submit"
+                variant="secondary"
+                size="sm"
+                disabled={!picture}
+              >
                 Save picture
               </Button>
             </form>
           </SettingsSection>
 
+          <SettingsSection title="Name">
+            <form className={formRowStyle} onSubmit={handleNameSubmit}>
+              <Input
+                id="settings-first-name"
+                aria-label="First name"
+                placeholder="First name"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <Input
+                id="settings-last-name"
+                aria-label="Last name"
+                placeholder="Last name"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+              <Button
+                type="submit"
+                variant="secondary"
+                size="sm"
+                className={rowButtonStyle}
+                disabled={
+                  firstName === profile.firstName &&
+                  lastName === profile.lastName
+                }
+              >
+                Save name
+              </Button>
+            </form>
+          </SettingsSection>
+
           <SettingsSection title="Email">
-            <form className="flex flex-col gap-3" onSubmit={handleEmailSubmit}>
+            <form className={formRowStyle} onSubmit={handleEmailSubmit}>
               <Input
                 id="settings-email"
                 type="email"
-                label="New email"
-                placeholder="name@example.com"
+                aria-label="New email"
+                placeholder="New email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <Button type="submit" variant="secondary">
+              <Button
+                type="submit"
+                variant="secondary"
+                size="sm"
+                className={rowButtonStyle}
+              >
                 Update email
               </Button>
             </form>
@@ -141,40 +195,47 @@ export default function ProfileSettings({
 
           <SettingsSection title="Password">
             <form
-              className="flex flex-col gap-3"
+              className="flex flex-col gap-2"
               onSubmit={handlePasswordSubmit}
             >
               <Input
                 id="settings-current-password"
                 type="password"
-                label="Current password"
+                aria-label="Current password"
                 placeholder="Current password"
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
               />
-              <Input
-                id="settings-new-password"
-                type="password"
-                label="New password"
-                placeholder="New password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <Input
-                id="settings-confirm-password"
-                type="password"
-                label="Confirm new password"
-                placeholder="Confirm new password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                error={passwordError}
-              />
-              <Button type="submit" variant="secondary">
-                Update password
-              </Button>
+              <div className={formRowStyle}>
+                <Input
+                  id="settings-new-password"
+                  type="password"
+                  aria-label="New password"
+                  placeholder="New password"
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <Input
+                  id="settings-confirm-password"
+                  type="password"
+                  aria-label="Confirm new password"
+                  placeholder="Confirm new password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  error={passwordError}
+                />
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  className={rowButtonStyle}
+                >
+                  Update password
+                </Button>
+              </div>
             </form>
           </SettingsSection>
 
@@ -186,6 +247,7 @@ export default function ProfileSettings({
             {isConfirmingDelete ? (
               <div className="flex flex-wrap items-center gap-2">
                 <Button
+                  size="sm"
                   icon={<FaTrash />}
                   iconPlacement="left"
                   className="bg-error text-white hover:bg-error-dark"
@@ -195,6 +257,7 @@ export default function ProfileSettings({
                 </Button>
                 <Button
                   variant="tertiary"
+                  size="sm"
                   onClick={() => setIsConfirmingDelete(false)}
                 >
                   Cancel
@@ -203,6 +266,7 @@ export default function ProfileSettings({
             ) : (
               <Button
                 variant="secondary"
+                size="sm"
                 icon={<FaTrash />}
                 iconPlacement="left"
                 className="border-error text-error hover:border-error-dark hover:bg-error/10 hover:text-error-dark"
