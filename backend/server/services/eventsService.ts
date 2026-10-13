@@ -6,12 +6,18 @@ import {
   UpdateEventData,
   RsvpStatus,
 } from "@flock/shared/schemas/event";
-import { NotFoundError, ForbiddenError, ValidationError } from "../utils/errors";
+import {
+  NotFoundError,
+  ForbiddenError,
+  ValidationError,
+} from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
+import { withSignedImageUrl, withSignedEventUserImages } from "./imageService";
 
 export async function getEvents() {
   const events = await prisma.event.findMany();
-  return events;
+
+  return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
 
 export async function getEventById(eventId: EventId, userId: UserId) {
@@ -59,14 +65,18 @@ export async function getEventById(eventId: EventId, userId: UserId) {
     throw new ForbiddenError("User is not authorized to view this event");
   }
 
+  const eventWithImage = await withSignedEventUserImages(event);
+
   if (isHost) {
-    return event;
+    return eventWithImage;
   }
 
   //If not host return data without rsvpComments
   return {
-    ...event,
-    invitees: event.invitees.map(({ rsvpComment, ...invitee }) => invitee),
+    ...eventWithImage,
+    invitees: eventWithImage.invitees.map(
+      ({ rsvpComment, ...invitee }) => invitee,
+    ),
   };
 }
 
@@ -74,7 +84,7 @@ export async function getCreatedEvents(userId: UserId) {
   const events = await prisma.event.findMany({
     where: { createdById: userId },
   });
-  return events;
+  return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
 
 export async function getInvitedEvents(userId: UserId) {
@@ -93,14 +103,14 @@ export async function getInvitedEvents(userId: UserId) {
       },
     },
   });
-  return events;
+  return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
 
 export async function createNewEvent(eventData: CreateEventData) {
-  const events = await prisma.event.create({
+  const event = await prisma.event.create({
     data: eventData,
   });
-  return events;
+  return event;
 }
 
 export async function updateEventInfo(
@@ -131,6 +141,7 @@ export async function updateEventInfo(
     },
     data: eventData,
   });
+
   return newEvent;
 }
 
@@ -194,4 +205,3 @@ export async function rsvpToEvent(
     },
   });
 }
-
