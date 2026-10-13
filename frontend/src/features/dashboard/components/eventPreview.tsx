@@ -14,6 +14,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { ExtendedEvent } from "@/shared/types/event";
+import dayjs from "dayjs";
 
 function ImagePlaceholder({
   title,
@@ -76,7 +77,7 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
           >
             <FaCalendar />
             <time
-              dateTime={event.startsAt.toISOString()}
+              dateTime={dayjs(event.startsAt).toISOString()}
               title={formatDate(event.startsAt)}
             >
               {formatRelativeDate(event.startsAt)}

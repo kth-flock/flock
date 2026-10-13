@@ -9,6 +9,7 @@ import EventFormFields from "@/features/event/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
 import { uploadSelectedImage } from "@/shared/lib/image";
+import { combineDateTime } from "@/shared/lib/dateFormat";
 
 // TODO: make enddate optional
 
@@ -57,11 +58,6 @@ export default function CreateEventForm({
 
     setValidationError({});
     return result.data;
-  }
-
-  function combineDateTime(date: string, time: string): Date | null {
-    if (!date || !time) return null;
-    return new Date(`${date}T${time}`);
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {

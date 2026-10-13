@@ -3,8 +3,9 @@ import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
-import { FaPenToSquare } from "react-icons/fa6";
 import InviteButton from "./inviteModal";
+import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
+import dayjs from "dayjs";
 
 export default function EventInfo({
   event,
@@ -13,8 +14,8 @@ export default function EventInfo({
   event: ExtendedEvent;
   isHost: boolean;
 }) {
-  const eventEnd = new Date(event.endsAt ?? event.startsAt).getTime();
-  const hasPassed = Date.now() > eventEnd;
+  const eventEnd = dayjs(event.endsAt ?? event.startsAt);
+  const hasPassed = dayjs().isAfter(eventEnd);
 
   return (
     <div className="flex flex-col gap-6">

@@ -10,6 +10,7 @@ import type { Event } from "@prisma/types";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { useRouter } from "next/navigation";
 import { FaCamera } from "react-icons/fa6";
+import { combineDateTime } from "@/shared/lib/dateFormat";
 
 // TODO: make enddate optional
 
@@ -60,11 +61,6 @@ export default function EditEventForm({ event }: { event: Event }) {
 
     setValidationError({});
     return result.data;
-  }
-
-  function combineDateTime(date: string, time: string): Date | null {
-    if (!date || !time) return null;
-    return new Date(`${date}T${time}`);
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {

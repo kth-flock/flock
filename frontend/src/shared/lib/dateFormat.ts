@@ -1,143 +1,79 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import "dayjs/locale/en-gb";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("en-gb");
 // Formatting runs on the server, so pin the time zone instead of using the server's
-// TODO: check how server saves time in regards to timezone etc. Convert to local timezone?
+dayjs.tz.setDefault("Europe/Stockholm");
 
-const TIME_ZONE = "Europe/Stockholm";
+type DateInput = Date | string;
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
+const inZone = (d: DateInput) => dayjs.tz(d);
 
-const timeFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
-  hour: "2-digit",
-  minute: "2-digit",
-});
+export const formatDate = (d: DateInput) => inZone(d).format("ddd D MMM YYYY");
+export const formatTime = (d: DateInput) => inZone(d).format("HH:mm");
+export const formatDateInput = (d: DateInput) => inZone(d).format("YYYY-MM-DD");
+export const formatTimeInput = formatTime;
 
-const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
+const formatDateTime = (d: DateInput) => `${formatDate(d)}, ${formatTime(d)}`;
 
-const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-});
+const range = (
+  start: DateInput,
+  end: DateInput | null,
+  format: (d: DateInput) => string,
+) => (end ? `${format(start)} - ${format(end)}` : format(start));
 
-export const formatDate = (iso: Date | string) =>
-  dateFormatter.format(new Date(iso));
-export const formatTime = (iso: Date | string) =>
-  timeFormatter.format(new Date(iso));
+export const formatTimeRange = (start: DateInput, end: DateInput | null) =>
+  range(start, end, formatTime);
 
-export function formatDateInput(date: Date | string) {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  const parts = Object.fromEntries(
-    dateInputFormatter
-      .formatToParts(dateObj)
-      .map(({ type, value }) => [type, value]),
-  );
-  return `${parts.year}-${parts.month}-${parts.day}`;
+export function formatDateTimeRange(start: DateInput, end: DateInput | null) {
+  if (!end || !inZone(start).isSame(inZone(end), "day")) {
+    return range(start, end, formatDateTime);
+  }
+  return `${formatDateTime(start)} - ${formatTime(end)}`;
 }
 
-export function formatTimeInput(date: Date | string) {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  const parts = Object.fromEntries(
-    timeInputFormatter
-      .formatToParts(dateObj)
-      .map(({ type, value }) => [type, value]),
-  );
-  return `${parts.hour}:${parts.minute}`;
-}
-
-export function formatDateTimeRange(
-  startsAt: Date | string,
-  endsAt: Date | string | null,
-) {
-  const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
-  if (!endsAt) return start;
-
-  const sameDay = formatDate(startsAt) === formatDate(endsAt);
-  const end = sameDay
-    ? formatTime(endsAt)
-    : `${formatDate(endsAt)}, ${formatTime(endsAt)}`;
-
-  return `${start} - ${end}`;
-}
-
-const calendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: TIME_ZONE,
-});
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RELATIVE_DAYS_AHEAD = 14;
 
-const daysFromToday = (iso: Date | string) =>
-  Math.round(
-    (Date.parse(calendarDayFormatter.format(new Date(iso))) -
-      Date.parse(calendarDayFormatter.format(new Date()))) /
-      MS_PER_DAY,
-  );
+const daysFromToday = (d: DateInput) =>
+  inZone(d).startOf("day").diff(inZone(new Date()).startOf("day"), "day");
 
-// Relative date formatting
-export function formatRelativeDate(iso: Date | string) {
-  const days = daysFromToday(iso);
-  if (days < 0 || days > RELATIVE_DAYS_AHEAD) return formatDate(iso);
+export function formatRelativeDate(d: DateInput) {
+  const days = daysFromToday(d);
+  if (days < 0 || days > RELATIVE_DAYS_AHEAD) return formatDate(d);
   if (days === 0) return "Today";
   if (days === 1) return "Tomorrow";
   return `In ${days} days`;
 }
 
-export function formatTimeRange(
-  startsAt: Date | string,
-  endsAt: Date | string | null,
-) {
-  const start = `${formatTime(startsAt)}`;
-  if (!endsAt) return start;
+const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? "" : "s"}`;
 
-  return `${start} - ${formatTime(endsAt)}`;
-}
-
-export function getRelativeDatetime(datetime: Date) {
-  const eventDate = new Date(datetime);
-  const today = new Date();
-  const diffSeconds = Math.round(
-    (eventDate.getTime() - today.getTime()) / 1000,
-  );
+export function getRelativeDatetime(datetime: DateInput) {
+  const diffSeconds = Math.round(dayjs(datetime).diff(dayjs(), "second", true));
   const diffMinutes = Math.round(diffSeconds / 60);
   const diffHours = Math.round(diffMinutes / 60);
   const diffDays = Math.round(diffHours / 24);
 
   if (diffSeconds > 0) {
-    if (diffHours < 24) {
-      return "today";
-    }
-    if (diffHours < 48) {
-      return "tomorrow";
-    }
-    if (diffDays < 4) {
-      return `in ${diffDays} days`;
-    }
+    if (diffHours < 24) return "today";
+    if (diffHours < 48) return "tomorrow";
+    if (diffDays < 4) return `in ${diffDays} days`;
   }
   if (diffSeconds < 0) {
-    if (diffSeconds > -60) {
-      return "just now";
-    }
-    if (diffMinutes > -60) {
-      return `${Math.abs(diffMinutes)} minute${diffMinutes !== -1 ? "s" : ""} ago`;
-    }
-    if (diffHours > -24) {
-      return `${Math.abs(diffHours)} hour${diffHours !== -1 ? "s" : ""} ago`;
-    }
-    if (diffDays > -7) {
-      return `${Math.abs(diffDays)} day${diffDays !== -1 ? "s" : ""} ago`;
-    }
+    if (diffSeconds > -60) return "just now";
+    if (diffMinutes > -60)
+      return `${plural(Math.abs(diffMinutes), "minute")} ago`;
+    if (diffHours > -24) return `${plural(Math.abs(diffHours), "hour")} ago`;
+    if (diffDays > -7) return `${plural(Math.abs(diffDays), "day")} ago`;
   }
-  return formatDate(eventDate);
+  return formatDate(datetime);
+}
+
+export function combineDateTime(date: string, time: string): Date | null {
+  if (!date || !time) return null;
+  const parsed = dayjs.tz(`${date} ${time}`); // uses tz.setDefault
+  return parsed.isValid() ? parsed.toDate() : null;
 }

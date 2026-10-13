@@ -10,6 +10,7 @@ import Comment from "./comment";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TextArea } from "@/shared/components/formInputs";
+import dayjs from "dayjs";
 
 export default function Announcement({
   announcement,
@@ -35,8 +36,8 @@ export default function Announcement({
   }
 
   // Oldest first, replies read top to bottom
-  const comments = [...announcement.comments].sort(
-    (a, b) => Date.parse(String(b.createdAt)) - Date.parse(String(a.createdAt)),
+  const comments = [...announcement.comments].sort((a, b) =>
+    dayjs(a.createdAt).diff(b.createdAt),
   );
 
   return (

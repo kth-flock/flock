@@ -6,6 +6,7 @@ import { ExtendedAnnouncment } from "@/shared/types/event";
 import Button from "@/shared/components/button";
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 export default function AnnouncementList({
   announcements,
@@ -18,8 +19,8 @@ export default function AnnouncementList({
 }) {
   const [isAdding, setIsAdding] = useState(false);
 
-  const sorted = [...announcements].sort(
-    (a, b) => Date.parse(String(b.createdAt)) - Date.parse(String(a.createdAt)),
+  const sorted = [...announcements].sort((a, b) =>
+    dayjs(b.createdAt).diff(a.createdAt),
   );
 
   return (

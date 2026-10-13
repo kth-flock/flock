@@ -1,7 +1,13 @@
 import ProfileImage from "@/shared/components/profileImage";
-import { formatDate, formatTime } from "@/shared/lib/dateFormat";
+import {
+  formatDate,
+  formatTime,
+  getRelativeDatetime,
+} from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
+import type { User } from "@prisma/types";
+import dayjs from "dayjs";
 
 type PostMetaProps = {
   user: PublicUser;
@@ -17,8 +23,13 @@ export default function PostMeta({ user, createdAt }: PostMetaProps) {
         profileImgSrc={user.imageUrl ?? ""}
       />
       <span className="flock-ui-label">{fullName(user)}</span>
-      <time dateTime={String(createdAt)} className="flock-caption">
-        {formatDate(createdAt)}, {formatTime(createdAt)}
+      <time
+        dateTime={dayjs(createdAt).toISOString()}
+        title={`${formatDate(createdAt)}, ${formatTime(createdAt)}`}
+        suppressHydrationWarning
+        className="flock-caption"
+      >
+        {getRelativeDatetime(createdAt)}
       </time>
     </div>
   );

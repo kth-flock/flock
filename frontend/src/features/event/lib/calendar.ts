@@ -1,19 +1,21 @@
-import { ExtendedEvent } from "@/shared/types/event";
-const DEFAULT_DURATION_MS = 60 * 60 * 1000;
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import type { ExtendedEvent } from "@/shared/types/event";
+
+dayjs.extend(utc);
+
+const DEFAULT_DURATION_HOURS = 1;
 
 // Google Calendar wants UTC timestamps like 20260929T180000Z
-const toCalendarDate = (date: Date) =>
-  date
-    .toISOString()
-    .replace(/[-:]/g, "")
-    .replace(/\.\d{3}/, "");
+const toCalendarDate = (date: dayjs.Dayjs) =>
+  date.utc().format("YYYYMMDD[T]HHmmss[Z]");
 
 export function getGoogleCalendarUrl(event: ExtendedEvent) {
-  const start = new Date(event.startsAt);
+  const start = dayjs(event.startsAt);
   // Events without an end time get a one hour slot
   const end = event.endsAt
-    ? new Date(event.endsAt)
-    : new Date(start.getTime() + DEFAULT_DURATION_MS);
+    ? dayjs(event.endsAt)
+    : start.add(DEFAULT_DURATION_HOURS, "hour");
 
   const params = new URLSearchParams({
     action: "TEMPLATE",

@@ -11,6 +11,7 @@ import {
 import { getGoogleCalendarUrl } from "../lib/calendar";
 import { getGoogleMapsUrl } from "../lib/googleMaps";
 import { getRelativeDatetime, formatTimeRange } from "@/shared/lib/dateFormat";
+import dayjs from "dayjs";
 
 export default function EventDetails({
   event,
@@ -33,7 +34,7 @@ export default function EventDetails({
           </p>
         )}
         <time
-          dateTime={String(event.startsAt)}
+          dateTime={dayjs(event.startsAt).toISOString()}
           className="flex gap-4 items-center"
         >
           <p className="flock-lead flex items-center gap-2 text-foreground/80 capitalize">
