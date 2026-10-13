@@ -132,7 +132,7 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
         </div>
       </div>
       <div className="w-full flex justify-between">
-        <Button type="button" variant="secondary" href="/event">
+        <Button type="button" variant="secondary" href={`event/${eventId}`}>
           Skip
         </Button>
         <Button type="button" onClick={handleSendInvites}>
