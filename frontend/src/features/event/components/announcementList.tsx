@@ -19,7 +19,7 @@ export default function AnnouncementList({
   const [isAdding, setIsAdding] = useState(false);
 
   const sorted = [...announcements].sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    (a, b) => Date.parse(String(b.createdAt)) - Date.parse(String(a.createdAt)),
   );
 
   return (
