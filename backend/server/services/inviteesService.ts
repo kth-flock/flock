@@ -1,82 +1,88 @@
 import { prisma } from "../prisma";
-import { UserId } from "@flock/shared/schemas/user"; 
-import { EventId } from "@flock/shared/schemas/event"; 
+import { UserId } from "@flock/shared/schemas/user";
+import { EventId } from "@flock/shared/schemas/event";
+import {
+  NotFoundError,
+  ForbiddenError,
+  ValidationError,
+  ConflictError,
+} from "../utils/errors";
 
-export class InviteeNotFoundError extends Error {}
-export class EventNotFoundError extends Error {}
-export class InviteeAlreadyInvitedError extends Error {}
-export class NotAuthorizedError extends Error {}
-export class InviteeCannotInviteSelfError extends Error {}
-export class InviteeNotInvitedError extends Error {}
-export async function addInvitee(userId: UserId, eventId: EventId, inviteeId: UserId) {
+export async function addInvitee(
+  userId: UserId,
+  eventId: EventId,
+  inviteeId: UserId,
+) {
+  const eventExists = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
 
-    const eventExists = await prisma.event.findUnique({
-        where: { id: eventId },
-    });
-    
-    if (!eventExists) {
-        throw new EventNotFoundError();
-    }
-
-    if(eventExists.createdById !== userId) {
-        throw new NotAuthorizedError();
-    }
-    const inviteeExists = await prisma.user.findUnique({
-        where: { id: inviteeId },
-    });
-    if (!inviteeExists) {
-        throw new InviteeNotFoundError();
-    }
-    
-    if(inviteeId == userId) {
-        throw new InviteeCannotInviteSelfError();
-    }
-
-    const inviteeAlreadyInvited = await prisma.invitee.findUnique({
-        where: { eventId_userId: { eventId, userId: inviteeId } },
-    });
-    if (inviteeAlreadyInvited) {
-        throw new InviteeAlreadyInvitedError();
-    }
-
-
-    const invitee = await prisma.invitee.create({
-        data:{
-            eventId,
-            userId: inviteeId,
-        },
-    });
-  
-    return invitee;
+  if (!eventExists) {
+    throw new NotFoundError("Event not found");
   }
 
-  export async function removeInvitee(userId: UserId, eventId: EventId, inviteeId: UserId) {
-    const eventExists = await prisma.event.findUnique({
-        where: { id: eventId },
-    });
-    
-    if (!eventExists) {
-        throw new EventNotFoundError();
-    }
-
-    if(eventExists.createdById !== userId) {
-        throw new NotAuthorizedError();
-    }
-    const inviteeExists = await prisma.user.findUnique({
-        where: { id: inviteeId },
-    });
-    if (!inviteeExists) {
-        throw new InviteeNotFoundError();
-    }
-    const inviteeIsNotInvited = await prisma.invitee.findUnique({
-        where: { eventId_userId: { eventId, userId: inviteeId } },
-    });
-    if (!inviteeIsNotInvited) {
-        throw new InviteeNotInvitedError();
-    }
-
-    const invitee = await prisma.invitee.delete({
-        where: { eventId_userId: { eventId, userId: inviteeId } },
-    });
-    return invitee;
+  if (eventExists.createdById !== userId) {
+    throw new ForbiddenError("Only event host can invite users");
   }
+
+  const inviteeExists = await prisma.user.findUnique({
+    where: { id: inviteeId },
+  });
+  if (!inviteeExists) {
+    throw new NotFoundError("Invitee is not a valid user");
+  }
+
+  if (inviteeId === userId) {
+    throw new ValidationError("You cannot invite yourself to your own event");
+  }
+
+  const inviteeAlreadyInvited = await prisma.invitee.findUnique({
+    where: { eventId_userId: { eventId, userId: inviteeId } },
+  });
+  if (inviteeAlreadyInvited) {
+    throw new ConflictError("User already invited to event");
+  }
+
+  return prisma.invitee.create({
+    data: {
+      eventId,
+      userId: inviteeId,
+    },
+  });
+}
+
+export async function removeInvitee(
+  userId: UserId,
+  eventId: EventId,
+  inviteeId: UserId,
+) {
+  const eventExists = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
+  if (!eventExists) {
+    throw new NotFoundError("Event not found");
+  }
+
+  if (eventExists.createdById !== userId) {
+    throw new ForbiddenError("Only event host can remove invitees");
+  }
+
+  const inviteeExists = await prisma.user.findUnique({
+    where: { id: inviteeId },
+  });
+  if (!inviteeExists) {
+    throw new NotFoundError("Invitee is not a valid user");
+  }
+
+  const inviteeIsInvited = await prisma.invitee.findUnique({
+    where: { eventId_userId: { eventId, userId: inviteeId } },
+  });
+  if (!inviteeIsInvited) {
+    throw new NotFoundError("Invitee is not invited to the event");
+  }
+
+  return prisma.invitee.delete({
+    where: { eventId_userId: { eventId, userId: inviteeId } },
+  });
+}

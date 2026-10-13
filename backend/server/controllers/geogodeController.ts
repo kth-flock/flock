@@ -5,6 +5,7 @@ import {
   reverseGeocodeSchema,
 } from "@flock/shared/schemas/geocode";
 import { validate } from "../utils/validate";
+import { NotFoundError } from "../utils/errors";
 
 export async function searchLocations(req: Request, res: Response) {
   const parsedQuery = validate(
@@ -13,17 +14,8 @@ export async function searchLocations(req: Request, res: Response) {
     "Invalid request",
   );
 
-  try {
-    const locations = await geocodeService.searchLocations(parsedQuery.q);
-    res.status(200).json({ status: "Success", data: locations });
-  } catch (error) {
-    if (error instanceof geocodeService.GeocodingUnavailableError) {
-      return res
-        .status(502)
-        .json({ status: "Error", error: "Geocoding service unavailable" });
-    }
-    throw error;
-  }
+  const locations = await geocodeService.searchLocations(parsedQuery.q);
+  res.status(200).json({ status: "Success", data: locations });
 }
 
 export async function reverseGeocode(req: Request, res: Response) {
@@ -33,25 +25,14 @@ export async function reverseGeocode(req: Request, res: Response) {
     "Invalid coordinates",
   );
 
-  try {
-    const location = await geocodeService.reverseGeocode(
-      parsedQuery.lat,
-      parsedQuery.lon,
-    );
+  const location = await geocodeService.reverseGeocode(
+    parsedQuery.lat,
+    parsedQuery.lon,
+  );
 
-    if (!location) {
-      return res
-        .status(404)
-        .json({ status: "Error", error: "No result found" });
-    }
-
-    res.status(200).json({ status: "Success", data: location });
-  } catch (error) {
-    if (error instanceof geocodeService.GeocodingUnavailableError) {
-      return res
-        .status(502)
-        .json({ status: "Error", error: "Geocoding service unavailable" });
-    }
-    throw error;
+  if (!location) {
+    throw new NotFoundError("No result found");
   }
+
+  res.status(200).json({ status: "Success", data: location });
 }

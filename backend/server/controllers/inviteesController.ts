@@ -1,106 +1,46 @@
 import { Request, Response } from "express";
-import { prisma } from "../prisma";
 import * as inviteesServices from "../services/inviteesService";
 import { idSchema } from "@flock/shared/schemas/common";
+import { validate } from "../utils/validate";
 
-export async function addInvitee( req : Request, res: Response){
+export async function addInvitee(req: Request, res: Response) {
+  const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
+  const inviteeId = validate(
+    idSchema,
+    req.params.inviteeId,
+    "Invalid invitee ID",
+  );
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-    try {    
-        const eventId = req.params.eventId;
-        const inviteeId = req.params.inviteeId;
+  const invite = await inviteesServices.addInvitee(
+    userId,
+    eventId,
+    inviteeId,
+  );
 
-        const eventIdResult = idSchema.safeParse(eventId); 
-        const inviteeIdResult = idSchema.safeParse(inviteeId); 
-
-
-        if (!eventIdResult.success || !inviteeIdResult.success) {
-            return res.status(400).json({
-                error: "Invalid event or invitee ID",
-            });
-        }
-
-
-        const invite = await inviteesServices.addInvitee(req.user.id, eventIdResult.data, inviteeIdResult.data);
-        res.status(201).json({
-            status: "Success",
-            data: invite,
-        });
-    } 
-    catch (error) {
-        if (error instanceof inviteesServices.NotAuthorizedError) {
-            return res.status(403).json({
-                error: "Only event host can invite users",
-            });
-        }
-        if (error instanceof inviteesServices.EventNotFoundError) {
-            return res.status(404).json({
-                error: "Event not found",
-            });
-        }
-        if (error instanceof inviteesServices.InviteeNotFoundError) {
-            return res.status(404).json({
-                error: "Invitee is not a valid user",
-            });
-        }
-        if (error instanceof inviteesServices.InviteeCannotInviteSelfError) {
-            return res.status(400).json({
-                error: "You cannot invite yourself to your own event",
-            });
-        }
-        if (error instanceof inviteesServices.InviteeAlreadyInvitedError) {
-            return res.status(400).json({
-                error: "User already invited to event",
-            });
-        }
-
-        throw error;
-    }
+  res.status(201).json({
+    status: "Success",
+    data: invite,
+  });
 }
 
+export async function removeInvitee(req: Request, res: Response) {
+  const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
+  const inviteeId = validate(
+    idSchema,
+    req.params.inviteeId,
+    "Invalid invitee ID",
+  );
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
+  const invitee = await inviteesServices.removeInvitee(
+    userId,
+    eventId,
+    inviteeId,
+  );
 
-export async function removeInvitee( req : Request, res: Response){
-    try {
-        const eventId = req.params.eventId;
-        const inviteeId = req.params.inviteeId;
-
-        const eventIdResult = idSchema.safeParse(eventId); 
-        const inviteeIdResult = idSchema.safeParse(inviteeId); 
-
-        if (!eventIdResult.success || !inviteeIdResult.success) {
-            return res.status(400).json({
-                error: "Invalid event or invitee ID",
-            });
-        }
-
-        const invitee = await inviteesServices.removeInvitee(req.user.id, eventIdResult.data, inviteeIdResult.data);
-        res.status(200).json({
-            status: "Success",
-            data: invitee,
-        });
-    }
-    catch (error) {
-        if (error instanceof inviteesServices.NotAuthorizedError) {
-            return res.status(403).json({
-                error: "Only event host can remove invitees",
-            });
-        }
-        if (error instanceof inviteesServices.EventNotFoundError) {
-            return res.status(404).json({
-                error: "Event not found",
-            });
-        }
-        if (error instanceof inviteesServices.InviteeNotFoundError) {
-            return res.status(404).json({
-                error: "Invitee is not a valid user",
-            });
-        }
-        if (error instanceof inviteesServices.InviteeNotInvitedError) {
-            return res.status(404).json({
-                error: "Invitee is not invited to the event",
-            });
-        }
-        throw error;
-    }
-
+  res.status(200).json({
+    status: "Success",
+    data: invitee,
+  });
 }
