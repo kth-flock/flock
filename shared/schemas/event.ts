@@ -41,9 +41,7 @@ export const createEventSchema = z
     },
   );
 
-export type CreateEventData = z.infer<typeof createEventSchema> & {
-  createdById: UserId;
-};
+export type CreateEventData = z.infer<typeof createEventSchema>;
 
 export const updateEventSchema = z
   .object({
@@ -58,8 +56,7 @@ export const updateEventSchema = z
         error: "Start date must be in the future.",
       })
       .optional(),
-    endsAt: z
-      .coerce
+    endsAt: z.coerce
       .date()
       .nullable()
       .optional()
@@ -92,23 +89,17 @@ export const updateEventSchema = z
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
 
-export type RsvpStatus =
-  | "PENDING"
-  | "ACCEPTED"
-  | "MAYBE"
-  | "DECLINED";
+export type RsvpStatus = "PENDING" | "ACCEPTED" | "MAYBE" | "DECLINED";
 
+export const rsvpStatusSchema = z.enum([
+  "PENDING",
+  "ACCEPTED",
+  "MAYBE",
+  "DECLINED",
+]);
 
-  export const rsvpStatusSchema = z.enum([
-    "PENDING",
-    "ACCEPTED",
-    "MAYBE",
-    "DECLINED",
-  ]);
-  
-
-  export const rsvpToEventSchema = z.object({
-    rsvp: rsvpStatusSchema,
-    rsvpComment: z.string().optional(),
-  });
-  export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;
+export const rsvpToEventSchema = z.object({
+  rsvp: rsvpStatusSchema,
+  rsvpComment: z.string().optional(),
+});
+export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;

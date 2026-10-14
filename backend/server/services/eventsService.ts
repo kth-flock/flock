@@ -110,8 +110,10 @@ export async function getInvitedEvents(userId: UserId) {
   return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
 
-export async function createNewEvent(eventData: CreateEventData) {
-  const event = await prisma.event.create({
+export async function createNewEvent(
+  eventData: CreateEventData & { createdById: UserId },
+) {
+  const events = await prisma.event.create({
     data: eventData,
   });
   return event;
