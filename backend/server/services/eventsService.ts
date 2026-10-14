@@ -116,7 +116,7 @@ export async function createNewEvent(
   const events = await prisma.event.create({
     data: eventData,
   });
-  return event;
+  return events;
 }
 
 export async function updateEventInfo(
