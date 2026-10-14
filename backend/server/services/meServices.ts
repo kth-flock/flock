@@ -7,6 +7,7 @@ import {
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
+import { withSignedImageUrl } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
 
 export async function getMyAccount(userId: UserId) {
@@ -15,7 +16,9 @@ export async function getMyAccount(userId: UserId) {
     select: privateUserInformationSelect,
   });
 
-  return account;
+  if (!account) throw new NotFoundError("User not found");
+
+  return withSignedImageUrl(account);
 }
 
 export async function deleteMyAccount(userId: UserId) {
