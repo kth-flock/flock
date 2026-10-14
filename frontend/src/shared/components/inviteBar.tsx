@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaUserPlus } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
+import FriendSearchResult from "./friendSearchResult";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -32,20 +33,45 @@ export default function InviteBar() {
     <div
       ref={barRef}
       className={twMerge(
-        "flex h-full flex-row items-center rounded-full",
+        "relative flex h-full items-center rounded-full",
         searchBarToggle
-          ? "w-48 gap-1px-1 py-1 md:w-64"
+          ? "z-50 w-48 px-1 py-1 md:w-64"
           : "aspect-square justify-center",
       )}
     >
       {searchBarToggle ? (
-        <SearchBar
-          autoFocus
-          id="invite-search"
-          placeholder="Search by name"
-          size="compact"
-          className="min-w-0 flex-1"
-        />
+        <>
+          <SearchBar
+            autoFocus
+            id="invite-search"
+            placeholder="Add friends"
+            size="compact"
+            className="min-w-0 w-full"
+          />
+          <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-60 flex-col gap-2 overflow-y-auto rounded-xl border border-primary/20 bg-white p-3 shadow-md">
+            <FriendSearchResult
+              user={{
+                id: 1,
+                firstName: "John",
+                lastName: "Doe WithaLongAssName",
+                imageUrl: null,
+                createdAt: "2021-01-01",
+                friendshipStatus: "FRIENDS",
+              }}
+            />
+            <div className="border-t border-primary/20 w-2/3 mx-auto" ></div>
+            <FriendSearchResult
+              user={{
+                id: 2,
+                firstName: "Jane",
+                lastName: "Smith",
+                imageUrl: null,
+                createdAt: "2021-01-01",
+                friendshipStatus: "NONE",
+              }}
+            />
+          </div>
+        </>
       ) : (
         <button
           type="button"
