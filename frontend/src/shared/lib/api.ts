@@ -92,6 +92,24 @@ export async function inviteFriendFetch(eventId: number, userId: number) {
   }
 }
 
+export async function batchInviteFetch(eventId: number, userIds: number[]) {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}/invitees`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ inviteeIds: userIds }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to invite users");
+  }
+
+  const response: { status: string; data: { skipped: number } } =
+    await res.json();
+  return response.data.skipped;
+}
+
 export async function uninviteFriendFetch(eventId: number, userId: number) {
   const res = await fetch(
     `${API_BASE_URL}/events/${eventId}/invitees/${userId}`,

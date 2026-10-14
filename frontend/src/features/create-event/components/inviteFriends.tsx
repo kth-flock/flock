@@ -4,12 +4,16 @@ import InviteFriendCard from "../../invite-friends/inviteFriendCard";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
-import { searchUsersFetch, getMyFriends } from "@/shared/lib/api";
+import {
+  searchUsersFetch,
+  getMyFriends,
+  batchInviteFetch,
+} from "@/shared/lib/api";
 import { debounce } from "lodash";
-
+import { useRouter } from "next/navigation";
 // TODO: Connect to API and make sure types and structures are correct
 
-export default function InviteFriends({ eventId }: { eventId: number | null }) {
+export default function InviteFriends({ eventId }: { eventId: number }) {
   const searchRequestRef = useRef(0);
   const debouncedSearch = useRef(
     debounce(async (query: string, requestId: number) => {
@@ -28,6 +32,7 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
   );
   const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<UserSearchResult[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const invitedIds = new Set(invitees.map((invitee) => invitee.id));
@@ -77,9 +82,14 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     });
   }
 
-  function handleSendInvites() {
-    // TODO: No endpoint for inviting multiple people at once?
-    console.log("inviting...");
+  async function handleSendInvites() {
+    if (invitees.length > 0) {
+      await batchInviteFetch(
+        eventId,
+        invitees.map((invitee) => invitee.id),
+      );
+    }
+    router.push(`/event/${eventId}`);
   }
 
   return (

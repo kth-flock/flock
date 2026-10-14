@@ -8,6 +8,6 @@ import {
   removeInvitee,
 } from "../controllers/inviteesController";
 
-inviteesRouter.post("/", authMiddleware, addInviteesInBatch);
-inviteesRouter.post("/:inviteeId", authMiddleware, addInvitee); // TODO: invitees or invite?
-inviteesRouter.delete("/:inviteeId", authMiddleware, removeInvitee);
+inviteesRouter.post("/", addInviteesInBatch);
+inviteesRouter.post("/:inviteeId", addInvitee); // TODO: invitees or invite?
+inviteesRouter.delete("/:inviteeId", removeInvitee);
