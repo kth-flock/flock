@@ -94,7 +94,6 @@ export default function CreateEventForm({
       try {
         const createdEvent = await createEventFetch({
           ...payload,
-          createdById: 1, // TODO: Remove hardcoded id and use session auth
           imageUrl,
         });
         onCreated(createdEvent.id);

@@ -96,7 +96,9 @@ export async function getInvitedEvents(userId: UserId) {
   return events;
 }
 
-export async function createNewEvent(eventData: CreateEventData) {
+export async function createNewEvent(
+  eventData: CreateEventData & { createdById: UserId },
+) {
   const events = await prisma.event.create({
     data: eventData,
   });
@@ -194,4 +196,3 @@ export async function rsvpToEvent(
     },
   });
 }
-

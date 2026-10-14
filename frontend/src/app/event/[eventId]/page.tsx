@@ -34,6 +34,7 @@ export default async function EventPage({
   const parsedEventId = idSchema.safeParse(eventId);
   if (!parsedEventId.success) notFound();
 
+  // TODO: Server returns error if user is not host and not invited to event. Do want to handle this specifically? Or just a general error?
   const [user, event] = await Promise.all([
     getCurrentUser(cookie),
     getEvent(parsedEventId.data, cookie),

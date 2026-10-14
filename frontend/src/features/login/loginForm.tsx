@@ -5,6 +5,7 @@ import { useState } from "react";
 import { loginUserSchema, LoginUser } from "@flock/shared/schemas/auth";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [validationError, setValidationError] = useState<
@@ -118,6 +119,15 @@ export default function LoginForm() {
           {isSubmitting ? "Logging in..." : "Log in"}
         </Button>
       </form>
+      <span className="inline-flex gap-2 items-center flock-body justify-center">
+        New to flock?
+        <Link
+          href="/register"
+          className="text-secondary font-semibold! hover:underline "
+        >
+          Register here
+        </Link>
+      </span>
     </>
   );
 }
