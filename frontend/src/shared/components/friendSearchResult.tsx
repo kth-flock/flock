@@ -33,7 +33,7 @@ export default function FriendSearchResult({
   const actions: Record<FriendshipStatus, ActionConfig> = {
     NONE: { ariaLabel: "Add Friend", label: "", disabled: false, onClick: onAddFriend, icon: <FaUserPlus aria-hidden />, variant: "primary" },
     REQUEST_SENT: { ariaLabel: "pending...", label: "sent", disabled: true, icon: <></>, variant: "tertiary" },
-    FRIENDS: { ariaLabel: "Already Friends", label: "friend", disabled: true, icon: <></>, variant: "tertiary" },
+    FRIENDS: { ariaLabel: "Already Friends", label: "", disabled: true, icon: <></>, variant: "tertiary" },
     REQUEST_RECEIVED: {
       ariaLabel: "Accept Friend Request",
       label: "",

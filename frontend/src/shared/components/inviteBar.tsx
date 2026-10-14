@@ -15,6 +15,7 @@ const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
 export default function InviteBar() {
   const [results, setResults] = useState<UserSearchResult[] | null>(null);
+  const [loading, setLoading] = useState(false);
   const [pendingUserId, setPendingUserId] = useState<number | null>(null);
   const searchRequestRef = useRef(0);
   const [searchBarToggle, setSearchBarToggle] = useState(false);
@@ -23,6 +24,7 @@ export default function InviteBar() {
   const debouncedSearch = useMemo(
     () =>
       debounce(async (query: string, requestId: number) => {
+        setLoading(true);
         try {
           const data = await searchUsersFetch(query);
           if (requestId === searchRequestRef.current) setResults(data);
@@ -31,6 +33,8 @@ export default function InviteBar() {
             console.error(err);
             setResults([]);
           }
+        } finally {
+          if (requestId === searchRequestRef.current) setLoading(false);
         }
       }, 400),
     [],
@@ -49,8 +53,10 @@ export default function InviteBar() {
     if (!query.trim()) {
       debouncedSearch.cancel();
       setResults(null);
+      setLoading(false);
       return;
     }
+    setLoading(true);
     debouncedSearch(query, requestId);
   }
 
@@ -63,6 +69,7 @@ export default function InviteBar() {
       if (barRef.current?.contains(target)) return;
       setSearchBarToggle(false);
       setResults(null);
+      setLoading(false);
       debouncedSearch.cancel();
       searchRequestRef.current += 1;
     };
@@ -71,6 +78,8 @@ export default function InviteBar() {
     return () =>
       document.removeEventListener("pointerdown", handlePointerDown);
   }, [searchBarToggle, debouncedSearch]);
+
+  const showDropdown = loading || results !== null;
 
   return (
     <div
@@ -93,18 +102,25 @@ export default function InviteBar() {
             onQueryChange={onSearch}
           />
 
-          {results !== null && (
+          {showDropdown && (
             <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-100 flex-col overflow-y-auto rounded-xl border border-primary/20 bg-white p-3 shadow-md">
-              {results.length === 0 ? (
+              {loading ? (
+                <p
+                  className="flock-caption flex items-center justify-center gap-2 p-2 text-primary"
+                  aria-live="polite"
+                >
+                  Searching...
+                </p>
+              ) : results?.length === 0 ? (
                 <p className="flock-caption p-2 text-center">No users found</p>
               ) : (
-                results.map((friend, index) => (
+                results?.map((friend, index) => (
                   <div key={friend.id}>
                     <FriendSearchResult
                       user={friend}
                       isPending={pendingUserId === friend.id}
                     />
-                    {index < results.length - 1 && (
+                    {results && index < results.length - 1 && (
                       <div className="mx-auto w-3/4 border-t border-primary/20" />
                     )}
                   </div>
