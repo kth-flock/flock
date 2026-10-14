@@ -5,6 +5,38 @@ import { FaUserPlus } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
 import FriendSearchResult from "./friendSearchResult";
+import type { FriendshipStatus } from "@flock/shared/schemas/user";
+
+const mockFriends = [
+  {
+    id: 1,
+    firstName: "Johnddd",
+    lastName: "DoeWIthALongAssName",
+    imageUrl: null,
+    friendshipStatus: "FRIENDS",
+  },
+  {
+    id: 2,
+    firstName: "Jane",
+    lastName: "Smith",
+    imageUrl: null,
+    friendshipStatus: "NONE",
+  },
+  {
+    id: 3,
+    firstName: "Jim",
+    lastName: "Beam",
+    imageUrl: null,
+    friendshipStatus: "REQUEST_RECEIVED",
+  },
+  {
+    id: 4,
+    firstName: "Jill",
+    lastName: "Johnson",
+    imageUrl: null,
+    friendshipStatus: "REQUEST_SENT",
+  },
+];
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -48,29 +80,25 @@ export default function InviteBar() {
             size="compact"
             className="min-w-0 w-full"
           />
-          <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-60 flex-col gap-2 overflow-y-auto rounded-xl border border-primary/20 bg-white p-3 shadow-md">
-            <FriendSearchResult
-              user={{
-                id: 1,
-                firstName: "John",
-                lastName: "Doe WithaLongAssName",
-                imageUrl: null,
-                createdAt: "2021-01-01",
-                friendshipStatus: "FRIENDS",
-              }}
-            />
-            <div className="border-t border-primary/20 w-2/3 mx-auto" ></div>
-            <FriendSearchResult
-              user={{
-                id: 2,
-                firstName: "Jane",
-                lastName: "Smith",
-                imageUrl: null,
-                createdAt: "2021-01-01",
-                friendshipStatus: "NONE",
-              }}
-            />
-          </div>
+         
+         <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-100 flex-col  overflow-y-auto rounded-xl border border-primary/20 bg-white p-3 shadow-md">
+             
+            {mockFriends.map((friend, index) => (
+                <div key={friend.id} className="">
+                <FriendSearchResult
+                user={{
+                  id: friend.id,
+                  firstName: friend.firstName,
+                  lastName: friend.lastName,
+                  imageUrl: friend.imageUrl,
+                  createdAt: "2021-01-01",
+                  friendshipStatus: friend.friendshipStatus as FriendshipStatus,
+                }}
+              />
+              {index < mockFriends.length - 1 && <div className="border-t border-primary/20 w-3/4 mx-auto" />}
+            </div>
+            ))}
+            </div>
         </>
       ) : (
         <button
