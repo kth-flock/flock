@@ -4,7 +4,7 @@ import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
 import InviteButton from "./inviteModal";
-import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
+import { FaPenToSquare } from "react-icons/fa6";
 import dayjs from "dayjs";
 
 export default function EventInfo({

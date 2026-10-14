@@ -6,7 +6,6 @@ import {
 } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
-import type { User } from "@prisma/types";
 import dayjs from "dayjs";
 
 type PostMetaProps = {
