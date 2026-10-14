@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+import { API_BASE_URL } from "@/shared/lib/api";
 
 export async function geocodeFetch<T>(
   path: "search" | "reverse",
@@ -6,6 +6,7 @@ export async function geocodeFetch<T>(
 ): Promise<T> {
   const res = await fetch(
     `${API_BASE_URL}/geocode/${path}?${new URLSearchParams(params)}`,
+    { credentials: "include" },
   );
   if (!res.ok) throw new Error(`Geocoding ${path} failed`);
 

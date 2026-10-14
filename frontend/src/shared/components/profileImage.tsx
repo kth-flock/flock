@@ -5,7 +5,7 @@ type ProfileImageProps =
   | {
       className?: string;
       shadow?: boolean;
-      profileImgSrc?: undefined;
+      profileImgSrc?: string;
       firstName: string;
       lastName: string;
     }
@@ -13,8 +13,8 @@ type ProfileImageProps =
       className?: string;
       shadow?: boolean;
       profileImgSrc: string;
-      firstName?: undefined;
-      lastName?: undefined;
+      firstName?: string;
+      lastName?: string;
     };
 
 export default function ProfileImage({
@@ -25,7 +25,7 @@ export default function ProfileImage({
   lastName,
 }: ProfileImageProps) {
   return (
-    <div className="rounded-full overflow-hidden h-8 w-8 group relative">
+    <div className="rounded-full overflow-hidden h-8 w-8 shrink-0 group relative">
       {profileImgSrc ? (
         <Image src={profileImgSrc} fill alt={`${firstName} ${lastName}`} />
       ) : (
@@ -36,7 +36,7 @@ export default function ProfileImage({
             className,
           )}
         >
-          {firstName && (
+          {firstName && lastName && (
             <span className="text-[40cqw]! flock-ui-label leading-none">
               {firstName[0]}
               {lastName[0]}

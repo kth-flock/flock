@@ -1,7 +1,12 @@
+"use client";
+
+import { PublicHomePage } from "@/features/home/publicHomePage";
+import PrivateHomePage from "@/features/home/privateHomePage";
+import { useAuth } from "@/shared/auth/authContext";
+
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center dark:bg-black bg-amber-50">
-      HOME PAGE
-    </div>
-  );
+  const { user } = useAuth();
+  if (user === undefined) return null;
+  if (user === null) return <PublicHomePage />;
+  return <PrivateHomePage />;
 }

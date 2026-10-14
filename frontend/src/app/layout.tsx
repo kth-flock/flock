@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "../shared/components/navbar";
+import Footer from "../shared/components/footer";
+import { AuthProvider } from "@/shared/auth/authContext";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -9,7 +11,7 @@ const libreBaskerville = Libre_Baskerville({
 });
 
 const openSans = Open_Sans({
-  variable: "--font-fira-sans",
+  variable: "--font-open-sans",
   subsets: ["latin"],
 });
 
@@ -24,9 +26,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col px-6 md:px-24">
-        <Navbar />
-        {children}
+      <body className="flex flex-col px-6 md:px-24 items-center">
+        <AuthProvider>
+          <div className="flex min-h-dvh w-full flex-col">
+            <Navbar />
+            <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
+              {children}
+            </main>
+          </div>
+          <Footer /> {/* sibling after the min-h-dvh div */}
+        </AuthProvider>
       </body>
     </html>
   );

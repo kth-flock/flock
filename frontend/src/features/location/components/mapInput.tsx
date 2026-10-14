@@ -1,162 +1,134 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMapEvents,
-  useMap,
-} from "react-leaflet";
-import L from "leaflet";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
-import { FieldWrapper } from "./formInputs";
-import { useFocusWithin } from "../hooks/useFocusWithin";
-import { renderToStaticMarkup } from "react-dom/server";
-import type { Location, NominatimResult } from "../lib/nominatim";
-import {
-  formatLocationName,
-  DEFAULT_CENTER,
-  DEFAULT_ZOOM,
-} from "../lib/nominatim";
-import { geocodeFetch } from "../lib/apiFetch";
+import { FieldWrapper } from "../../../shared/components/formInputs";
+import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
+import type { Location } from "@flock/shared/schemas/geocode";
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from "../lib/geocoding";
+import { geocodeFetch } from "../lib/api";
+import { MarkerIcon } from "./mapMarker";
+import { ClickHandler } from "../lib/utils";
+import { RecenterOnSelect } from "../lib/utils";
+import debounce from "lodash/debounce";
 
-// ---------- CONSTANTS ----------
-
-const markerIcon = L.divIcon({
-  html: renderToStaticMarkup(
-    <FaLocationDot size={34} className="fill-primary" />,
-  ),
-  className: "custom-marker",
-  iconSize: [34, 34],
-  iconAnchor: [17, 34],
-});
-
-// ---------- HELPER FUNCTIONS ----------
-
-function ClickHandler({
-  onClick,
-}: {
-  onClick: (lat: number, lng: number) => void;
-}) {
-  useMapEvents({
-    click(e) {
-      onClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
-
-function RecenterOnSelect({ selected }: { selected: Location | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (selected) {
-      map.setView([selected.lat, selected.lng], map.getZoom());
-    }
-  }, [selected, map]);
-  return null;
-}
-
-// ---------- COMPONENT ----------
+export type LocationPickerProps = {
+  onSelect?: (location: Location | null) => void;
+  initalValue?: Location;
+};
 
 export default function LocationPicker({
+  initialValue,
   onSelect,
 }: {
+  initialValue?: Location | null;
   onSelect?: (location: Location | null) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<NominatimResult[]>([]);
-  const [selected, setSelected] = useState<Location | null>(null);
+  const [query, setQuery] = useState(initialValue?.label ?? "");
+  const [results, setResults] = useState<Location[]>([]);
+  const [selected, setSelected] = useState<Location | null>(
+    initialValue ?? null,
+  );
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const skipNextSearchRef = useRef(false);
+  const searchRequestRef = useRef(0);
+  const skipNextSearchRef = useRef(Boolean(initialValue?.label));
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();
 
-  useEffect(() => {
-    if (!isMapOpen) return;
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (searchQuery: string, requestId: number) => {
+        setLoading(true);
+        try {
+          const data = await geocodeFetch<Location[]>("search", {
+            q: searchQuery,
+          });
+          if (requestId === searchRequestRef.current) setResults(data);
+        } catch (err) {
+          if (requestId === searchRequestRef.current) {
+            console.error("Geocoding search failed:", err);
+          }
+        } finally {
+          if (requestId === searchRequestRef.current) setLoading(false);
+        }
+      }, 400),
+    [],
+  );
 
+  useEffect(() => {
     function handleOutsidePointer(event: PointerEvent) {
       if (!pickerRef.current?.contains(event.target as Node)) {
         setIsMapOpen(false);
+        setResults([]);
+        debouncedSearch.cancel();
+        searchRequestRef.current += 1;
+        setLoading(false);
       }
     }
 
     document.addEventListener("pointerdown", handleOutsidePointer);
     return () =>
       document.removeEventListener("pointerdown", handleOutsidePointer);
-  }, [isMapOpen]);
+  }, []);
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const requestId = ++searchRequestRef.current;
+    debouncedSearch.cancel();
 
     if (skipNextSearchRef.current) {
       skipNextSearchRef.current = false;
+      setLoading(false);
       return;
     }
 
     if (query.trim().length < 3) {
       setResults([]);
+      setLoading(false);
       return;
     }
 
-    debounceRef.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const data = await geocodeFetch<NominatimResult[]>("search", {
-          q: query,
-        });
-        setResults(data);
-      } catch (err) {
-        console.error("Geocoding search failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    }, 400);
+    debouncedSearch(query, requestId);
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debouncedSearch.cancel();
+      searchRequestRef.current += 1;
     };
-  }, [query]);
+  }, [query, debouncedSearch]);
 
-  function commitLocation(location: Location, displayText: string) {
+  function commitLocation(location: Location) {
     setSelected(location);
-    skipNextSearchRef.current = displayText !== query;
-    setQuery(displayText);
+    skipNextSearchRef.current = location.label !== query;
+    setQuery(location.label);
     onSelect?.(location);
   }
 
-  function chooseResult(result: NominatimResult) {
-    const location: Location = {
-      lat: parseFloat(result.lat),
-      lng: parseFloat(result.lon),
-      label: result.display_name,
-    };
-    commitLocation(location, formatLocationName(result));
+  function chooseResult(result: Location) {
+    commitLocation(result);
     setResults([]);
     setIsMapOpen(false);
   }
 
-  async function handleMapClick(lat: number, lng: number) {
-    setSelected({ lat, lng, label: `${lat.toFixed(5)}, ${lng.toFixed(5)}` });
+  async function handleMapClick(lat: number, lon: number) {
+    setSelected({ lat, lon, label: `${lat.toFixed(5)}, ${lon.toFixed(5)}` });
     setIsMapOpen(false);
     setLoading(true);
 
-    let label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    let label = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
     try {
-      const result = await geocodeFetch<NominatimResult>("reverse", {
+      const result = await geocodeFetch<Location>("reverse", {
         lat: String(lat),
-        lon: String(lng),
+        lon: String(lon),
       });
 
-      label = formatLocationName(result);
+      label = result.label;
     } catch (err) {
       console.error("Geocoding reverse lookup failed:", err);
     } finally {
-      const location = { lat, lng, label };
-      commitLocation(location, label);
+      const location = { lat, lon, label };
+      commitLocation(location);
       setLoading(false);
     }
   }
@@ -164,7 +136,7 @@ export default function LocationPicker({
   return (
     <div ref={pickerRef} className="relative z-20 w-full">
       <FieldWrapper
-        icon={<FaLocationDot />}
+        icon={<FaLocationDot aria-hidden />}
         label="Location"
         htmlFor="location-search"
         isFocused={isFocused}
@@ -177,13 +149,15 @@ export default function LocationPicker({
             type="text"
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value);
+              const value = e.target.value;
+              setQuery(value);
               setSelected(null);
-              onSelect?.(null);
+              onSelect?.(value.trim() ? { label: value } : null);
             }}
             onFocus={focusWithinProps.onFocus}
             onBlur={focusWithinProps.onBlur}
             placeholder="Search for an address or place..."
+            autoComplete="off"
             className="flock-body w-full border-0 bg-transparent p-0 pr-16 outline-none placeholder:text-neutral"
           />
           <button
@@ -195,19 +169,19 @@ export default function LocationPicker({
             }}
             className="absolute flex items-center bg-accent/50 p-2 rounded-lg right-0 -top-1/2 cursor-pointer hover:shadow-md hover:scale-110"
           >
-            <FaMapLocationDot aria-hidden="true" className="fill-primary" />
+            <FaMapLocationDot aria-hidden className="fill-primary" />
           </button>
           {loading && (
-            <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary">
+            <span className="flock-caption absolute right-16 top-1/2 -translate-y-1/2 text-primary bg-neutral px-1 py-0.5 rounded-md">
               Searching...
             </span>
           )}
 
           {results.length > 0 && (
             <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-white p-0 shadow-md">
-              {results.map((r) => (
+              {results.map((r, i) => (
                 <li
-                  key={r.place_id}
+                  key={i}
                   className="border-b border-primary/10 last:border-b-0"
                 >
                   <button
@@ -215,7 +189,7 @@ export default function LocationPicker({
                     onClick={() => chooseResult(r)}
                     className="flock-body-sm block w-full px-4 py-3 text-left text-primary hover:bg-secondary/20 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
                   >
-                    {formatLocationName(r)}
+                    {r.label}
                   </button>
                 </li>
               ))}
@@ -227,20 +201,24 @@ export default function LocationPicker({
       {isMapOpen && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
           <MapContainer
-            center={selected ? [selected.lat, selected.lng] : DEFAULT_CENTER}
+            center={
+              selected?.lat !== undefined && selected.lon !== undefined
+                ? [selected.lat, selected.lon]
+                : DEFAULT_CENTER
+            }
             zoom={DEFAULT_ZOOM}
             style={{ height: 350, width: "100%" }}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png."
+              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <ClickHandler onClick={handleMapClick} />
             <RecenterOnSelect selected={selected} />
-            {selected && (
+            {selected?.lat !== undefined && selected.lon !== undefined && (
               <Marker
-                position={[selected.lat, selected.lng]}
-                icon={markerIcon}
+                position={[selected.lat, selected.lon]}
+                icon={MarkerIcon}
               />
             )}
           </MapContainer>

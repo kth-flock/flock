@@ -1,8 +1,10 @@
 const skeletonStyle = "animate-pulse rounded-2xl bg-neutral/50";
 
+// TODO: Double check, doe sthis match layout?
+
 export default function EventLoading() {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 pb-16">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 pb-16">
       <div className={`h-64 md:h-96 w-full rounded-3xl ${skeletonStyle}`} />
       <div className="flex justify-center gap-3">
         <div className={`h-11 w-32 rounded-full ${skeletonStyle}`} />

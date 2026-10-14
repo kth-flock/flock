@@ -10,6 +10,7 @@ type IconPlacement = "left" | "right" | "";
 
 type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
+  externalLink?: boolean;
 };
 
 type ButtonProps =
@@ -28,12 +29,13 @@ type ButtonProps =
 
 type IconButtonProps = ClickableItemProps & {
   size?: ButtonSize;
+  variant?: ButtonVariant;
 };
 
 // ---------- STYLE CLASSES ----------
 
 const baseStyle =
-  "flex gap-1 items-center rounded-full cursor-pointer disabled:pointer-events-none";
+  "flex gap-1 items-center rounded-full cursor-pointer disabled:pointer-events-none w-fit h-fit";
 
 const buttonStyles: Record<ButtonVariant, string> = {
   primary:
@@ -111,10 +113,12 @@ const getButtonClasses = ({
   );
 
 const getIconButtonClasses = ({
+  variant = "primary",
   size = "md",
   className,
   disabled,
 }: {
+  variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
   disabled?: boolean;
@@ -123,7 +127,7 @@ const getIconButtonClasses = ({
     "group",
     iconButtonSizeStyles[size],
     baseStyle,
-    buttonStyles.primary,
+    buttonStyles[variant],
     getDisabledClasses(disabled),
     className,
   );
@@ -132,6 +136,7 @@ const getIconButtonClasses = ({
 
 export function ClickableItem({
   href,
+  externalLink,
   disabled,
   className,
   children,
@@ -142,6 +147,8 @@ export function ClickableItem({
   return href ? (
     <Link
       href={href}
+      target={externalLink ? "_blank" : undefined}
+      rel={externalLink ? "noopener noreferrer" : undefined}
       className={className}
       onClick={(event) => {
         if (disabled) {
@@ -197,6 +204,7 @@ export default function Button({
 
 export function IconButton({
   size = "md",
+  variant = "primary",
   className,
   children,
   disabled,
@@ -205,7 +213,7 @@ export function IconButton({
   return (
     <ClickableItem
       disabled={disabled}
-      className={getIconButtonClasses({ size, className, disabled })}
+      className={getIconButtonClasses({ variant, size, className, disabled })}
       {...props}
     >
       <span className={disabled ? "scale-100 rotate-0" : iconHoverClasses}>
