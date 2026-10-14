@@ -11,7 +11,6 @@ import {
 } from "@/shared/lib/api";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
-// TODO: Connect to API and make sure types and structures are correct
 
 export default function InviteFriends({ eventId }: { eventId: number }) {
   const searchRequestRef = useRef(0);
@@ -93,7 +92,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:w-xl">
+    <div className="flex flex-col gap-4 md:w-2xl min-h-[50vh] justify-between">
       <div className="w-full flex flex-col md:flex-row gap-4">
         <div className="w-full flex flex-col gap-2">
           <SearchBar onQueryChange={onSearch} />
