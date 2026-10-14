@@ -30,10 +30,8 @@ const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
 });
 
-export const formatDate = (iso: string) => dateFormatter.format(new Date(iso));
 export const formatMonthYear = (iso: string) =>
   monthYearFormatter.format(new Date(iso));
-export const formatTime = (iso: string) => timeFormatter.format(new Date(iso));
 
 const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,

@@ -1,4 +1,4 @@
-import { SmallEventPreview } from "@/features/dashboard/eventPreview";
+import { SmallEventPreview } from "@/features/dashboard/components/eventPreview";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 
 type ProfileHistoryProps = {
@@ -10,8 +10,8 @@ export default function ProfileHistory({
   hostedEvents,
   invitedEvents,
 }: ProfileHistoryProps) {
-  const history = [...hostedEvents, ...invitedEvents].toSorted((a, b) =>
-    b.startsAt.localeCompare(a.startsAt),
+  const history = [...hostedEvents, ...invitedEvents].toSorted(
+    (a, b) => b.startsAt.getTime() - a.startsAt.getTime(),
   );
 
   return (

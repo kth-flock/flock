@@ -1,7 +1,8 @@
 import type { PublicUser } from "@/shared/types/user";
 import type { DashboardNotification } from "@/features/dashboard/lib/types";
 import type { ProfileDetails } from "@/features/profile/lib/types";
-import type { EventDetails, Rsvp } from "./types";
+import type { ExtendedEvent } from "@/shared/types/event";
+import type { Rsvp } from "./types";
 
 // Placeholder data used while frontend pages aren't wired to the backend
 
@@ -84,7 +85,6 @@ const grace: ExampleUser = {
   pwdHash: null,
   createdAt: new Date("2026-10-03T20:45:00.000Z"),
 };
-};
 
 function toPublicUser(user: ExampleUser): PublicUser {
   return {
@@ -92,7 +92,6 @@ function toPublicUser(user: ExampleUser): PublicUser {
     firstName: user.firstName,
     lastName: user.lastName,
     imageUrl: user.imageUrl,
-    createdAt: user.createdAt.toISOString(),
   };
 }
 
@@ -122,7 +121,7 @@ export const exampleFriends: PublicUser[] = [
   toPublicUser(clara),
 ];
 
-export const exampleEvent: EventDetails = {
+export const exampleEvent: ExtendedEvent = {
   id: 1,
   createdById: alice.id,
   title: "Grillkväll i Tyresö",

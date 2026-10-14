@@ -4,11 +4,8 @@ import {
   exampleInvitees,
   exampleProfiles,
 } from "@/features/event/lib/exampleData";
-import type {
-  EventDetails,
-  EventSummary,
-  InvitedEvent,
-} from "@/features/event/lib/types";
+import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
+import type { ExtendedEvent } from "@/shared/types/event";
 import type { PublicUser } from "@/shared/types/user";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { ProfileDetails } from "./types";
@@ -51,19 +48,21 @@ export async function getProfileFriends(
 
 // The event list endpoints leave out the announcements, and the hosted one
 // the host as well
-const toEventSummary = (event: EventDetails): EventSummary => ({
+const toEventSummary = (event: ExtendedEvent): EventSummary => ({
   id: event.id,
   createdById: event.createdById,
   title: event.title,
   description: event.description,
   locationName: event.locationName,
-  googlePlaceId: event.googlePlaceId,
+  latitude: event.latitude,
+  longitude: event.longitude,
   startsAt: event.startsAt,
   endsAt: event.endsAt,
   imageUrl: event.imageUrl,
+  createdAt: event.createdAt,
 });
 
-const toInvitedEvent = (event: EventDetails): InvitedEvent => ({
+const toInvitedEvent = (event: ExtendedEvent): InvitedEvent => ({
   ...toEventSummary(event),
   createdBy: event.createdBy,
 });

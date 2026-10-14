@@ -20,22 +20,18 @@ export type EventAnnouncement = {
   comments: EventComment[];
 };
 
-export type EventSummary = {
-  id: number;
-  createdById: number;
-  title: string;
-  description: string | null;
-  locationName: string | null;
-  googlePlaceId: string | null;
+// Shapes returned by GET /events/:eventId (dates arrive as ISO strings)
+export type EventDetails = Omit<Event, "startsAt" | "endsAt"> & {
   startsAt: string;
   endsAt: string | null;
-  imageUrl: string | null;
-};
-
-export type InvitedEvent = EventSummary & { createdBy: PublicUser };
-
-export type EventDetails = InvitedEvent & {
+  createdBy: PublicUser;
   announcements: EventAnnouncement[];
 };
+
+// Shape returned by GET /events/createdBy/:userId
+export type EventSummary = Event;
+
+// Shape returned by GET /events/invited/:userId
+export type InvitedEvent = Event & { createdBy: PublicUser };
 
 export type { RSVP as Rsvp } from "../../../../../backend/prisma/generated/enums";

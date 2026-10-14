@@ -13,7 +13,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
-import type { EventDetails, EventSummary } from "@/features/event/lib/types";
+import type { ExtendedEvent } from "@/shared/types/event";
+import type { EventSummary } from "@/features/event/lib/types";
 
 function ImagePlaceholder({
   title,
