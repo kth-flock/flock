@@ -45,9 +45,6 @@ export async function getEventById(eventId: EventId, userId: UserId) {
           },
         },
       },
-      invitees: {
-        include: { user: { select: publicUserInformationSelect } },
-      },
     },
   });
 
@@ -100,7 +97,9 @@ export async function getInvitedEvents(userId: UserId) {
   return events;
 }
 
-export async function createNewEvent(eventData: CreateEventData) {
+export async function createNewEvent(
+  eventData: CreateEventData & { createdById: UserId },
+) {
   const events = await prisma.event.create({
     data: eventData,
   });
@@ -167,13 +166,18 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
 export class EventEndedError extends Error {}
 export class InviteeNotInvitedError extends Error {}
 
-export async function rsvpToEvent(userId: UserId, eventId: EventId, rsvpStatus: RsvpStatus, comment?: string) {
+export async function rsvpToEvent(
+  userId: UserId,
+  eventId: EventId,
+  rsvpStatus: RsvpStatus,
+  comment?: string,
+) {
   const eventExists = await prisma.event.findUnique({
-      where: { id: eventId },
+    where: { id: eventId },
   });
 
   if (!eventExists) {
-      throw new EventNotFoundError();
+    throw new EventNotFoundError();
   }
   if (eventExists.endsAt && new Date(eventExists.endsAt) < new Date()) {
     throw new EventEndedError();
@@ -194,4 +198,3 @@ export async function rsvpToEvent(userId: UserId, eventId: EventId, rsvpStatus: 
   });
   return rsvp;
 }
-
