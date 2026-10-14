@@ -12,6 +12,7 @@ import {
   FaFileLines,
   FaHeading,
 } from "react-icons/fa6";
+import { BiMinus, BiPlus } from "react-icons/bi";
 
 const LocationPicker = dynamic(
   () => import("@/features/location/components/mapInput"),
@@ -111,7 +112,17 @@ export default function EventFormFields({
           size="sm"
           onClick={toggleEndFields}
         >
-          {showEndFields ? "Remove end date" : "Add end date"}
+          {showEndFields ? (
+            <>
+              {" "}
+              <BiMinus /> <p>Remove end date</p>
+            </>
+          ) : (
+            <>
+              {" "}
+              <BiPlus /> <p>Add end date</p>
+            </>
+          )}
         </Button>
       </div>
 
