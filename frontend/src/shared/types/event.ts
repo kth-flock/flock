@@ -86,3 +86,16 @@ export type ExtendedComment = Prisma.CommentGetPayload<{
     };
   };
 }>;
+
+export type ExtendedInvitee = Prisma.InviteeGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        imageUrl: true;
+      };
+    };
+  };
+}>;

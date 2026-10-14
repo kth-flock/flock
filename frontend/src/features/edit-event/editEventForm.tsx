@@ -6,7 +6,7 @@ import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 import { updateEventSchema } from "@flock/shared/schemas/event";
 import { updateEventFetch } from "@/shared/lib/api";
-import type { Event } from "@prisma/types";
+import type { ExtendedEvent } from "@/shared/types/event";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { useRouter } from "next/navigation";
 import { FaCamera } from "react-icons/fa6";
@@ -15,7 +15,7 @@ import { FaCamera } from "react-icons/fa6";
 
 // TODO: Wire up image-upload
 
-export default function EditEventForm({ event }: { event: Event }) {
+export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const router = useRouter();
   const [validationError, setValidationError] = useState<
     Record<string, string>
