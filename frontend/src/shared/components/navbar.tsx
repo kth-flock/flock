@@ -14,6 +14,7 @@ const navLinkStyle =
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
 
+
 export default async function Navbar() {
   const token = (await cookies()).get("token")?.value;
   return (
