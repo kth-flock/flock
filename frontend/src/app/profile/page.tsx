@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import ProfileHeader from "@/features/profile/components/profileHeader";
 import ProfileContent from "@/features/profile/components/profileContent";
 import ProfileHistory from "@/features/profile/components/profileHistory";
 import {
-  getHostedEvents,
-  getInvitedEvents,
+  getMyHostedEvents,
+  getMyInvitedEvents,
   getMyProfile,
   getProfileFriends,
 } from "@/features/profile/lib/api";
@@ -17,15 +18,16 @@ export const metadata: Metadata = { title: "My profile • Flock" };
 export const dynamic = "force-dynamic";
 
 export default async function MyProfilePage() {
-  const profile = await getMyProfile();
+  const cookie = (await cookies()).toString();
+  const profile = await getMyProfile(cookie);
 
   // TODO: point this at the login page once it exists
   if (!profile) redirect("/");
 
   const [friends, hostedEvents, invitedEvents] = await Promise.all([
-    getProfileFriends(profile.id),
-    getHostedEvents(profile.id),
-    getInvitedEvents(profile.id),
+    getProfileFriends(profile.id, cookie),
+    getMyHostedEvents(cookie),
+    getMyInvitedEvents(cookie),
   ]);
 
   return (

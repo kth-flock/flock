@@ -57,8 +57,9 @@ function FriendStack({ friends }: { friends: PublicUser[] }) {
 type ProfileContentProps = {
   profile: ProfileDetails;
   friends: PublicUser[];
-  hostedEvents: EventSummary[];
-  invitedEvents: InvitedEvent[];
+  // Only known for your own profile
+  hostedEvents?: EventSummary[];
+  invitedEvents?: InvitedEvent[];
   className?: string;
 };
 
@@ -81,16 +82,24 @@ export default function ProfileContent({
       label: "Friends",
       extra: friends.length > 0 && <FriendStack friends={friends} />,
     },
-    {
-      icon: <FaHouseChimney />,
-      value: String(hostedEvents.length),
-      label: "Events hosted",
-    },
-    {
-      icon: <FaCalendarCheck />,
-      value: String(invitedEvents.length),
-      label: "Invitations",
-    },
+    ...(hostedEvents
+      ? [
+          {
+            icon: <FaHouseChimney />,
+            value: String(hostedEvents.length),
+            label: "Events hosted",
+          },
+        ]
+      : []),
+    ...(invitedEvents
+      ? [
+          {
+            icon: <FaCalendarCheck />,
+            value: String(invitedEvents.length),
+            label: "Invitations",
+          },
+        ]
+      : []),
   ];
 
   return (

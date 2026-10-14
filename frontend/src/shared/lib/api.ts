@@ -1,8 +1,6 @@
 import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
-import type {
-  CreateEventData,
-  UpdateEventData,
-} from "@flock/shared/schemas/event";
+import type { ChangeEmail, ChangePassword, UserInfo } from "@flock/shared/schemas/user";
+import type { CreateEventData, UpdateEventData } from "@flock/shared/schemas/event";
 import { UserSearchResult, PrivateUser, PublicUser } from "../types/user";
 import type { ExtendedEvent } from "../types/event";
 
@@ -102,6 +100,74 @@ export async function uninviteFriendFetch(eventId: number, userId: number) {
     const response: { error?: string } = await res.json().catch(() => ({}));
     throw new Error(response.error ?? "Failed to uninvite user");
   }
+}
+
+export async function sendFriendRequestFetch(userId: number) {
+  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ requesteeId: userId }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to send friend request");
+  }
+}
+
+export async function acceptFriendRequestFetch(userId: number) {
+  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ requesterId: userId }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to accept friend request");
+  }
+}
+
+export async function removeFriendshipFetch(userId: number) {
+  const res = await fetch(`${API_BASE_URL}/me/friendships`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ friendId: userId }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to remove friendship");
+  }
+}
+
+async function patchMe(path: string, body: unknown, fallbackError: string) {
+  const res = await fetch(`${API_BASE_URL}/me${path}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? fallbackError);
+  }
+}
+
+export async function updateMyInfoFetch(data: UserInfo) {
+  await patchMe("", data, "Failed to update your profile");
+}
+
+export async function changeEmailFetch(data: ChangeEmail) {
+  await patchMe("/email", data, "Failed to change your email");
+}
+
+export async function changePasswordFetch(data: ChangePassword) {
+  await patchMe("/password", data, "Failed to change your password");
 }
 
 export async function uploadImageFetch(

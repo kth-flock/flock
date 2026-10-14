@@ -14,7 +14,8 @@ export async function getUsers(req: Request, res: Response) {
 export async function getUser(req: Request, res: Response) {
   const userId = validate(idSchema, req.params.userId, "Invalid user ID");
 
-  const user = await usersServices.getUserById(userId);
+  // Includes createdAt, for "Member since" on the profile page
+  const user = await usersServices.getUserProfile(userId);
 
   if (!user) {
     throw new NotFoundError("User not found");
