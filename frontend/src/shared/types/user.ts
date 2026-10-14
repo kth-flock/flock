@@ -5,7 +5,11 @@ export type PublicUser = {
   id: number;
   firstName: string;
   lastName: string;
-  imageUrl?: string | null;
+  imageUrl: string | null;
+};
+
+export type PrivateUser = PublicUser & {
+  email: string;
 };
 
 export type UserSearchResult = PublicUser & {

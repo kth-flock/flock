@@ -1,29 +1,13 @@
 "use client";
 import ImageUpload from "@/shared/components/imageUpload";
-import Input from "@/shared/components/formInputs";
-import { TextArea } from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
-import dynamic from "next/dynamic";
 import { useState } from "react";
-import type { CreateEventDraft } from "../types/eventTypes";
-import {
-  CreateEventData,
-  createEventSchema,
-} from "@flock/shared/schemas/event";
-const LocationPicker = dynamic(() => import("@/shared/components/mapInput"), {
-  ssr: false,
-});
-import {
-  createEventFetch,
-  deleteImageFromS3Fetch,
-} from "@/shared/lib/apiFetch";
-import {
-  FaHeading,
-  FaCalendarDay,
-  FaClock,
-  FaFileLines,
-  FaCamera,
-} from "react-icons/fa6";
+import { createEventSchema } from "@flock/shared/schemas/event";
+import { createEventFetch, deleteImageFromS3Fetch } from "@/shared/lib/api";
+import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
+import EventFormFields from "@/features/event/components/eventFormFields";
+
+import { FaCamera } from "react-icons/fa6";
 import { uploadSelectedImage } from "@/shared/lib/image";
 
 // TODO: make enddate optional
@@ -38,7 +22,7 @@ export default function CreateEventForm({
   >({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [eventDraft, setEventDraft] = useState<CreateEventDraft>({
+  const [eventDraft, setEventDraft] = useState<EventFormValues>({
     title: "",
     description: "",
     startDate: "",
@@ -48,9 +32,9 @@ export default function CreateEventForm({
     location: null,
   });
 
-  function handleInputChange<Key extends keyof CreateEventDraft>(
+  function handleInputChange<Key extends keyof EventFormValues>(
     field: Key,
-    value: CreateEventDraft[Key],
+    value: EventFormValues[Key],
   ) {
     setEventDraft((prev) => ({ ...prev, [field]: value }));
   }
@@ -90,12 +74,11 @@ export default function CreateEventForm({
     const endsAt = combineDateTime(eventDraft.endDate, eventDraft.endTime);
 
     const payload = validateFields({
-      createdById: 1, // user ID should be connected in backend
       title: eventDraft.title,
       description: eventDraft.description || undefined,
       locationName: eventDraft.location?.label,
       latitude: eventDraft.location?.lat,
-      longitude: eventDraft.location?.lng,
+      longitude: eventDraft.location?.lon,
       startsAt: startsAt ?? undefined,
       endsAt: endsAt ?? undefined,
     });
@@ -109,7 +92,10 @@ export default function CreateEventForm({
       // it's for deleting the image from the s3 bucket if the create event fails, but idk how to do it in a pretty way
       const imageUrl = await uploadSelectedImage(imageFile);
       try {
-        const createdEvent = await createEventFetch({ ...payload, imageUrl });
+        const createdEvent = await createEventFetch({
+          ...payload,
+          imageUrl,
+        });
         onCreated(createdEvent.id);
       } catch (error) {
         if (imageUrl) deleteImageFromS3Fetch(imageUrl).catch(() => {});
@@ -138,81 +124,11 @@ export default function CreateEventForm({
           <span>Upload</span>
         </span>
       </ImageUpload>
-
-      <span className="flex flex-1 max-sm:flex-wrap gap-2">
-        <Input
-          icon={<FaHeading aria-hidden />}
-          type="text"
-          label="Event title"
-          required
-          placeholder="Title"
-          value={eventDraft.title}
-          onChange={(e) => handleInputChange("title", e.target.value)}
-          error={validationError["title"] ?? ""}
-        />
-        <LocationPicker
-          onSelect={(loc) => handleInputChange("location", loc)}
-        />
-      </span>
-      <span className="flex flex-wrap gap-2">
-        <span className="flex flex-1 max-sm:flex-wrap gap-2">
-          <Input
-            icon={<FaCalendarDay aria-hidden />}
-            type="date"
-            label="Startdate"
-            required
-            value={eventDraft.startDate}
-            onChange={(e) => {
-              const startDate = e.target.value;
-
-              setEventDraft((prev) => ({
-                ...prev,
-                startDate,
-              }));
-            }}
-            error={validationError["startDate"] ?? ""}
-          />
-
-          <Input
-            icon={<FaClock aria-hidden />}
-            type="time"
-            label="Starttime"
-            required
-            value={eventDraft.startTime}
-            onChange={(e) => {
-              const startTime = e.target.value;
-
-              setEventDraft((prev) => ({
-                ...prev,
-                startTime,
-              }));
-            }}
-            error={validationError["startDate"] ?? ""}
-          />
-        </span>
-        <span className="flex flex-1 max-sm:flex-wrap gap-2">
-          <Input
-            icon={<FaCalendarDay aria-hidden />}
-            type="date"
-            label="Enddate"
-            value={eventDraft.endDate}
-            onChange={(e) => handleInputChange("endDate", e.target.value)}
-            error={validationError["endDate"] ?? ""}
-          />
-          <Input
-            icon={<FaClock aria-hidden />}
-            type="time"
-            label="Endtime"
-            value={eventDraft.endTime}
-            onChange={(e) => handleInputChange("endTime", e.target.value)}
-            error={validationError["endDate"] ?? ""}
-          />
-        </span>
-      </span>
-      <TextArea
-        icon={<FaFileLines aria-hidden />}
-        value={eventDraft.description}
-        onChange={(e) => handleInputChange("description", e.target.value)}
+      <EventFormFields
+        values={eventDraft}
+        errors={validationError}
+        onChange={handleInputChange}
+        onLocationChange={(location) => handleInputChange("location", location)}
       />
       {submitError && (
         <p className="flock-ui-label text-error" role="alert">

@@ -1,4 +1,5 @@
 import type { PublicUser } from "@/shared/types/user";
+import type { Event } from "@prisma/types";
 
 export type EventComment = {
   id: number;

@@ -15,16 +15,24 @@ import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { EventDetails, EventSummary } from "@/features/event/lib/types";
 
-function ImagePlaceholder({ title, className }: 
-  { title: string; className: string; }) {
+function ImagePlaceholder({
+  title,
+  className,
+}: {
+  title: string;
+  className: string;
+}) {
   return (
-    <span aria-hidden className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}>
+    <span
+      aria-hidden
+      className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}
+    >
       <span className="truncate">{title}</span>
     </span>
   );
 }
 
-export default function EventPreview({ event }: { event: EventDetails }) {
+export default function EventPreview({ event }: { event: ExtendedEvent }) {
   return (
     <Link
       href={`/event/${event.id}`}
@@ -49,7 +57,7 @@ export default function EventPreview({ event }: { event: EventDetails }) {
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
           <span
-            className="flock-h4 min-w-0 line-clamp-2 break-words"
+            className="flock-h4 min-w-0 line-clamp-2 wrap-break-words"
             title={event.title}
           >
             {event.title}
@@ -62,9 +70,15 @@ export default function EventPreview({ event }: { event: EventDetails }) {
         </div>
 
         <span className="flex flex-wrap gap-x-4 gap-y-2">
-          <span className="inline-flex gap-2 items-center flock-body text-nowrap" title="Date">
+          <span
+            className="inline-flex gap-2 items-center flock-body text-nowrap"
+            title="Date"
+          >
             <FaCalendar />
-            <time dateTime={event.startsAt} title={formatDate(event.startsAt)}>
+            <time
+              dateTime={event.startsAt.toISOString()}
+              title={formatDate(event.startsAt)}
+            >
               {formatRelativeDate(event.startsAt)}
             </time>
           </span>
@@ -79,7 +93,7 @@ export default function EventPreview({ event }: { event: EventDetails }) {
             title={event.locationName}
           >
             <FaLocationDot className="mt-1 shrink-0" />
-            <span className="min-w-0 line-clamp-2 break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-words">
               {event.locationName}
             </span>
           </span>
@@ -124,9 +138,15 @@ export function SmallEventPreview({ event }: { event: EventSummary }) {
           <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
         </span>
 
-        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
+        <span
+          className="inline-flex items-center gap-1 flock-caption"
+          title="Date"
+        >
           <FaCalendar />
-          <time dateTime={event.startsAt} title={formatDate(event.startsAt)}>
+          <time
+            dateTime={event.startsAt.toISOString()}
+            title={formatDate(event.startsAt)}
+          >
             {formatRelativeDate(event.startsAt)}
           </time>
         </span>
@@ -156,11 +176,7 @@ export function NoNextEvent() {
           Create one and invite your friends!
         </p>
       </div>
-      <Button
-        href="/create-event"
-        icon={<FaCirclePlus />}
-        iconPlacement="left"
-      >
+      <Button href="/create-event" icon={<FaCirclePlus />} iconPlacement="left">
         Create event
       </Button>
     </div>

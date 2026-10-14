@@ -5,72 +5,121 @@ import type { EventDetails, Rsvp } from "./types";
 
 // Placeholder data used while frontend pages aren't wired to the backend
 
-const alice: ProfileDetails = {
+type ExampleUser = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string | null;
+  pwdHash: string | null;
+  createdAt: Date;
+};
+
+const alice: ExampleUser = {
   id: 1,
   firstName: "Felix",
   lastName: "Larsson",
   imageUrl: null,
-  createdAt: "2026-09-16T13:31:00.000Z",
+  email: "felix@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-16T13:31:00.000Z"),
 };
 
-const bob: ProfileDetails = {
+const bob: ExampleUser = {
   id: 2,
   firstName: "Sandra",
   lastName: "Kåhre",
   imageUrl: null,
-  createdAt: "2026-09-16T14:02:00.000Z",
+  email: "sandra@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-16T14:02:00.000Z"),
 };
 
-const clara: ProfileDetails = {
+const clara: ExampleUser = {
   id: 3,
   firstName: "Alice",
   lastName: "Cohen",
   imageUrl: null,
-  createdAt: "2026-09-22T09:15:00.000Z",
+  email: "alice@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-22T09:15:00.000Z"),
 };
 
-const dave: ProfileDetails = {
+const dave: ExampleUser = {
   id: 4,
   firstName: "John",
   lastName: "Smith One",
   imageUrl: null,
-  createdAt: "2026-09-24T18:40:00.000Z",
+  email: "john.one@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-24T18:40:00.000Z"),
 };
 
-const erin: ProfileDetails = {
+const erin: ExampleUser = {
   id: 5,
   firstName: "John",
   lastName: "Smith Two",
   imageUrl: null,
-  createdAt: "2026-09-26T11:05:00.000Z",
+  email: "john.two@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-26T11:05:00.000Z"),
 };
 
-const frank: ProfileDetails = {
+const frank: ExampleUser = {
   id: 6,
   firstName: "John",
   lastName: "Smith Three",
   imageUrl: null,
-  createdAt: "2026-10-01T08:20:00.000Z",
+  email: "john.three@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-10-01T08:20:00.000Z"),
 };
 
-const grace: ProfileDetails = {
+const grace: ExampleUser = {
   id: 7,
   firstName: "John",
   lastName: "Smith Four",
   imageUrl: null,
-  createdAt: "2026-10-03T20:45:00.000Z",
+  email: "john.four@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-10-03T20:45:00.000Z"),
+};
 };
 
-export const exampleFriends: PublicUser[] = [alice, bob, clara];
+function toPublicUser(user: ExampleUser): PublicUser {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    createdAt: user.createdAt.toISOString(),
+  };
+}
+
+function toProfileDetails(user: ExampleUser): ProfileDetails {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    createdAt: user.createdAt.toISOString(),
+  };
+}
 
 export const exampleProfiles: ProfileDetails[] = [
-  alice,
-  bob,
-  clara,
-  dave,
-  erin,
-  frank,
-  grace,
+  toProfileDetails(alice),
+  toProfileDetails(bob),
+  toProfileDetails(clara),
+  toProfileDetails(dave),
+  toProfileDetails(erin),
+  toProfileDetails(frank),
+  toProfileDetails(grace),
+];
+
+export const exampleFriends: PublicUser[] = [
+  toPublicUser(alice),
+  toPublicUser(bob),
+  toPublicUser(clara),
 ];
 
 export const exampleEvent: EventDetails = {
@@ -80,19 +129,22 @@ export const exampleEvent: EventDetails = {
   description:
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ac nunc euismod, ullamcorper nulla vitae, feugiat tellus. Aenean in lorem quam. Pellentesque vitae nisi sed quam tincidunt pharetra. Cras erat mi, blandit non mollis ut, ultrices sit amet nibh. Nullam pharetra iaculis auctor. Nunc lobortis felis id tortor hendrerit accumsan. Nullam nec mollis dolor, a varius odio. Quisque semper luctus accumsan. Nullam et bibendum sapien. Aenean ultrices bibendum imperdiet. Sed rhoncus sapien eget interdum blandit. Vivamus suscipit purus eu massa efficitur eleifend.\n\nVestibulum nec lorem id metus facilisis vehicula. Phasellus magna sem, blandit at bibendum in, sollicitudin sed odio. Nam interdum, mauris et elementum egestas, massa nulla faucibus urna, ut lobortis lectus diam a nulla.",
   locationName: "Sommarliden, Tyresö",
-  googlePlaceId: null,
-  startsAt: "2026-10-10T12:00:00.000Z",
-  endsAt: "2026-10-10T16:00:00.000Z",
+  latitude: 59.2,
+  longitude: 18.3,
+  startsAt: new Date("2026-10-10T12:00:00.000Z"),
+  endsAt: new Date("2026-10-10T16:00:00.000Z"),
+  createdAt: new Date("2026-09-20T12:00:00.000Z"),
   imageUrl:
     "https://images.unsplash.com/photo-1508189860359-777d945909ef?w=1200",
   createdBy: alice,
+  invitees: [],
   announcements: [
     {
       id: 1,
       eventId: 1,
       userId: alice.id,
       content: "Welcome! Pls bring you car.",
-      createdAt: "2026-09-25T09:30:00.000Z",
+      createdAt: new Date("2026-09-25T09:30:00.000Z"),
       user: alice,
       comments: [
         {
@@ -100,7 +152,7 @@ export const exampleEvent: EventDetails = {
           announcementId: 1,
           userId: bob.id,
           content: "Hell yes",
-          createdAt: "2026-09-25T10:05:00.000Z",
+          createdAt: new Date("2026-09-25T10:05:00.000Z"),
           user: bob,
         },
         {
@@ -108,7 +160,7 @@ export const exampleEvent: EventDetails = {
           announcementId: 1,
           userId: clara.id,
           content: "Lfg",
-          createdAt: "2026-09-25T11:42:00.000Z",
+          createdAt: new Date("2026-09-25T11:42:00.000Z"),
           user: clara,
         },
       ],
@@ -118,42 +170,49 @@ export const exampleEvent: EventDetails = {
       eventId: 1,
       userId: alice.id,
       content: "Imagine a world where we all bring our own cars.",
-      createdAt: "2026-09-28T17:15:00.000Z",
+      createdAt: new Date("2026-09-28T17:15:00.000Z"),
       user: alice,
       comments: [],
     },
   ],
 };
 
-const hemmafest: EventDetails = {
+const hemmafest: ExtendedEvent = {
   id: 2,
   createdById: bob.id,
   title: "Hemmafest!",
   description: null,
   locationName: "Industrigatan 7A",
-  googlePlaceId: null,
-  startsAt: "2026-10-17T16:00:00.000Z",
-  endsAt: "2026-10-17T21:00:00.000Z",
+  latitude: null,
+  longitude: null,
+  startsAt: new Date("2026-10-17T16:00:00.000Z"),
+  endsAt: new Date("2026-10-17T21:00:00.000Z"),
   imageUrl: null,
+  createdAt: new Date("2026-09-22T12:00:00.000Z"),
   createdBy: bob,
+  invitees: [],
   announcements: [],
 };
 
-const boardGameNight: EventDetails = {
+const boardGameNight: ExtendedEvent = {
   id: 3,
   createdById: clara.id,
-  title: "Board game night with lots of friends and some more friends and maybe perhaps even more friends than you can imagine",
+  title:
+    "Board game night with lots of friends and some more friends and maybe perhaps even more friends than you can imagine",
   description: null,
   locationName: "Valhallavägen 79",
-  googlePlaceId: null,
-  startsAt: "2026-10-23T16:30:00.000Z",
+  latitude: null,
+  longitude: null,
+  startsAt: new Date("2026-10-23T16:30:00.000Z"),
   endsAt: null,
   imageUrl: null,
+  createdAt: new Date("2026-09-24T12:00:00.000Z"),
   createdBy: clara,
+  invitees: [],
   announcements: [],
 };
 
-export const exampleEvents: EventDetails[] = [
+export const exampleEvents: ExtendedEvent[] = [
   exampleEvent,
   hemmafest,
   boardGameNight,
@@ -198,20 +257,20 @@ export const exampleNotifications: DashboardNotification[] = [
   {
     id: 1,
     type: "req",
-    from: bob,
+    from: toPublicUser(bob),
     createdAt: "2026-10-05T18:20:00.000Z",
   },
   {
     id: 2,
     type: "invite",
-    from: bob,
+    from: toPublicUser(bob),
     event: { id: hemmafest.id, title: hemmafest.title },
     createdAt: "2026-10-04T12:00:00.000Z",
   },
   {
     id: 3,
     type: "RSVP",
-    from: bob,
+    from: toPublicUser(bob),
     event: { id: exampleEvent.id, title: exampleEvent.title },
     RSVPstatus: "ACCEPTED",
     createdAt: "2026-10-02T08:45:00.000Z",

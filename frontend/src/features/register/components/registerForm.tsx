@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
-import ImageUpload from "@/shared/components/imageUpload";
 import {
   RegisterUserDraft,
   registerUserFormSchema,
 } from "../types/registerTypes";
-import { registerFetch } from "@/shared/lib/apiFetch";
+import { useAuth } from "@/shared/auth/authContext";
+import Link from "next/link";
 
-export default function Register() {
+export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
     Record<string, string>
   >({});
@@ -28,6 +29,8 @@ export default function Register() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { register } = useAuth();
 
   function handleInputChange<Key extends keyof RegisterUserDraft>(
     field: Key,
@@ -81,14 +84,14 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      await registerFetch({
+      await register({
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
         password: payload.password,
       });
 
-      //TODO: what happens when you successfully register
+      router.push("/");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -136,7 +139,7 @@ export default function Register() {
           name="email"
           type="email"
           label="Email"
-          placeholder="Email"
+          placeholder="email@example.com"
           required
           autoComplete="email"
           value={registerDraft.email}
@@ -150,9 +153,9 @@ export default function Register() {
             name="password"
             type="password"
             label="Password"
-            placeholder="Password"
+            placeholder="••••••••"
             required
-            autoComplete="new-password"
+            autoComplete="off"
             value={registerDraft.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             error={validationError["password"] ?? ""}
@@ -163,9 +166,9 @@ export default function Register() {
             name="confirmPassword"
             type="password"
             label="Confirm password"
-            placeholder="Confirm password"
+            placeholder="••••••••"
             required
-            autoComplete="new-password"
+            autoComplete="off"
             value={registerDraft.confirmPassword}
             onChange={(e) =>
               handleInputChange("confirmPassword", e.target.value)
@@ -190,6 +193,15 @@ export default function Register() {
           {isSubmitting ? "Registering..." : "Register"}
         </Button>
       </form>
+      <span className="inline-flex gap-2 items-center flock-body justify-center">
+        Already have an account?
+        <Link
+          href="/register"
+          className="text-secondary font-semibold! hover:underline "
+        >
+          Log in
+        </Link>
+      </span>
     </>
   );
 }

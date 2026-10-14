@@ -1,5 +1,7 @@
 const skeletonStyle = "animate-pulse rounded-2xl bg-neutral/50";
 
+// TODO: Double check, doe sthis match layout?
+
 export default function EventLoading() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 pb-16">

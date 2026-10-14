@@ -6,12 +6,15 @@ import {
   FaHouseChimney,
   FaCirclePlus,
 } from "react-icons/fa6";
+import { cookies } from "next/headers";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const token = (await cookies()).get("token")?.value;
+
   return (
     <nav className="w-full py-2 md:p-6 flex flex-row justify-between h-20 md:h-32 items-center">
       <Link
@@ -29,36 +32,38 @@ export default function Navbar() {
         />
       </Link>
 
-      <span className="flex h-full items-center gap-4 rounded-full bg-accent/10 px-4 md:px-8 py-2 md:py-4">
-        <Link
-          href="/"
-          className={`flex h-[50%] ${navLinkStyle}`}
-          aria-label="Home"
-        >
-          <FaHouseChimney className={navIconStyle} />
-        </Link>
-        <Link
-          href="/create-event"
-          className={`flex h-[50%] ${navLinkStyle}`}
-          aria-label="Create Event"
-        >
-          <FaCirclePlus className={navIconStyle} />
-        </Link>
-        <Link
-          href="/"
-          className={`flex h-[50%] ${navLinkStyle}`}
-          aria-label="Calendar"
-        >
-          <FaCalendarDays className={navIconStyle} />
-        </Link>
-        <Link
-          href="/profile"
-          className={`flex h-full ${navLinkStyle}`}
-          aria-label="Profile"
-        >
-          <FaCircleUser className={navIconStyle} />
-        </Link>
-      </span>
+      {token && (
+        <span className="flex h-full items-center gap-4 rounded-full bg-accent/10 px-4 md:px-8 py-2 md:py-4">
+          <Link
+            href="/"
+            className={`flex h-[50%] ${navLinkStyle}`}
+            aria-label="Home"
+          >
+            <FaHouseChimney className={navIconStyle} />
+          </Link>
+          <Link
+            href="/create-event"
+            className={`flex h-[50%] ${navLinkStyle}`}
+            aria-label="Create Event"
+          >
+            <FaCirclePlus className={navIconStyle} />
+          </Link>
+          <Link
+            href="/"
+            className={`flex h-[50%] ${navLinkStyle}`}
+            aria-label="Calendar"
+          >
+            <FaCalendarDays className={navIconStyle} />
+          </Link>
+          <Link
+            href="/profile"
+            className={`flex h-full ${navLinkStyle}`}
+            aria-label="Profile"
+          >
+            <FaCircleUser className={navIconStyle} />
+          </Link>
+        </span>
+      )}
     </nav>
   );
 }

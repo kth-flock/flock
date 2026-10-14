@@ -2,38 +2,31 @@ import { Request, Response } from "express";
 import * as friendsServices from "../services/friendshipsServices";
 import { directionSchema, idSchema } from "@flock/shared/schemas/common";
 import { getUserById } from "../services/usersServices";
+import { validate } from "../utils/validate";
+import { NotFoundError } from "../utils/errors";
 
 export async function getMyFriends(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.user.id);
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-
-  const userId = result.data;
   const user = await getUserById(userId);
 
   if (!user) {
-    return res.status(404).json({ status: "Error", error: "User not found" });
+    throw new NotFoundError("User not found");
   }
 
-  const friendsInfo = await friendsServices.getAllFriends(result.data);
+  const friendsInfo = await friendsServices.getAllFriends(userId);
 
   res.status(200).json({ status: "Success", data: friendsInfo });
 }
 
 export async function getFriendRequests(req: Request, res: Response) {
-  const result = directionSchema.safeParse(req.query.direction);
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid request",
-    });
-  }
+  const direction = validate(
+    directionSchema,
+    req.query.direction,
+    "Invalid request",
+  );
 
-  const direction = result.data;
-  const userId = req.user.id; // might need to be type checked
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
   const friendshipRequests = await friendsServices.getFriendRequests(
     userId,
@@ -45,59 +38,31 @@ export async function getFriendRequests(req: Request, res: Response) {
 
 // Send request
 export async function sendFriendRequest(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.body.requesteeId);
-  if (!result.success) {
-    return res.status(400).json({ error: "Invalid user ID" });
-  }
+  const requesterId = validate(idSchema, req.user.id, "Invalid user ID");
+  const requesteeId = validate(
+    idSchema,
+    req.body.requesteeId,
+    "Invalid user ID",
+  );
 
-  const requesterId = req.user.id;
-  const requesteeId = result.data;
-
-  try {
-    const request = await friendsServices.sendFriendRequest(
-      requesterId,
-      requesteeId,
-    );
-    res.status(201).json({
-      status: "Success",
-      message: "Friend request sent",
-      data: request,
-    });
-  } catch (err) {
-    if (err instanceof friendsServices.SelfFriendRequestError) {
-      return res.status(400).json({
-        status: "Error",
-        error: "Cannot send a friend request to yourself",
-      });
-    }
-    if (err instanceof friendsServices.UserNotFoundError) {
-      return res.status(404).json({ status: "Error", error: "User not found" });
-    }
-    if (err instanceof friendsServices.AlreadyFriendsError) {
-      return res
-        .status(409)
-        .json({ status: "Error", error: "Users already friends" });
-    }
-    if (err instanceof friendsServices.RequestPendingError) {
-      return res
-        .status(409)
-        .json({ status: "Error", error: "Friend request already pending" });
-    }
-    throw err;
-  }
+  const request = await friendsServices.sendFriendRequest(
+    requesterId,
+    requesteeId,
+  );
+  res.status(201).json({
+    status: "Success",
+    message: "Friend request sent",
+    data: request,
+  });
 }
 
 export async function acceptFriendship(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.body.requesterId);
-
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-
-  const requesterId = result.data;
-  const requesteeId = req.user.id;
+  const requesterId = validate(
+    idSchema,
+    req.body.requesterId,
+    "Invalid user ID",
+  );
+  const requesteeId = validate(idSchema, req.user.id, "Invalid user ID");
 
   const friendship = await friendsServices.getFriendship(
     requesterId,
@@ -105,9 +70,7 @@ export async function acceptFriendship(req: Request, res: Response) {
   );
 
   if (!friendship) {
-    return res
-      .status(404)
-      .json({ status: "Error", error: "Friend request not found" });
+    throw new NotFoundError("Friend request not found");
   }
 
   const updatedFriendship = await friendsServices.updateFriendship(friendship);
@@ -116,28 +79,19 @@ export async function acceptFriendship(req: Request, res: Response) {
 }
 
 export async function deleteFriendship(req: Request, res: Response) {
-  const userId = req.user.id; // check type?
-  const result = idSchema.safeParse(req.body.friendId);
-
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-  const friendId = result.data;
+  const userId = validate(idSchema, req.user.id, "Invalid user ID");
+  const friendId = validate(idSchema, req.body.friendId, "Invalid user ID");
 
   const friend = await getUserById(friendId);
   if (!friend) {
-    return res.status(404).json({ status: "Error", error: "User not found" });
+    throw new NotFoundError("User not found");
   }
 
   // check if friendship exists
   const friendship = await friendsServices.getFriendship(userId, friendId);
 
   if (!friendship) {
-    return res
-      .status(404)
-      .json({ status: "Error", error: " Friendship not found" });
+    throw new NotFoundError("Friendship not found");
   }
 
   friendsServices.deleteFriendship(friendship);

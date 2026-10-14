@@ -3,26 +3,11 @@ import SearchBar from "@/shared/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
-import type { UserSearchResult } from "@/shared/types/user";
-import { searchUsersFetch } from "@/shared/lib/apiFetch";
-import { debounce } from "@/shared/lib/debounce";
+import type { UserSearchResult, PublicUser } from "@/shared/types/user";
+import { searchUsersFetch, getMyFriends } from "@/shared/lib/api";
+import { debounce } from "lodash";
 
 // TODO: Connect to API and make sure types and structures are correct
-
-const allSuggestions: UserSearchResult[] = [
-  {
-    firstName: "Sandra",
-    lastName: "Kåhre",
-    id: 1,
-    friendshipStatus: "FRIENDS",
-  },
-  {
-    firstName: "Alice",
-    lastName: "Cohen",
-    id: 2,
-    friendshipStatus: "NONE",
-  },
-];
 
 export default function InviteFriends({ eventId }: { eventId: number | null }) {
   const searchRequestRef = useRef(0);
@@ -42,12 +27,12 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     null,
   );
   const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
-  const [suggestions, setSuggestions] = useState(allSuggestions);
+  const [suggestions, setSuggestions] = useState<UserSearchResult[]>([]);
 
   useEffect(() => {
     const invitedIds = new Set(invitees.map((invitee) => invitee.id));
     setSuggestions(
-      allSuggestions.filter((suggestion) => !invitedIds.has(suggestion.id)),
+      suggestions.filter((suggestion) => !invitedIds.has(suggestion.id)),
     );
   }, [invitees]);
 
@@ -58,6 +43,17 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
     },
     [debouncedSearch],
   );
+
+  useEffect(() => {
+    async function fetchFriends() {
+      const friends = await getMyFriends();
+      setSuggestions(
+        friends.map((friend) => ({ ...friend, friendshipStatus: "FRIENDS" })),
+      );
+    }
+
+    fetchFriends();
+  }, []);
 
   function onSearch(query: string) {
     const requestId = ++searchRequestRef.current;
@@ -82,11 +78,12 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
   }
 
   function handleSendInvites() {
+    // TODO: No endpoint for inviting multiple people at once?
     console.log("inviting...");
   }
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4 md:w-xl">
       <div className="w-full flex flex-col md:flex-row gap-4">
         <div className="w-full flex flex-col gap-2">
           <SearchBar onQueryChange={onSearch} />
@@ -135,7 +132,7 @@ export default function InviteFriends({ eventId }: { eventId: number | null }) {
         </div>
       </div>
       <div className="w-full flex justify-between">
-        <Button type="button" variant="secondary" href="/event">
+        <Button type="button" variant="secondary" href={`event/${eventId}`}>
           Skip
         </Button>
         <Button type="button" onClick={handleSendInvites}>
