@@ -5,9 +5,9 @@ import {
   ForbiddenError,
   ConflictError,
   InvalidCredentialsError,
+  BadGatewayError,
 } from "../utils/errors";
 import multer from "multer";
-import { ZodError } from "zod";
 
 export function errorHandler(
   error: unknown,
@@ -50,6 +50,13 @@ export function errorHandler(
 
   if (error instanceof ConflictError) {
     return res.status(409).json({
+      status: "Error",
+      error: error.message,
+    });
+  }
+
+  if (error instanceof BadGatewayError) {
+    return res.status(502).json({
       status: "Error",
       error: error.message,
     });

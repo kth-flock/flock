@@ -6,9 +6,8 @@ import {
   UpdateEventData,
   RsvpStatus,
 } from "@flock/shared/schemas/event";
-import { NotFoundError, ForbiddenError } from "../utils/errors";
+import { NotFoundError, ForbiddenError, ValidationError } from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
-import { EventNotFoundError } from "./inviteesService";
 
 export async function getEvents() {
   const events = await prisma.event.findMany();
@@ -163,9 +162,6 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
   });
 }
 
-export class EventEndedError extends Error {}
-export class InviteeNotInvitedError extends Error {}
-
 export async function rsvpToEvent(
   userId: UserId,
   eventId: EventId,
@@ -177,24 +173,26 @@ export async function rsvpToEvent(
   });
 
   if (!eventExists) {
-    throw new EventNotFoundError();
+    throw new NotFoundError("Event not found, you cannot RSVP to it");
   }
   if (eventExists.endsAt && new Date(eventExists.endsAt) < new Date()) {
-    throw new EventEndedError();
+    throw new ValidationError("Event has ended, you cannot RSVP to it");
   }
   const inviteeExists = await prisma.invitee.findUnique({
-    where: { eventId_userId: { eventId, userId: userId } },
+    where: { eventId_userId: { eventId, userId } },
   });
   if (!inviteeExists) {
-    throw new InviteeNotInvitedError();
+    throw new ValidationError(
+      "You are not invited to this event, you cannot RSVP to it",
+    );
   }
 
-  const rsvp = await prisma.invitee.update({
-    where: { eventId_userId: { eventId, userId: userId } },
+  return prisma.invitee.update({
+    where: { eventId_userId: { eventId, userId } },
     data: {
       rsvp: rsvpStatus,
       rsvpComment: comment,
+      updatedAt: new Date(),
     },
   });
-  return rsvp;
 }

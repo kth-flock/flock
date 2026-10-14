@@ -5,45 +5,34 @@ import {
 } from "@flock/shared/schemas/common";
 import { Request, Response } from "express";
 import * as imageServices from "../services/imageService";
+import { validate } from "../utils/validate";
+import { ValidationError } from "../utils/errors";
 
 export async function uploadImage(req: Request, res: Response) {
   if (!req.file) {
-    return res.status(400).json({ error: "No file provided" });
+    throw new ValidationError("No file provided");
   }
 
-  const folderResult = imageFolderSchema.safeParse(req.body?.folder);
+  const folder = validate(
+    imageFolderSchema,
+    req.body?.folder,
+    "Invalid folder",
+  );
+  validate(imageSchema, req.file, "Invalid image");
 
-  if (!folderResult.success) {
-    return res.status(400).json({
-      error: "Invalid folder",
-      details: folderResult.error.issues,
-    });
-  }
-
-  const fileResult = imageSchema.safeParse(req.file);
-
-  if (!fileResult.success) {
-    return res.status(400).json({
-      error: "Invalid image",
-      details: fileResult.error.issues,
-    });
-  }
-
-  const imageUrl = await imageServices.uploadImage(req.file, folderResult.data);
+  const imageUrl = await imageServices.uploadImage(req.file, folder);
 
   res.status(201).json({ imageUrl });
 }
 
 export async function deleteImageFromS3(req: Request, res: Response) {
-  const imageURL = imageKeySchema.safeParse(req.body?.imageUrl);
+  const imageUrl = validate(
+    imageKeySchema,
+    req.body?.imageUrl,
+    "Invalid key",
+  );
 
-  if (!imageURL.success) {
-    return res.status(400).json({
-      error: "Invalid key",
-    });
-  }
-
-  await imageServices.deleteImageFromS3(imageURL.data);
+  await imageServices.deleteImageFromS3(imageUrl);
 
   res.status(200).json({ status: "Success", message: "Image deleted" });
 }
