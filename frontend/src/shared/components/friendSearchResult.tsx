@@ -69,7 +69,7 @@ export default function FriendSearchResult({
           aria-label={"decline friend request"}
           onClick={onDeclineFriend}
           disabled={action.disabled }
-          className="px-1.5"
+          className="px-1.5 bg-error hover:bg-error-dark"
         >
         </Button>
         }
