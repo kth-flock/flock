@@ -23,20 +23,25 @@ export default function InviteBar() {
 
   const debouncedSearch = useMemo(
     () =>
-      debounce(async (query: string, requestId: number) => {
-        setLoading(true);
-        try {
-          const data = await searchUsersFetch(query);
-          if (requestId === searchRequestRef.current) setResults(data);
-        } catch (err) {
-          if (requestId === searchRequestRef.current) {
-            console.error(err);
-            setResults([]);
+      debounce(
+        async (query: string, requestId: number) => {
+          setLoading(true);
+          try {
+            const data = await searchUsersFetch(query);
+            if (requestId === searchRequestRef.current) setResults(data);
+          } catch (err) {
+            if (requestId === searchRequestRef.current) {
+              console.error(err);
+              setResults([]);
+            }
+          } finally {
+            if (requestId === searchRequestRef.current) setLoading(false);
           }
-        } finally {
-          if (requestId === searchRequestRef.current) setLoading(false);
-        }
-      }, 400),
+        },
+        300,
+        // First keystroke after a pause searches immediately; further typing waits for a pause.
+        { leading: true, trailing: true },
+      ),
     [],
   );
 
