@@ -68,7 +68,7 @@ export default function FriendSearchResult({
           iconPlacement="right"
           aria-label={"decline friend request"}
           onClick={onDeclineFriend}
-          disabled={action.disabled }
+          disabled={action.disabled || isPending}
           className="px-1.5 bg-error hover:bg-error-dark"
         >
         </Button>
@@ -80,7 +80,7 @@ export default function FriendSearchResult({
         iconPlacement="right"
         aria-label={action.ariaLabel}
         onClick={action.onClick}
-        disabled={action.disabled }
+        disabled={action.disabled || isPending}
         className="px-1.5"
       >
 

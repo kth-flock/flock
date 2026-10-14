@@ -7,7 +7,12 @@ import { twMerge } from "tailwind-merge";
 import FriendSearchResult from "./friendSearchResult";
 import type { UserSearchResult } from "../types/user";
 import { debounce } from "lodash";
-import { searchUsersFetch } from "@/shared/lib/api";
+import {
+  searchUsersFetch,
+  sendFriendRequestFetch,
+  acceptFriendRequestFetch,
+  declineFriendRequestFetch,
+} from "@/shared/lib/api";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -63,6 +68,55 @@ export default function InviteBar() {
     }
     setLoading(true);
     debouncedSearch(query, requestId);
+  }
+
+  function updateFriendshipStatus(
+    userId: number,
+    friendshipStatus: UserSearchResult["friendshipStatus"],
+  ) {
+    setResults(
+      (prev) =>
+        prev?.map((user) =>
+          user.id === userId ? { ...user, friendshipStatus } : user,
+        ) ?? null,
+    );
+  }
+
+  async function handleAddFriend(user: UserSearchResult) {
+    setPendingUserId(user.id);
+    try {
+      await sendFriendRequestFetch(user.id);
+      updateFriendshipStatus(user.id, "REQUEST_SENT");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPendingUserId(null);
+    }
+  }
+
+  async function handleAcceptFriend(user: UserSearchResult) {
+    setPendingUserId(user.id);
+    try {
+      // They sent the request, so their id is requesterId.
+      await acceptFriendRequestFetch(user.id);
+      updateFriendshipStatus(user.id, "FRIENDS");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPendingUserId(null);
+    }
+  }
+
+  async function handleDeclineFriend(user: UserSearchResult) {
+    setPendingUserId(user.id);
+    try {
+      await declineFriendRequestFetch(user.id);
+      updateFriendshipStatus(user.id, "NONE");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPendingUserId(null);
+    }
   }
 
   useEffect(() => {
@@ -124,6 +178,9 @@ export default function InviteBar() {
                     <FriendSearchResult
                       user={friend}
                       isPending={pendingUserId === friend.id}
+                      onAddFriend={() => handleAddFriend(friend)}
+                      onAcceptFriend={() => handleAcceptFriend(friend)}
+                      onDeclineFriend={() => handleDeclineFriend(friend)}
                     />
                     {results && index < results.length - 1 && (
                       <div className="mx-auto w-3/4 border-t border-primary/20" />
