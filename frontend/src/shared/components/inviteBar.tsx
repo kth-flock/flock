@@ -21,7 +21,10 @@ const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 export default function InviteBar() {
   const [results, setResults] = useState<UserSearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const [pendingUserId, setPendingUserId] = useState<number | null>(null);
+  const [pending, setPending] = useState<{
+    userId: number;
+    action: "add" | "accept" | "decline";
+  } | null>(null);
   const searchRequestRef = useRef(0);
   const [searchBarToggle, setSearchBarToggle] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
@@ -83,19 +86,19 @@ export default function InviteBar() {
   }
 
   async function handleAddFriend(user: UserSearchResult) {
-    setPendingUserId(user.id);
+    setPending({ userId: user.id, action: "add" });
     try {
       await sendFriendRequestFetch(user.id);
       updateFriendshipStatus(user.id, "REQUEST_SENT");
     } catch (error) {
       console.error(error);
     } finally {
-      setPendingUserId(null);
+      setPending(null);
     }
   }
 
   async function handleAcceptFriend(user: UserSearchResult) {
-    setPendingUserId(user.id);
+    setPending({ userId: user.id, action: "accept" });
     try {
       // They sent the request, so their id is requesterId.
       await acceptFriendRequestFetch(user.id);
@@ -103,19 +106,19 @@ export default function InviteBar() {
     } catch (error) {
       console.error(error);
     } finally {
-      setPendingUserId(null);
+      setPending(null);
     }
   }
 
   async function handleDeclineFriend(user: UserSearchResult) {
-    setPendingUserId(user.id);
+    setPending({ userId: user.id, action: "decline" });
     try {
       await declineFriendRequestFetch(user.id);
       updateFriendshipStatus(user.id, "NONE");
     } catch (error) {
       console.error(error);
     } finally {
-      setPendingUserId(null);
+      setPending(null);
     }
   }
 
@@ -177,7 +180,10 @@ export default function InviteBar() {
                   <div key={friend.id}>
                     <FriendSearchResult
                       user={friend}
-                      isPending={pendingUserId === friend.id}
+                      isPending={pending?.userId === friend.id}
+                      pendingAction={
+                        pending?.userId === friend.id ? pending.action : null
+                      }
                       onAddFriend={() => handleAddFriend(friend)}
                       onAcceptFriend={() => handleAcceptFriend(friend)}
                       onDeclineFriend={() => handleDeclineFriend(friend)}
