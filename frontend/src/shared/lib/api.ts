@@ -151,6 +151,20 @@ export async function registerFetch(data: RegisterUser) {
   return response.data;
 }
 
+export async function sendFriendRequestFetch(requesteeId: number) {
+  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ requesteeId }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to send friend request");
+  }
+}
+
 export async function loginFetch(data: LoginUser) {
   const res = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
