@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import * as meServices from "../services/meServices";
 import { getUserById } from "../services/usersServices";
 import { idSchema } from "@flock/shared/schemas/common";
-import { editUserInfoSchema } from "@flock/shared/schemas/user";
+import {
+  changeEmailSchema,
+  changePasswordSchema,
+  editUserInfoSchema,
+} from "@flock/shared/schemas/user";
 import { validate } from "../utils/validate";
 import { NotFoundError } from "../utils/errors";
 
@@ -56,26 +60,36 @@ export async function editUserInfo(req: Request, res: Response) {
 }
 
 export async function changeEmail(req: Request, res: Response) {
-  const result = idSchema.safeParse(req.user.id); //TODO: we do this check often, we should maybe make a middleware for this.
-  if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid user ID",
-    });
-  }
-  const id = result.data;
-  //validate the id is their own id
-  //validate the new email is not already in use an email type
-  //change the email via the service
+  const id = validate(idSchema, req.user.id, "Invalid user ID");
+
+  const data = validate(
+    changeEmailSchema,
+    req.body,
+    "Invalid email or password",
+  );
+
+  const updatedUser = await meServices.changeEmail(id, data);
 
   res.status(200).json({
     status: "Success",
-    message: "User information successfully edited",
-    data: "Email changed successfully", //TODO: send the new email to the user
+    message: "Email successfully changed",
+    data: updatedUser,
   });
-
-
 }
 
 export async function changePassword(req: Request, res: Response) {
-  //TODO
+  const id = validate(idSchema, req.user.id, "Invalid user ID");
+
+  const data = validate(
+    changePasswordSchema,
+    req.body,
+    "The new password must be 8-50 characters with at least one uppercase letter and one number",
+  );
+
+  await meServices.changePassword(id, data);
+
+  res.status(200).json({
+    status: "Success",
+    message: "Password successfully changed",
+  });
 }
