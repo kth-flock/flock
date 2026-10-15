@@ -5,6 +5,7 @@ import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
 import { useState } from "react";
+import EventImage from "@/shared/components/eventImage";
 
 export default function EventHeader({
   event,
@@ -27,15 +28,17 @@ export default function EventHeader({
       )}
 
       <div className="relative flex flex-col justify-end h-64 w-full overflow-hidden rounded-2xl shadow-lg md:h-96">
-        <Image
-          src={event.imageUrl ?? "/placeholder.png"}
-          alt=""
+        <EventImage
+          src={event.imageUrl}
+          imageFailed={event.imageFailed}
+          alt={`Cover image for ${event.title}`}
           fill
           sizes="(min-width: 48rem) 48rem, 100vw"
           loading="eager"
           fetchPriority="high"
           className="object-cover"
         />
+
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
         <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">

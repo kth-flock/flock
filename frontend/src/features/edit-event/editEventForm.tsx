@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaCamera, FaPen, FaPenToSquare } from "react-icons/fa6";
+import EventImage from "@/shared/components/eventImage";
 
 // TODO: make enddate optional
 
@@ -141,8 +142,9 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
         </div>
       ) : (
         <div className="relative h-40 overflow-hidden rounded-2xl shadow-lg md:h-56">
-          <Image
-            src={event.imageUrl ?? "/placeholder.png"}
+          <EventImage
+            src={event.imageUrl}
+            imageFailed={event.imageFailed}
             alt=""
             fill
             sizes="(min-width: 48rem) 48rem, 100vw"
