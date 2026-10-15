@@ -50,7 +50,6 @@ function toPublicUser(user: ExampleUser): PublicUser {
     firstName: user.firstName,
     lastName: user.lastName,
     imageUrl: user.imageUrl,
-    createdAt: user.createdAt.toISOString(),
   };
 }
 
