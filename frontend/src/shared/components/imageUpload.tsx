@@ -16,7 +16,7 @@ type ImageUploadProps = {
 
 export default function ImageUpload({
   className,
-  accept = "image/*",
+  accept = "image/jpeg,image/png,image/gif",
   disabled = false,
   children,
   onFileSelect,

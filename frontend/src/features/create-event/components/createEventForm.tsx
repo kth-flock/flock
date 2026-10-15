@@ -8,7 +8,7 @@ import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
-import { uploadSelectedImage } from "@/shared/lib/image";
+import { uploadSelectedImage, withUploadedImage } from "@/shared/lib/image";
 
 // TODO: make enddate optional
 
@@ -88,19 +88,13 @@ export default function CreateEventForm({
     setSubmitError(null);
 
     try {
-      // this code needs to be checked, nested try catches no bueno
-      // it's for deleting the image from the s3 bucket if the create event fails, but idk how to do it in a pretty way
-      const imageUrl = await uploadSelectedImage(imageFile);
-      try {
-        const createdEvent = await createEventFetch({
+      const createdEvent = await withUploadedImage(imageFile, (imageUrl) =>
+        createEventFetch({
           ...payload,
           imageUrl,
-        });
-        onCreated(createdEvent.id);
-      } catch (error) {
-        if (imageUrl) deleteImageFromS3Fetch(imageUrl).catch(() => {});
-        throw error;
-      }
+        }),
+      );
+      onCreated(createdEvent.id);
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
