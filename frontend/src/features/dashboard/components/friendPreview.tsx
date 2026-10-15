@@ -16,18 +16,26 @@ export default function FriendPreview({ friends }: { friends: PublicUser[] }) {
         {friends.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">
             {friends.map((friend) => (
-              <Link key={friend.id} href={`/profile/${friend.id}`} title={`${friend.firstName} ${friend.lastName}`} className="group transition-all hover:scale-110 hover:-translate-y-0.5 hover:-rotate-5">
+              <Link
+                key={friend.id}
+                href={`/profile/${friend.id}`}
+                title={`${friend.firstName} ${friend.lastName}`}
+                className="group transition-all hover:scale-110 hover:-translate-y-0.5 hover:-rotate-5"
+              >
                 {friend.imageUrl ? (
                   <ProfileImage shadow profileImgSrc={friend.imageUrl} />
                 ) : (
-                  <ProfileImage shadow firstName={friend.firstName} lastName={friend.lastName}
+                  <ProfileImage
+                    shadow
+                    firstName={friend.firstName}
+                    lastName={friend.lastName}
                   />
                 )}
               </Link>
             ))}
           </div>
         ) : (
-          <p className="self-center flock-body-sm text-(--color-text-muted)">
+          <p className="self-center flock-body-sm text--text-muted">
             No friends added yet
           </p>
         )}

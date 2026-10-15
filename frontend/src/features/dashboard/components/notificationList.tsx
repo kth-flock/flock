@@ -4,7 +4,7 @@ import { FaChevronDown } from "react-icons/fa6";
 import Notification, { NotificationAction } from "./notification";
 import type { DashboardNotification } from "../lib/types";
 
-const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
+const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
 
 export default function NotificationList({
   notifications,
@@ -53,7 +53,7 @@ export default function NotificationList({
         className={`${isOpen ? "flex" : "hidden"} md:flex flex-col w-full`}
       >
         {notifications.length === 0 && (
-          <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
+          <p className="p-4 text-center flock-body-sm text-text-muted">
             No new notifications
           </p>
         )}

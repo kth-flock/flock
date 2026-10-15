@@ -43,7 +43,7 @@ export default function PrivateHomePage() {
   if (!data) {
     return (
       <main className="flex flex-1 items-center justify-center">
-        <p className="flock-body text-(--color-text-muted)">Loading…</p>
+        <p className="flock-body text-text-muted">Loading…</p>
       </main>
     );
   }

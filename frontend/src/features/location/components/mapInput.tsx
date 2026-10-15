@@ -178,7 +178,7 @@ export default function LocationPicker({
           )}
 
           {results.length > 0 && (
-            <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-white p-0 shadow-md">
+            <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-nackground p-0 shadow-md">
               {results.map((r, i) => (
                 <li
                   key={i}
@@ -199,7 +199,7 @@ export default function LocationPicker({
       </FieldWrapper>
 
       {isMapOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-white shadow-xl">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-background shadow-xl">
           <MapContainer
             center={
               selected?.lat !== undefined && selected.lon !== undefined
