@@ -170,6 +170,18 @@ export async function changePasswordFetch(data: ChangePassword) {
   await patchMe("/password", data, "Failed to change your password");
 }
 
+export async function deleteMyAccountFetch() {
+  const res = await fetch(`${API_BASE_URL}/me`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to delete your account");
+  }
+}
+
 export async function uploadImageFetch(
   file: File,
   folder: "events" | "profiles",

@@ -19,9 +19,16 @@ export async function getMyAccount(userId: UserId) {
 }
 
 export async function deleteMyAccount(userId: UserId) {
-  await prisma.user.delete({
-    where: { id: userId },
-  });
+  const onMyEvents = { event: { createdById: userId } };
+
+  await prisma.$transaction([
+    prisma.comment.deleteMany({
+      where: { announcement: { OR: [onMyEvents, { userId }] } },
+    }),
+    prisma.announcement.deleteMany({ where: onMyEvents }),
+    prisma.invitee.deleteMany({ where: onMyEvents }),
+    prisma.user.delete({ where: { id: userId } }),
+  ]);
 }
 
 export async function editUserInfo(userId: UserId, data: UserInfo) {

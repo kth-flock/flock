@@ -20,7 +20,7 @@ export default async function MyProfilePage() {
   const cookie = (await cookies()).toString();
   const profile = await getMyProfile(cookie);
 
-  if (!profile) redirect("/");
+  if (!profile) redirect("/login");
 
   const [friends, hostedEvents, invitedEvents] = await Promise.all([
     getProfileFriends(profile.id, cookie),

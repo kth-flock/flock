@@ -8,10 +8,10 @@ import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import Input from "@/shared/components/formInputs";
 import ImageUpload from "@/shared/components/imageUpload";
-import { changeEmailFetch, changePasswordFetch, deleteImageFromS3Fetch, updateMyInfoFetch, uploadImageFetch } from "@/shared/lib/api";
+import { changeEmailFetch, changePasswordFetch, deleteImageFromS3Fetch, deleteMyAccountFetch, updateMyInfoFetch, uploadImageFetch } from "@/shared/lib/api";
+import { useAuth } from "@/shared/auth/authContext";
 import type { ProfileDetails } from "../lib/types";
 
-// TODO: delete account: DELETE /me, then log out and send the user to the start page
 
 const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";
 const rowButtonStyle = "shrink-0 md:mt-3.5";
@@ -97,6 +97,8 @@ export default function ProfileSettings({
   const nameSave = useSave();
   const emailSave = useSave();
   const passwordSave = useSave();
+  const deleteSave = useSave();
+  const { logout } = useAuth();
 
   function handlePictureSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -136,7 +138,6 @@ export default function ProfileSettings({
   function handlePasswordSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // Checked here too, since the backend only answers with a general message
     if (newPassword !== confirmPassword) {
       passwordSave.setResult({ ok: false, message: "Passwords do not match" });
       return;
@@ -158,7 +159,14 @@ export default function ProfileSettings({
     }, "Password changed");
   }
 
-  function handleDeleteAccount() {}
+  function handleDeleteAccount() {
+    void deleteSave.save(async () => {
+      await deleteMyAccountFetch();
+      await logout();
+      router.push("/");
+      router.refresh();
+    }, "Account deleted");
+  }
 
   return (
     <>
@@ -340,13 +348,15 @@ export default function ProfileSettings({
                   icon={<FaTrash />}
                   iconPlacement="left"
                   className="bg-error text-white hover:bg-error-dark"
+                  disabled={deleteSave.isSaving}
                   onClick={handleDeleteAccount}
                 >
-                  Yes, delete my account
+                  {deleteSave.isSaving ? "Deleting..." : "Yes, delete my account"}
                 </Button>
                 <Button
                   variant="tertiary"
                   size="sm"
+                  disabled={deleteSave.isSaving}
                   onClick={() => setIsConfirmingDelete(false)}
                 >
                   Cancel
@@ -364,6 +374,7 @@ export default function ProfileSettings({
                 Delete account
               </Button>
             )}
+            <SaveResult result={deleteSave.result} />
           </SettingsSection>
         </div>
       </Modal>

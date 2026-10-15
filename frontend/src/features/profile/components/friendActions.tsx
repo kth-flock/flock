@@ -7,6 +7,7 @@ import {
   FaUserClock,
   FaUserGroup,
   FaUserPlus,
+  FaUserXmark,
 } from "react-icons/fa6";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import Button from "@/shared/components/button";
@@ -16,17 +17,25 @@ import {
   sendFriendRequestFetch,
 } from "@/shared/lib/api";
 
-const friendButton: Record<
-  FriendshipStatus,
-  { icon: React.ReactElement; label: string; disabled: boolean }
-> = {
-  NONE: { icon: <FaUserPlus />, label: "Add friend", disabled: false },
-  REQUEST_SENT: { icon: <FaUserClock />, label: "Pending", disabled: true },
-  REQUEST_RECEIVED: { icon: <FaUserCheck />, label: "Accept", disabled: false },
-  FRIENDS: { icon: <FaUserGroup />, label: "Friends", disabled: true },
-};
+const positiveStyle = "bg-success/60 text-white hover:bg-success/40";
+const negativeStyle = "bg-error/60 text-white hover:bg-error/40";
+const stateStyle = "group bg-white/15 text-white hover:bg-error/60";
 
-// TODO: let "Pending" cancel the request and "Friends" unfriend (removeFriendshipFetch)
+function HoverLabel({
+  label,
+  hoverLabel,
+}: {
+  label: string;
+  hoverLabel: string;
+}) {
+  return (
+    <>
+      <span className="group-hover:hidden">{label}</span>
+      <span className="hidden group-hover:inline">{hoverLabel}</span>
+    </>
+  );
+}
+
 export default function FriendActions({
   profileId,
   initialStatus,
@@ -37,9 +46,8 @@ export default function FriendActions({
   const router = useRouter();
   const [status, setStatus] = useState(initialStatus);
   const [isPending, setIsPending] = useState(false);
+  const [isConfirmingUnfriend, setIsConfirmingUnfriend] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { icon, label, disabled } = friendButton[status];
 
   async function runAction(
     action: (userId: number) => Promise<void>,
@@ -50,7 +58,7 @@ export default function FriendActions({
     try {
       await action(profileId);
       setStatus(nextStatus);
-      // Updates the rest of the page, like the friend count
+      setIsConfirmingUnfriend(false);
       router.refresh();
     } catch (err) {
       setError(
@@ -65,35 +73,88 @@ export default function FriendActions({
     }
   }
 
-  function handleMainClick() {
-    if (status === "NONE") {
-      void runAction(sendFriendRequestFetch, "REQUEST_SENT");
-    } else if (status === "REQUEST_RECEIVED") {
-      void runAction(acceptFriendRequestFetch, "FRIENDS");
-    }
-  }
-
   return (
     <div className="flex shrink-0 flex-col items-end gap-1">
       <div className="flex items-center gap-2">
-        <Button
-          icon={icon}
-          iconPlacement="left"
-          disabled={disabled || isPending}
-          onClick={handleMainClick}
-          className="bg-success/60 text-white hover:bg-success/40 disabled:opacity-100 disabled:bg-white/15"
-        >
-          {label}
-        </Button>
-        {status === "REQUEST_RECEIVED" && (
+        {status === "NONE" && (
           <Button
+            icon={<FaUserPlus />}
+            iconPlacement="left"
             disabled={isPending}
-            onClick={() => void runAction(removeFriendshipFetch, "NONE")}
-            className="bg-error/60 text-white hover:bg-error/40"
+            onClick={() =>
+              void runAction(sendFriendRequestFetch, "REQUEST_SENT")
+            }
+            className={positiveStyle}
           >
-            Decline
+            Add friend
           </Button>
         )}
+
+        {status === "REQUEST_RECEIVED" && (
+          <>
+            <Button
+              icon={<FaUserCheck />}
+              iconPlacement="left"
+              disabled={isPending}
+              onClick={() =>
+                void runAction(acceptFriendRequestFetch, "FRIENDS")
+              }
+              className={positiveStyle}
+            >
+              Accept
+            </Button>
+            <Button
+              disabled={isPending}
+              onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+              className={negativeStyle}
+            >
+              Decline
+            </Button>
+          </>
+        )}
+
+        {status === "REQUEST_SENT" && (
+          <Button
+            icon={<FaUserClock />}
+            iconPlacement="left"
+            disabled={isPending}
+            onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+            className={stateStyle}
+          >
+            <HoverLabel label="Pending" hoverLabel="Cancel request" />
+          </Button>
+        )}
+
+        {status === "FRIENDS" &&
+          (isConfirmingUnfriend ? (
+            <>
+              <Button
+                icon={<FaUserXmark />}
+                iconPlacement="left"
+                disabled={isPending}
+                onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+                className={negativeStyle}
+              >
+                Unfriend
+              </Button>
+              <Button
+                disabled={isPending}
+                onClick={() => setIsConfirmingUnfriend(false)}
+                className="bg-white/15 text-white hover:bg-white/25"
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <Button
+              icon={<FaUserGroup />}
+              iconPlacement="left"
+              onClick={() => setIsConfirmingUnfriend(true)}
+              className={stateStyle}
+            >
+              <HoverLabel label="Friends" hoverLabel="Unfriend" />
+            </Button>
+          ))}
       </div>
       {error && (
         <p className="flock-caption text-white!" role="alert">
