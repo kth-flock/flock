@@ -51,6 +51,7 @@ export default function FriendActions({
             ? err.message
             : "Something went wrong",
       );
+      if (!(err instanceof TypeError)) router.refresh();
     } finally {
       setIsPending(false);
     }

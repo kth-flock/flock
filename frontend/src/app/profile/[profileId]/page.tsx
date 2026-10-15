@@ -48,7 +48,9 @@ export default async function ProfilePage({
     myProfile ? getEventsTogether(profile.id, cookie) : [],
   ]);
 
-  const friendshipStatus = myStatuses.get(profile.id) ?? "NONE";
+  const friendshipStatus = myProfile
+    ? (myStatuses.get(profile.id) ?? "NONE")
+    : undefined;
   const friendsWithStatus = friends.map((friend) => ({
     ...friend,
     friendshipStatus: myStatuses.get(friend.id) ?? "NONE",
