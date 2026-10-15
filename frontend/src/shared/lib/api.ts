@@ -102,34 +102,6 @@ export async function uninviteFriendFetch(eventId: number, userId: number) {
   }
 }
 
-export async function sendFriendRequestFetch(userId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ requesteeId: userId }),
-  });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to send friend request");
-  }
-}
-
-export async function acceptFriendRequestFetch(userId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ requesterId: userId }),
-  });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to accept friend request");
-  }
-}
-
 export async function removeFriendshipFetch(userId: number) {
   const res = await fetch(`${API_BASE_URL}/me/friendships`, {
     method: "DELETE",

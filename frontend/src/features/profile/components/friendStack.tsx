@@ -2,24 +2,112 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FaCheck, FaUserClock, FaUserPlus, FaXmark } from "react-icons/fa6";
+import type { FriendshipStatus } from "@flock/shared/schemas/user";
+import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import ProfileImage from "@/shared/components/profileImage";
+import {
+  acceptFriendRequestFetch,
+  declineFriendRequestFetch,
+  sendFriendRequestFetch,
+} from "@/shared/lib/api";
 import { fullName } from "@/shared/lib/user";
-import type { PublicUser } from "@/shared/types/user";
+import type { UserSearchResult } from "@/shared/types/user";
 
 const MAX_FRIEND_IMAGES = 4;
 
 const stackedImageStyle =
   "isolate rounded-full bg-background ring-2 ring-background";
 
+const actionButtonStyle = "px-1.5";
+
+function FriendRowActions({
+  friend,
+  myId,
+  isPending,
+  onAction,
+}: {
+  friend: UserSearchResult;
+  myId: number;
+  isPending: boolean;
+  onAction: (
+    action: (userId: number) => Promise<void>,
+    nextStatus: FriendshipStatus,
+  ) => void;
+}) {
+  if (friend.id === myId) {
+    return <span className="flock-caption shrink-0 px-2">You</span>;
+  }
+
+  switch (friend.friendshipStatus) {
+    case "NONE":
+      return (
+        <Button
+          size="sm"
+          icon={<FaUserPlus aria-hidden />}
+          iconPlacement="right"
+          aria-label={`Add ${fullName(friend)} as friend`}
+          disabled={isPending}
+          onClick={() => onAction(sendFriendRequestFetch, "REQUEST_SENT")}
+          className={actionButtonStyle}
+        />
+      );
+    case "REQUEST_RECEIVED":
+      return (
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            size="sm"
+            icon={<FaXmark aria-hidden />}
+            iconPlacement="right"
+            aria-label={`Decline friend request from ${fullName(friend)}`}
+            disabled={isPending}
+            onClick={() => onAction(declineFriendRequestFetch, "NONE")}
+            className={`${actionButtonStyle} bg-error hover:bg-error-dark`}
+          />
+          <Button
+            size="sm"
+            icon={<FaCheck aria-hidden />}
+            iconPlacement="right"
+            aria-label={`Accept friend request from ${fullName(friend)}`}
+            disabled={isPending}
+            onClick={() => onAction(acceptFriendRequestFetch, "FRIENDS")}
+            className={actionButtonStyle}
+          />
+        </div>
+      );
+    case "REQUEST_SENT":
+      return (
+        <span className="flock-caption inline-flex shrink-0 items-center gap-1 px-2">
+          <FaUserClock aria-hidden />
+          Pending
+        </span>
+      );
+    case "FRIENDS":
+      return null;
+  }
+}
+
 function FriendsModal({
   friends,
+  myId,
   isOpen,
   onClose,
+  pendingId,
+  error,
+  onAction,
 }: {
-  friends: PublicUser[];
+  friends: UserSearchResult[];
+  myId?: number;
   isOpen: boolean;
   onClose: () => void;
+  pendingId: number | null;
+  error: string | null;
+  onAction: (
+    friendId: number,
+    action: (userId: number) => Promise<void>,
+    nextStatus: FriendshipStatus,
+  ) => void;
 }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} bg="bg-background">
@@ -30,11 +118,14 @@ function FriendsModal({
         </span>
         <ul className="flex w-full flex-col">
           {friends.map((friend) => (
-            <li key={friend.id} className="not-last:border-b border-neutral">
+            <li
+              key={friend.id}
+              className="flex items-center gap-2 rounded-lg pr-2 transition-colors not-last:border-b border-neutral has-[a:hover]:bg-accent/10"
+            >
               <Link
                 href={`/profile/${friend.id}`}
                 onClick={onClose}
-                className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent/10"
+                className="flex min-w-0 flex-1 items-center gap-3 p-2"
               >
                 {friend.imageUrl ? (
                   <ProfileImage profileImgSrc={friend.imageUrl} />
@@ -43,25 +134,88 @@ function FriendsModal({
                 )}
                 <span className="flock-body truncate">{fullName(friend)}</span>
               </Link>
+              {myId !== undefined && (
+                <FriendRowActions
+                  friend={friend}
+                  myId={myId}
+                  isPending={pendingId === friend.id}
+                  onAction={(action, nextStatus) =>
+                    onAction(friend.id, action, nextStatus)
+                  }
+                />
+              )}
             </li>
           ))}
         </ul>
+        {error && (
+          <p className="flock-caption text-error!" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </Modal>
   );
 }
 
-export default function FriendStack({ friends }: { friends: PublicUser[] }) {
+export default function FriendStack({
+  friends,
+  myId,
+}: {
+  friends: UserSearchResult[];
+  myId?: number;
+}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [changedStatuses, setChangedStatuses] = useState<
+    Record<number, FriendshipStatus>
+  >({});
+  const [pendingId, setPendingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const friendsWithStatus = friends.map((friend) => ({
+    ...friend,
+    friendshipStatus: changedStatuses[friend.id] ?? friend.friendshipStatus,
+  }));
   const shownFriends = friends.slice(0, MAX_FRIEND_IMAGES);
   const hiddenCount = friends.length - shownFriends.length;
+
+  async function handleAction(
+    friendId: number,
+    action: (userId: number) => Promise<void>,
+    nextStatus: FriendshipStatus,
+  ) {
+    setPendingId(friendId);
+    setError(null);
+    try {
+      await action(friendId);
+      setChangedStatuses((prev) => ({ ...prev, [friendId]: nextStatus }));
+    } catch (err) {
+      setError(
+        err instanceof TypeError
+          ? "Couldn't reach the server. Try again."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong",
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
 
   return (
     <>
       <FriendsModal
-        friends={friends}
+        friends={friendsWithStatus}
+        myId={myId}
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={() => {
+          setIsOpen(false);
+          setError(null);
+        }}
+        pendingId={pendingId}
+        error={error}
+        onAction={(friendId, action, nextStatus) =>
+          void handleAction(friendId, action, nextStatus)
+        }
       />
       <button
         type="button"

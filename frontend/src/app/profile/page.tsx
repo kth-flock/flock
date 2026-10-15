@@ -39,7 +39,10 @@ export default async function MyProfilePage() {
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent
           profile={profile}
-          friends={friends}
+          friends={friends.map((friend) => ({
+            ...friend,
+            friendshipStatus: "FRIENDS" as const,
+          }))}
           hostedEvents={hostedEvents}
           invitedEvents={invitedEvents}
           className="grid-cols-2 md:grid-cols-1"

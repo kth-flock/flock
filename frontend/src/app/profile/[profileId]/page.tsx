@@ -6,13 +6,14 @@ import ProfileContent from "@/features/profile/components/profileContent";
 import EventsTogether from "@/features/profile/components/eventsTogether";
 import {
   getEventsTogether,
-  getFriendshipStatus,
+  getMyFriendshipStatuses,
   getMyProfile,
   getProfile,
   getProfileFriends,
 } from "@/features/profile/lib/api";
 import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 import { fullName } from "@/shared/lib/user";
+import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
 export async function generateMetadata({
   params,
@@ -39,13 +40,19 @@ export default async function ProfilePage({
 
   if (profile.id === myProfile?.id) redirect("/profile");
 
-  const [friends, friendshipStatus, eventsTogether] = await Promise.all([
+  const [friends, myStatuses, eventsTogether] = await Promise.all([
     getProfileFriends(profile.id, cookie),
     myProfile
-      ? getFriendshipStatus(profile.id, cookie)
-      : ("NONE" as const),
+      ? getMyFriendshipStatuses(cookie)
+      : new Map<number, FriendshipStatus>(),
     myProfile ? getEventsTogether(profile.id, cookie) : [],
   ]);
+
+  const friendshipStatus = myStatuses.get(profile.id) ?? "NONE";
+  const friendsWithStatus = friends.map((friend) => ({
+    ...friend,
+    friendshipStatus: myStatuses.get(friend.id) ?? "NONE",
+  }));
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
@@ -58,7 +65,8 @@ export default async function ProfilePage({
         <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
           <ProfileContent
             profile={profile}
-            friends={friends}
+            friends={friendsWithStatus}
+            myId={myProfile.id}
             className="grid-cols-2 md:grid-cols-1"
           />
           <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
@@ -66,7 +74,7 @@ export default async function ProfilePage({
           </div>
         </div>
       ) : (
-        <ProfileContent profile={profile} friends={friends} />
+        <ProfileContent profile={profile} friends={friendsWithStatus} />
       )}
     </main>
   );

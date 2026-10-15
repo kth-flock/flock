@@ -105,16 +105,23 @@ export async function getEventsTogether(
     .map(toInvitedEvent);
 }
 
-export async function getFriendshipStatus(
-  profileId: number,
-): Promise<FriendshipStatus> {
-  const friendship = exampleFriendships.find(
-    ({ requesterId, requesteeId }) =>
-      (requesterId === me.id && requesteeId === profileId) ||
-      (requesterId === profileId && requesteeId === me.id),
-  );
+export async function getMyFriendshipStatuses(): Promise<
+  Map<number, FriendshipStatus>
+> {
+  const statuses = new Map<number, FriendshipStatus>();
 
-  if (!friendship) return "NONE";
-  if (friendship.status === "ACCEPTED") return "FRIENDS";
-  return friendship.requesterId === me.id ? "REQUEST_SENT" : "REQUEST_RECEIVED";
+  for (const { requesterId, requesteeId, status } of exampleFriendships) {
+    if (requesterId !== me.id && requesteeId !== me.id) continue;
+    const iAmRequester = requesterId === me.id;
+    statuses.set(
+      iAmRequester ? requesteeId : requesterId,
+      status === "ACCEPTED"
+        ? "FRIENDS"
+        : iAmRequester
+          ? "REQUEST_SENT"
+          : "REQUEST_RECEIVED",
+    );
+  }
+
+  return statuses;
 }

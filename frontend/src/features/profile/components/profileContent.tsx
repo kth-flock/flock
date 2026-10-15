@@ -6,13 +6,14 @@ import {
 } from "react-icons/fa6";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
-import type { PublicUser } from "@/shared/types/user";
+import type { UserSearchResult } from "@/shared/types/user";
 import type { ProfileDetails } from "../lib/types";
 import FriendStack from "./friendStack";
 
 type ProfileContentProps = {
   profile: ProfileDetails;
-  friends: PublicUser[];
+  friends: UserSearchResult[];
+  myId?: number;
   hostedEvents?: EventSummary[];
   invitedEvents?: InvitedEvent[];
   className?: string;
@@ -21,6 +22,7 @@ type ProfileContentProps = {
 export default function ProfileContent({
   profile,
   friends,
+  myId,
   hostedEvents,
   invitedEvents,
   className = "grid-cols-2",
@@ -35,7 +37,7 @@ export default function ProfileContent({
       icon: <FaUsers />,
       value: String(friends.length),
       label: "Friends",
-      extra: friends.length > 0 && <FriendStack friends={friends} />,
+      extra: friends.length > 0 && <FriendStack friends={friends} myId={myId} />,
     },
     ...(hostedEvents
       ? [

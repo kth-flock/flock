@@ -92,7 +92,6 @@ export async function getMyInvitedEvents(
   return (events ?? []).map(withEventDates);
 }
 
-// Upcoming events you and someone else both take part in, soonest first
 export async function getEventsTogether(
   profileId: number,
   cookie: string,
@@ -105,11 +104,10 @@ export async function getEventsTogether(
   return (events ?? []).map(withEventDates);
 }
 
-export async function getFriendshipStatus(
-  profileId: number,
+export async function getMyFriendshipStatuses(
   cookie: string,
-): Promise<FriendshipStatus> {
-  if (USE_EXAMPLE_DATA) return example.getFriendshipStatus(profileId);
+): Promise<Map<number, FriendshipStatus>> {
+  if (USE_EXAMPLE_DATA) return example.getMyFriendshipStatuses();
 
   const [friends, sent, received] = await Promise.all([
     fetchData<PublicUser[]>("/me/friendships", cookie),
@@ -120,11 +118,9 @@ export async function getFriendshipStatus(
     ),
   ]);
 
-  const includesProfile = (users: PublicUser[] | null) =>
-    users?.some((user) => user.id === profileId) ?? false;
-
-  if (includesProfile(friends)) return "FRIENDS";
-  if (includesProfile(sent)) return "REQUEST_SENT";
-  if (includesProfile(received)) return "REQUEST_RECEIVED";
-  return "NONE";
+  const statuses = new Map<number, FriendshipStatus>();
+  received?.forEach((user) => statuses.set(user.id, "REQUEST_RECEIVED"));
+  sent?.forEach((user) => statuses.set(user.id, "REQUEST_SENT"));
+  friends?.forEach((user) => statuses.set(user.id, "FRIENDS"));
+  return statuses;
 }
