@@ -125,36 +125,39 @@ export default function FriendActions({
           </Button>
         )}
 
-        {status === "FRIENDS" &&
-          (isConfirmingUnfriend ? (
-            <>
+        {status === "FRIENDS" && (
+          <>
+            {isConfirmingUnfriend ? (
+              <>
+                <Button
+                  disabled={isPending}
+                  onClick={() => setIsConfirmingUnfriend(false)}
+                  className="bg-white/15 text-white hover:bg-white/25"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  icon={<FaUserXmark />}
+                  iconPlacement="left"
+                  disabled={isPending}
+                  onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+                  className={negativeStyle}
+                >
+                  Yes, unfriend
+                </Button>
+              </>
+            ) : (
               <Button
                 icon={<FaUserXmark />}
                 iconPlacement="left"
-                disabled={isPending}
-                onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+                onClick={() => setIsConfirmingUnfriend(true)}
                 className={negativeStyle}
               >
                 Unfriend
               </Button>
-              <Button
-                disabled={isPending}
-                onClick={() => setIsConfirmingUnfriend(false)}
-                className="bg-white/15 text-white hover:bg-white/25"
-              >
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <Button
-              icon={<FaUserGroup />}
-              iconPlacement="left"
-              onClick={() => setIsConfirmingUnfriend(true)}
-              className={stateStyle}
-            >
-              <HoverLabel label="Friends" hoverLabel="Unfriend" />
-            </Button>
-          ))}
+            )}
+          </>
+        )}
       </div>
       {error && (
         <p className="flock-caption text-white!" role="alert">
