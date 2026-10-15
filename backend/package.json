@@ -5,6 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "server": "tsx --watch index.ts",
+    "backend": "prisma migrate deploy && tsx index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma generate"
   },
