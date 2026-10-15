@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import Button, { IconButton } from "@/shared/components/button";
+import CalendarDay from "./calendarDay";
+import CalendarDayModal from "./calendarDayModal";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS = [
@@ -21,9 +23,7 @@ const MONTHS = [
   "December",
 ];
 
-const MAX_PILLS_PER_DAY = 2;
-
-type CalendarEvent = {
+export type CalendarEvent = {
   id: string;
   title: string;
   startsAt: Date;
@@ -127,21 +127,6 @@ function getMonthWeeks(year: number, month: number): (Date | null)[][] {
   return weeks;
 }
 
-function EventPill({ event }: { event: CalendarEvent }) {
-  return (
-    <button
-      type="button"
-      title={`${event.title} · ${formatTime(event.startsAt)} · ${event.createdBy.firstName} ${event.createdBy.lastName}`}
-      className="flex flex-col w-full gap-1 truncate rounded-lg bg-primary/15 px-2 py-0.5 text-left text-xs text-primary hover:bg-primary/25"
-    >
-      <span className="shrink-0 font-semibold">
-        {formatTime(event.startsAt)}
-      </span>
-      <span className="truncate">{event.title}</span>
-    </button>
-  );
-}
-
 export default function CalendarView({
   events = makeFakeEvents(), // swap for real events from the backend
 }: {
@@ -151,6 +136,10 @@ export default function CalendarView({
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
+  const [openDay, setOpenDay] = useState<{
+    day: Date;
+    events: CalendarEvent[];
+  } | null>(null);
 
   const today = new Date();
   const year = visibleMonth.getFullYear();
@@ -163,94 +152,75 @@ export default function CalendarView({
   }
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 md:gap-8">
-          <h2 className="flock-h2">
-            {MONTHS[month]} {year}
-          </h2>
-          <div className="flex gap-2">
-            <IconButton
-              variant="secondary"
-              size="sm"
-              onClick={() => changeMonth(-1)}
-            >
-              <FaChevronLeft />
-            </IconButton>
-            <IconButton
-              variant="secondary"
-              size="sm"
-              onClick={() => changeMonth(1)}
-            >
-              <FaChevronRight />
-            </IconButton>
+    <>
+      {openDay && (
+        <CalendarDayModal
+          isOpen={!!openDay}
+          onClose={() => setOpenDay(null)}
+          day={openDay.day}
+          events={openDay.events}
+        />
+      )}
+      <div className="w-full">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-8">
+            <h2 className="flock-h2">
+              {MONTHS[month]} {year}
+            </h2>
+            <div className="flex gap-2">
+              <IconButton
+                variant="secondary"
+                size="sm"
+                onClick={() => changeMonth(-1)}
+              >
+                <FaChevronLeft />
+              </IconButton>
+              <IconButton
+                variant="secondary"
+                size="sm"
+                onClick={() => changeMonth(1)}
+              >
+                <FaChevronRight />
+              </IconButton>
+            </div>
           </div>
+          <Button icon={<FaPlus />} iconPlacement="left" href="/create-event">
+            Add
+          </Button>
         </div>
-        <Button icon={<FaPlus />} iconPlacement="left" href="/create-event">
-          Add
-        </Button>
-      </div>
 
-      <table className="w-full table-fixed border-collapse">
-        <thead>
-          <tr>
-            {WEEKDAYS.map((weekday) => (
-              <th key={weekday} className="p-2 text-center flock-body-serif">
-                {weekday}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week, weekIndex) => (
-            <tr key={weekIndex}>
-              {week.map((day, dayIndex) => {
-                const dayEvents = day
-                  ? (eventsByDay.get(dayKey(day)) ?? [])
-                  : [];
-                const visible = dayEvents.slice(0, MAX_PILLS_PER_DAY);
-                const hiddenCount = dayEvents.length - visible.length;
-
-                return (
-                  <td
-                    key={dayIndex}
-                    className={twMerge(
-                      "h-28 border align-top p-2",
-                      !day ? "bg-neutral/50" : "",
-                    )}
-                  >
-                    {day && (
-                      <div className="flex flex-col gap-1">
-                        <span
-                          className={twMerge(
-                            "self-start",
-                            isSameDay(day, today) ? "font-bold relative" : "",
-                          )}
-                        >
-                          <span className="relative z-10">{day.getDate()}</span>
-                          {isSameDay(day, today) && (
-                            <span className="absolute inset-0 h-full scale-120 bg-secondary/50 z-0 rounded-full aspect-square" />
-                          )}
-                        </span>
-
-                        {visible.map((event) => (
-                          <EventPill key={event.id} event={event} />
-                        ))}
-
-                        {hiddenCount > 0 && (
-                          <span className="px-2 text-xs text-neutral-500">
-                            +{hiddenCount} more
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
+        <table className="w-full table-fixed border-collapse">
+          <thead>
+            <tr>
+              {WEEKDAYS.map((weekday) => (
+                <th key={weekday} className="p-2 text-center flock-body-serif">
+                  {weekday}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {weeks.map((week, weekIndex) => (
+              <tr key={weekIndex}>
+                {week.map((day, dayIndex) => {
+                  const dayEvents = day
+                    ? (eventsByDay.get(dayKey(day)) ?? [])
+                    : [];
+                  return (
+                    <CalendarDay
+                      key={dayIndex}
+                      day={day}
+                      isSameDay={day ? isSameDay(day, today) : false}
+                      events={dayEvents}
+                      onClick={(day, events) => setOpenDay({ day, events })}
+                    />
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
