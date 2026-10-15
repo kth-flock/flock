@@ -3,7 +3,7 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { API_BASE_URL } from "@/shared/lib/api";
 import type { PublicUser } from "@/shared/types/user";
 import * as example from "./exampleApi";
-import type { ProfileDetails } from "./types";
+import type { MyProfileDetails, ProfileDetails } from "./types";
 
 // Set USE_EXAMPLE_DATA=true in frontend/.env to use the example data instead of the backend, e.g. to work on the layout without running it
 const USE_EXAMPLE_DATA = process.env.USE_EXAMPLE_DATA === "true";
@@ -25,13 +25,11 @@ async function fetchFromBackend<T>(
   return res.json();
 }
 
-// Most endpoints wrap their result as { status, data }
 async function fetchData<T>(path: string, cookie: string): Promise<T | null> {
   const response = await fetchFromBackend<{ data: T }>(path, cookie);
   return response?.data ?? null;
 }
 
-// Dates arrive as ISO strings, but the event types use Date objects
 function withEventDates<T extends EventSummary>(event: T): T {
   return {
     ...event,
@@ -51,15 +49,14 @@ export async function getProfile(
 
 export async function getMyProfile(
   cookie: string,
-): Promise<ProfileDetails | null> {
+): Promise<MyProfileDetails | null> {
   if (USE_EXAMPLE_DATA) return example.getMyProfile();
 
   const res = await fetch(`${API_BASE_URL}/me`, { headers: { cookie } });
-  // Not logged in (or the login has expired)
   if (res.status === 401) return null;
   if (!res.ok) throw new Error("Failed to get your profile");
 
-  const response: { data: ProfileDetails } = await res.json();
+  const response: { data: MyProfileDetails } = await res.json();
   return response.data;
 }
 

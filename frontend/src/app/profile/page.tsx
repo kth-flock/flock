@@ -14,14 +14,12 @@ import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 
 export const metadata: Metadata = { title: "My profile • Flock" };
 
-// Depends on who is logged in (and the random banner colour), so don't prerender at build time
 export const dynamic = "force-dynamic";
 
 export default async function MyProfilePage() {
   const cookie = (await cookies()).toString();
   const profile = await getMyProfile(cookie);
 
-  // TODO: point this at the login page once it exists
   if (!profile) redirect("/");
 
   const [friends, hostedEvents, invitedEvents] = await Promise.all([
@@ -36,6 +34,7 @@ export default async function MyProfilePage() {
         profile={profile}
         bannerColor={randomBannerColor()}
         isOwnProfile
+        email={profile.email}
       />
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent

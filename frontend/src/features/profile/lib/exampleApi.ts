@@ -8,7 +8,7 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import type { ExtendedEvent } from "@/shared/types/event";
 import type { PublicUser } from "@/shared/types/user";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
-import type { ProfileDetails } from "./types";
+import type { MyProfileDetails, ProfileDetails } from "./types";
 
 // Example data versions of the functions in api.ts, used when
 // USE_EXAMPLE_DATA=true so the profile pages work without the backend.
@@ -24,8 +24,8 @@ export async function getProfile(
   );
 }
 
-export async function getMyProfile(): Promise<ProfileDetails | null> {
-  return me;
+export async function getMyProfile(): Promise<MyProfileDetails | null> {
+  return { ...me, email: "felix@example.com" };
 }
 
 export async function getProfileFriends(
@@ -61,6 +61,9 @@ const toEventSummary = (event: ExtendedEvent): EventSummary => ({
 const toInvitedEvent = (event: ExtendedEvent): InvitedEvent => ({
   ...toEventSummary(event),
   createdBy: event.createdBy,
+  invitees: exampleInvitees
+    .filter((invitee) => invitee.eventId === event.id && invitee.userId === me.id)
+    .map(({ rsvp }) => ({ rsvp })),
 });
 
 export async function getMyHostedEvents(): Promise<EventSummary[]> {

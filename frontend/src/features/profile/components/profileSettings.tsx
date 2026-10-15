@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { passwordSchema } from "@flock/shared/schemas/auth";
-import { FaCamera, FaGear, FaTrash, FaX } from "react-icons/fa6";
-import Button, { IconButton } from "@/shared/components/button";
+import { FaCamera, FaGear, FaTrash } from "react-icons/fa6";
+import Button from "@/shared/components/button";
+import Modal from "@/shared/components/modal";
 import Input from "@/shared/components/formInputs";
 import ImageUpload from "@/shared/components/imageUpload";
-import { changeEmailFetch, changePasswordFetch, updateMyInfoFetch, uploadImageFetch } from "@/shared/lib/api";
+import { changeEmailFetch, changePasswordFetch, deleteImageFromS3Fetch, updateMyInfoFetch, uploadImageFetch } from "@/shared/lib/api";
 import type { ProfileDetails } from "../lib/types";
 
 // TODO: delete account: DELETE /me, then log out and send the user to the start page
@@ -74,16 +75,18 @@ function SettingsSection({
 
 export default function ProfileSettings({
   profile,
+  email: currentEmail,
 }: {
   profile: ProfileDetails;
+  email: string;
 }) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const [picture, setPicture] = useState<File | null>(null);
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(currentEmail);
   const [emailPassword, setEmailPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -102,7 +105,9 @@ export default function ProfileSettings({
     void pictureSave.save(async () => {
       const { imageUrl } = await uploadImageFetch(picture, "profiles");
       await updateMyInfoFetch({ imageUrl });
-      // Shows the new picture in the header
+      if (profile.imageUrl) {
+        deleteImageFromS3Fetch(profile.imageUrl).catch(() => {});
+      }
       router.refresh();
     }, "Picture saved");
   }
@@ -161,35 +166,21 @@ export default function ProfileSettings({
         icon={<FaGear />}
         iconPlacement="left"
         className="bg-white/15 text-white hover:bg-white/25"
-        onClick={() => dialogRef.current?.showModal()}
+        onClick={() => setIsOpen(true)}
       >
         Settings
       </Button>
 
-      <dialog
-        ref={dialogRef}
-        aria-labelledby="settings-title"
-        className="m-auto w-full max-w-2xl rounded-3xl bg-background p-6 text-foreground shadow-lg backdrop:bg-black/50 md:p-8"
-        onClose={() => setIsConfirmingDelete(false)}
-        // Clicks on the backdrop land on the dialog element itself
-        onClick={(e) => {
-          if (e.target === e.currentTarget) e.currentTarget.close();
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setIsConfirmingDelete(false);
         }}
+        bg="bg-background"
       >
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 id="settings-title" className="flock-h2 text-primary">
-              Settings
-            </h2>
-            <IconButton
-              variant="tertiary"
-              size="sm"
-              aria-label="Close settings"
-              onClick={() => dialogRef.current?.close()}
-            >
-              <FaX />
-            </IconButton>
-          </div>
+        <div className="flex flex-col gap-4 text-foreground md:w-2xl">
+          <h2 className="flock-h2 text-primary">Settings</h2>
 
           <SettingsSection title="Profile picture">
             <form
@@ -202,7 +193,6 @@ export default function ProfileSettings({
                 onFileRemove={() => setPicture(null)}
               >
                 {profile.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={profile.imageUrl}
                     alt=""
@@ -264,8 +254,8 @@ export default function ProfileSettings({
               <Input
                 id="settings-email"
                 type="email"
-                aria-label="New email"
-                placeholder="New email"
+                aria-label="Email"
+                placeholder="Email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -284,7 +274,7 @@ export default function ProfileSettings({
                 variant="secondary"
                 size="sm"
                 className={rowButtonStyle}
-                disabled={emailSave.isSaving}
+                disabled={emailSave.isSaving || email === currentEmail}
               >
                 {emailSave.isSaving ? "Saving..." : "Update email"}
               </Button>
@@ -376,7 +366,7 @@ export default function ProfileSettings({
             )}
           </SettingsSection>
         </div>
-      </dialog>
+      </Modal>
     </>
   );
 }

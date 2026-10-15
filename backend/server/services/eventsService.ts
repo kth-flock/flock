@@ -63,7 +63,6 @@ export async function getEventById(eventId: EventId, userId: UserId) {
     return event;
   }
 
-  //If not host return data without rsvpComments
   return {
     ...event,
     invitees: event.invitees.map(({ rsvpComment, ...invitee }) => invitee),
@@ -90,6 +89,10 @@ export async function getInvitedEvents(userId: UserId) {
     include: {
       createdBy: {
         select: publicUserInformationSelect,
+      },
+      invitees: {
+        where: { userId },
+        select: { rsvp: true },
       },
     },
   });
@@ -146,7 +149,6 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
     },
   });
 
-  //TODO: Should we return weather the event exists if they are not authorized to change it????
   if (!event) {
     throw new NotFoundError("Event not found");
   }

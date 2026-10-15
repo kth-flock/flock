@@ -1,4 +1,7 @@
-import { SmallEventPreview } from "@/features/dashboard/components/eventPreview";
+import {
+  SmallEventPreview,
+  type EventStatus,
+} from "@/features/dashboard/components/eventPreview";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 
 type ProfileHistoryProps = {
@@ -10,9 +13,13 @@ export default function ProfileHistory({
   hostedEvents,
   invitedEvents,
 }: ProfileHistoryProps) {
-  const history = [...hostedEvents, ...invitedEvents].toSorted(
-    (a, b) => b.startsAt.getTime() - a.startsAt.getTime(),
-  );
+  const history = [
+    ...hostedEvents.map((event) => ({ event, status: "HOST" as EventStatus })),
+    ...invitedEvents.map((event) => ({
+      event,
+      status: event.invitees[0]?.rsvp ?? "PENDING",
+    })),
+  ].toSorted((a, b) => b.event.startsAt.getTime() - a.event.startsAt.getTime());
 
   return (
     <section className="flex flex-col gap-4">
@@ -24,8 +31,8 @@ export default function ProfileHistory({
         </p>
       )}
 
-      {history.map((event) => (
-        <SmallEventPreview key={event.id} event={event} />
+      {history.map(({ event, status }) => (
+        <SmallEventPreview key={event.id} event={event} status={status} />
       ))}
     </section>
   );

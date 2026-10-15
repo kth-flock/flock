@@ -1,9 +1,8 @@
-import { FaRightFromBracket } from "react-icons/fa6";
-import Button from "@/shared/components/button";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
 import type { ProfileDetails } from "../lib/types";
 import ProfileSettings from "./profileSettings";
+import LogoutButton from "./logoutButton";
 import FriendActions from "./friendActions";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
@@ -12,6 +11,7 @@ type ProfileHeaderProps = {
   bannerColor: string;
   isOwnProfile?: boolean;
   friendshipStatus?: FriendshipStatus;
+  email?: string;
 };
 
 export default function ProfileHeader({
@@ -19,6 +19,7 @@ export default function ProfileHeader({
   bannerColor,
   isOwnProfile = false,
   friendshipStatus = "NONE",
+  email = "",
 }: ProfileHeaderProps) {
   return (
     <header className="flex flex-col gap-6">
@@ -38,17 +39,10 @@ export default function ProfileHeader({
             <h1 className="flock-h1">{fullName(profile)}</h1>
           </div>
 
-          {/* TODO: log out (POST /auth/logout) when clicked */}
           {isOwnProfile && (
-            <div className="flex shrink-0 items-center gap-2">
-              <ProfileSettings profile={profile} />
-              <Button
-                icon={<FaRightFromBracket />}
-                iconPlacement="left"
-                className="bg-error/60 text-white hover:bg-error/40"
-              >
-                Log out
-              </Button>
+            <div className="flex shrink-0 items-start gap-2">
+              <ProfileSettings profile={profile} email={email} />
+              <LogoutButton />
             </div>
           )}
 
