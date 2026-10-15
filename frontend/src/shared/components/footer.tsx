@@ -2,8 +2,8 @@ import Link from "next/link";
 
 const footerLinks = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/terms", label: "Terms of Service" },
+  { href: "/", label: "About" }, // TODO: Add actual href
+  { href: "/", label: "Terms of Service" }, // TODO: Add actual href
 ];
 
 export default function Footer() {
