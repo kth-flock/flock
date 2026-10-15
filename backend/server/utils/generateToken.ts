@@ -19,7 +19,7 @@ const generateToken = (userId: number | string, res: Response) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 1 * 24 * 60 * 60 * 1000,
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
   return token;
 };
