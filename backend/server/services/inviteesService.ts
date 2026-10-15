@@ -76,6 +76,7 @@ export async function AddInviteesInBatch(
 
   const invitees = await prisma.invitee.createMany({
     data: uniqueIds.map((userId) => ({ userId, eventId })),
+    skipDuplicates: true,
   });
 
   return { invitees, skipped: uniqueIds.length - existingCount };
