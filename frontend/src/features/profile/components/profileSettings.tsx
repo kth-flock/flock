@@ -8,10 +8,16 @@ import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import Input from "@/shared/components/formInputs";
 import ImageUpload from "@/shared/components/imageUpload";
-import { changeEmailFetch, changePasswordFetch, deleteImageFromS3Fetch, deleteMyAccountFetch, updateMyInfoFetch, uploadImageFetch } from "@/shared/lib/api";
+import {
+  changeEmailFetch,
+  changePasswordFetch,
+  deleteImageFromS3Fetch,
+  deleteMyAccountFetch,
+  updateMyInfoFetch,
+  uploadImageFetch,
+} from "@/shared/lib/api";
 import { useAuth } from "@/shared/auth/authContext";
 import type { ProfileDetails } from "../lib/types";
-
 
 const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";
 const rowButtonStyle = "shrink-0 md:mt-3.5";
@@ -61,12 +67,18 @@ function SaveResult({ result }: { result: Result | null }) {
 function SettingsSection({
   title,
   children,
+  bordered = true,
+  className = "",
 }: {
   title: string;
   children: React.ReactNode;
+  bordered?: boolean;
+  className?: string;
 }) {
   return (
-    <section className="flex flex-col gap-2 border-t border-primary/20 pt-4">
+    <section
+      className={`flex flex-col gap-2 ${bordered ? "border-t border-primary/20 pt-4" : ""} ${className}`}
+    >
       <h3 className="flock-h5 text-primary">{title}</h3>
       {children}
     </section>
@@ -189,73 +201,79 @@ export default function ProfileSettings({
       >
         <div className="flex flex-col gap-4 text-foreground md:w-2xl">
           <h2 className="flock-h2 text-primary">Settings</h2>
-
-          <SettingsSection title="Profile picture">
-            <form
-              className="flex items-center gap-4"
-              onSubmit={handlePictureSubmit}
-            >
-              <ImageUpload
-                className="size-20 rounded-full bg-accent/40 text-primary"
-                onFileSelect={setPicture}
-                onFileRemove={() => setPicture(null)}
+          <div className="flex flex-col gap-4 border-t border-primary/20 pt-4 md:flex-row md:gap-16">
+            <SettingsSection title="Profile picture" bordered={false}>
+              <form
+                className="flex flex-1 flex-col items-start gap-2"
+                onSubmit={handlePictureSubmit}
               >
-                {profile.imageUrl ? (
-                  <img
-                    src={profile.imageUrl}
-                    alt=""
-                    className="size-full object-cover"
+                <ImageUpload
+                  className="size-28 rounded-full bg-accent/40 text-primary"
+                  onFileSelect={setPicture}
+                  onFileRemove={() => setPicture(null)}
+                >
+                  {profile.imageUrl ? (
+                    <img
+                      src={profile.imageUrl}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <FaCamera className="size-8" aria-hidden />
+                  )}
+                </ImageUpload>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  className="mt-auto"
+                  disabled={!picture || pictureSave.isSaving}
+                >
+                  {pictureSave.isSaving ? "Saving..." : "Save picture"}
+                </Button>
+              </form>
+              <SaveResult result={pictureSave.result} />
+            </SettingsSection>
+            <div className="flex flex-1 flex-col">
+              <SettingsSection title="Name" bordered={false} className="flex-1">
+                <form
+                  className="flex flex-1 flex-col gap-2"
+                  onSubmit={handleNameSubmit}
+                >
+                  <Input
+                    id="settings-first-name"
+                    aria-label="First name"
+                    placeholder="First name"
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
-                ) : (
-                  <FaCamera className="size-6" aria-hidden />
-                )}
-              </ImageUpload>
-              <Button
-                type="submit"
-                variant="secondary"
-                size="sm"
-                disabled={!picture || pictureSave.isSaving}
-              >
-                {pictureSave.isSaving ? "Saving..." : "Save picture"}
-              </Button>
-            </form>
-            <SaveResult result={pictureSave.result} />
-          </SettingsSection>
-
-          <SettingsSection title="Name">
-            <form className={formRowStyle} onSubmit={handleNameSubmit}>
-              <Input
-                id="settings-first-name"
-                aria-label="First name"
-                placeholder="First name"
-                required
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <Input
-                id="settings-last-name"
-                aria-label="Last name"
-                placeholder="Last name"
-                required
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-              <Button
-                type="submit"
-                variant="secondary"
-                size="sm"
-                className={rowButtonStyle}
-                disabled={
-                  nameSave.isSaving ||
-                  (firstName === profile.firstName &&
-                    lastName === profile.lastName)
-                }
-              >
-                {nameSave.isSaving ? "Saving..." : "Save name"}
-              </Button>
-            </form>
-            <SaveResult result={nameSave.result} />
-          </SettingsSection>
+                  <Input
+                    id="settings-last-name"
+                    aria-label="Last name"
+                    placeholder="Last name"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    variant="secondary"
+                    size="sm"
+                    className="mt-auto self-start"
+                    disabled={
+                      nameSave.isSaving ||
+                      (firstName === profile.firstName &&
+                        lastName === profile.lastName)
+                    }
+                  >
+                    {nameSave.isSaving ? "Saving..." : "Save name"}
+                  </Button>
+                </form>
+                <SaveResult result={nameSave.result} />
+              </SettingsSection>
+            </div>
+          </div>
 
           <SettingsSection title="Email">
             <form className={formRowStyle} onSubmit={handleEmailSubmit}>
@@ -337,45 +355,55 @@ export default function ProfileSettings({
             <SaveResult result={passwordSave.result} />
           </SettingsSection>
 
-          <SettingsSection title="Delete account">
-            <p className="flock-body-sm text-foreground/80">
-              {"This removes your account and everything you've created. It can't be undone."}
-            </p>
-            {isConfirmingDelete ? (
-              <div className="flex flex-wrap items-center gap-2">
+          <section className="flex flex-col gap-3 rounded-2xl border-2 border-error/60 p-4">
+            <h3 className="flock-h5 text-error">Danger zone</h3>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col">
+                <p className="flock-ui-label">Delete account</p>
+                <p className="flock-caption">
+                  {"Deletes your account and everything you've created."}
+                  <br />
+                  {"This action cannot be undone."}
+                </p>
+              </div>
+              {isConfirmingDelete ? (
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    disabled={deleteSave.isSaving}
+                    onClick={() => setIsConfirmingDelete(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    icon={<FaTrash />}
+                    iconPlacement="left"
+                    className="bg-error text-white hover:bg-error-dark"
+                    disabled={deleteSave.isSaving}
+                    onClick={handleDeleteAccount}
+                  >
+                    {deleteSave.isSaving
+                      ? "Deleting..."
+                      : "Yes, delete my account"}
+                  </Button>
+                </div>
+              ) : (
                 <Button
+                  variant="secondary"
                   size="sm"
                   icon={<FaTrash />}
                   iconPlacement="left"
-                  className="bg-error text-white hover:bg-error-dark"
-                  disabled={deleteSave.isSaving}
-                  onClick={handleDeleteAccount}
+                  className="shrink-0 border-error text-error hover:border-error-dark hover:bg-error/10 hover:text-error-dark"
+                  onClick={() => setIsConfirmingDelete(true)}
                 >
-                  {deleteSave.isSaving ? "Deleting..." : "Yes, delete my account"}
+                  Delete account
                 </Button>
-                <Button
-                  variant="tertiary"
-                  size="sm"
-                  disabled={deleteSave.isSaving}
-                  onClick={() => setIsConfirmingDelete(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={<FaTrash />}
-                iconPlacement="left"
-                className="border-error text-error hover:border-error-dark hover:bg-error/10 hover:text-error-dark"
-                onClick={() => setIsConfirmingDelete(true)}
-              >
-                Delete account
-              </Button>
-            )}
+              )}
+            </div>
             <SaveResult result={deleteSave.result} />
-          </SettingsSection>
+          </section>
         </div>
       </Modal>
     </>
