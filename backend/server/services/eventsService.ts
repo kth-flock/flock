@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { RSVP } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import {
   CreateEventData,
@@ -94,6 +95,27 @@ export async function getInvitedEvents(userId: UserId) {
         where: { userId },
         select: { rsvp: true },
       },
+    },
+  });
+  return events;
+}
+export async function getEventsTogether(myId: UserId, otherId: UserId) {
+  const takesPart = (userId: UserId) => ({
+    OR: [
+      { createdById: userId },
+      { invitees: { some: { userId, rsvp: { not: RSVP.DECLINED } } } },
+    ],
+  });
+
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [takesPart(myId), takesPart(otherId)],
+      startsAt: { gte: new Date() },
+    },
+    orderBy: { startsAt: "asc" },
+    include: {
+      createdBy: { select: publicUserInformationSelect },
+      invitees: { where: { userId: myId }, select: { rsvp: true } },
     },
   });
   return events;

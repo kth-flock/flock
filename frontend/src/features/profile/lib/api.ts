@@ -91,6 +91,20 @@ export async function getMyInvitedEvents(
   );
   return (events ?? []).map(withEventDates);
 }
+
+// Upcoming events you and someone else both take part in, soonest first
+export async function getEventsTogether(
+  profileId: number,
+  cookie: string,
+): Promise<InvitedEvent[]> {
+  if (USE_EXAMPLE_DATA) return example.getEventsTogether(profileId);
+  const events = await fetchData<InvitedEvent[]>(
+    `/users/${profileId}/events-together`,
+    cookie,
+  );
+  return (events ?? []).map(withEventDates);
+}
+
 export async function getFriendshipStatus(
   profileId: number,
   cookie: string,

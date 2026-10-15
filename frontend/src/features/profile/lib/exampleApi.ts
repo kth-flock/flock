@@ -82,6 +82,29 @@ export async function getMyInvitedEvents(): Promise<InvitedEvent[]> {
     .map(toInvitedEvent);
 }
 
+export async function getEventsTogether(
+  profileId: number,
+): Promise<InvitedEvent[]> {
+  const takesPart = (event: ExtendedEvent, userId: number) =>
+    event.createdById === userId ||
+    exampleInvitees.some(
+      (invitee) =>
+        invitee.eventId === event.id &&
+        invitee.userId === userId &&
+        invitee.rsvp !== "DECLINED",
+    );
+
+  return exampleEvents
+    .filter(
+      (event) =>
+        event.startsAt.getTime() >= Date.now() &&
+        takesPart(event, me.id) &&
+        takesPart(event, profileId),
+    )
+    .toSorted((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    .map(toInvitedEvent);
+}
+
 export async function getFriendshipStatus(
   profileId: number,
 ): Promise<FriendshipStatus> {
