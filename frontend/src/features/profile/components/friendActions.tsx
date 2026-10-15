@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   FaUserCheck,
   FaUserClock,
-  FaUserGroup,
   FaUserPlus,
   FaUserXmark,
 } from "react-icons/fa6";
@@ -19,22 +18,6 @@ import {
 
 const positiveStyle = "bg-success/60 text-white hover:bg-success/40";
 const negativeStyle = "bg-error/60 text-white hover:bg-error/40";
-const stateStyle = "group bg-white/15 text-white hover:bg-error/60";
-
-function HoverLabel({
-  label,
-  hoverLabel,
-}: {
-  label: string;
-  hoverLabel: string;
-}) {
-  return (
-    <>
-      <span className="group-hover:hidden">{label}</span>
-      <span className="hidden group-hover:inline">{hoverLabel}</span>
-    </>
-  );
-}
 
 export default function FriendActions({
   profileId,
@@ -114,15 +97,21 @@ export default function FriendActions({
         )}
 
         {status === "REQUEST_SENT" && (
-          <Button
-            icon={<FaUserClock />}
-            iconPlacement="left"
-            disabled={isPending}
-            onClick={() => void runAction(removeFriendshipFetch, "NONE")}
-            className={stateStyle}
-          >
-            <HoverLabel label="Pending" hoverLabel="Cancel request" />
-          </Button>
+          <>
+            <span className="inline-flex items-center gap-1.5 px-2 text-sm text-white/80 md:text-base">
+              <FaUserClock aria-hidden />
+              Pending
+            </span>
+            <Button
+              icon={<FaUserXmark />}
+              iconPlacement="left"
+              disabled={isPending}
+              onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+              className={negativeStyle}
+            >
+              Cancel request
+            </Button>
+          </>
         )}
 
         {status === "FRIENDS" && (
