@@ -45,12 +45,10 @@ export function isSameDay(a: Date, b: Date) {
   );
 }
 
-// Local-time key, e.g. "2026-9-12" (don't use toISOString, it shifts to UTC)
 export function dayKey(d: Date) {
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
 
-// Assumed implementation, since yours wasn't in the file you shared
 export function groupEventsByDay(events: CalendarEvent[]) {
   const map = new Map<string, CalendarEvent[]>();
   for (const event of events) {
