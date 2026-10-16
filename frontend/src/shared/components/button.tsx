@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
+import Spinner from "./spinner";
 
 // ---------- TYPES ----------
 
@@ -11,6 +12,7 @@ type IconPlacement = "left" | "right" | "";
 type ClickableItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   href?: string;
   externalLink?: boolean;
+  isLoading?: boolean;
 };
 
 type ButtonProps =
@@ -180,24 +182,29 @@ export default function Button({
   className,
   children,
   disabled,
+  isLoading,
   icon,
   iconPlacement = "",
   ...props
 }: ButtonProps) {
   return (
     <ClickableItem
-      disabled={disabled}
+      disabled={disabled || isLoading}
       className={getButtonClasses({
         variant,
         size,
         className,
-        disabled,
+        disabled: disabled || isLoading,
         iconPlacement,
       })}
       {...props}
     >
+      {isLoading && <Spinner className="size-4" />}
       {children}
-      {icon && <span className={iconSizeStyles[size]}>{icon}</span>}
+
+      {icon && !isLoading && (
+        <span className={iconSizeStyles[size]}>{icon}</span>
+      )}
     </ClickableItem>
   );
 }

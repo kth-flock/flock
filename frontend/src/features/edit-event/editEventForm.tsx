@@ -39,6 +39,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   });
   const [isEditingImage, setIsEditingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleInputChange<Key extends keyof EventFormValues>(
     field: Key,
@@ -94,6 +95,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
     if (!payload) return;
 
     setSubmitError(null);
+    setIsSubmitting(true);
     try {
       await withUploadedImage(imageFile, (imageUrl) =>
         updateEventFetch(event.id, {
@@ -110,6 +112,8 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
             ? error.message
             : "Couldn't create the event. Please try again.",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -184,7 +188,9 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
         <Button type="button" variant="secondary" href={`/event/${event.id}`}>
           Cancel
         </Button>
-        <Button type="submit">Update</Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          {isSubmitting ? "Updating event" : "Update"}
+        </Button>
       </div>
     </form>
   );

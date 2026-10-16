@@ -114,7 +114,7 @@ export default function LoginForm() {
           variant="primary"
           size="lg"
           className="w-full justify-center"
-          disabled={isSubmitting}
+          isLoading={isSubmitting}
         >
           {isSubmitting ? "Logging in..." : "Log in"}
         </Button>

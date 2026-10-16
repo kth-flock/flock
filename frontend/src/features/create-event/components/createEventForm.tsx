@@ -8,9 +8,7 @@ import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
-import { uploadSelectedImage, withUploadedImage } from "@/shared/lib/image";
-
-// TODO: make enddate optional
+import { withUploadedImage } from "@/shared/lib/image";
 
 export default function CreateEventForm({
   onCreated,
@@ -22,6 +20,7 @@ export default function CreateEventForm({
   >({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [eventDraft, setEventDraft] = useState<EventFormValues>({
     title: "",
     description: "",
@@ -86,6 +85,7 @@ export default function CreateEventForm({
     if (!payload) return;
 
     setSubmitError(null);
+    setIsSubmitting(true);
 
     try {
       const createdEvent = await withUploadedImage(imageFile, (imageUrl) =>
@@ -95,6 +95,7 @@ export default function CreateEventForm({
         }),
       );
       onCreated(createdEvent.id);
+      console.log("created");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -103,6 +104,8 @@ export default function CreateEventForm({
             ? error.message
             : "Couldn't create the event. Please try again.",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -133,7 +136,9 @@ export default function CreateEventForm({
         <Button type="button" variant="secondary" href="/">
           Cancel
         </Button>
-        <Button type="submit">Create</Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          {isSubmitting ? "Creating event" : "Create"}
+        </Button>
       </div>
     </form>
   );
