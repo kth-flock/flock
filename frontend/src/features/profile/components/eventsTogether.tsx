@@ -1,6 +1,6 @@
 import { SmallEventPreview } from "@/features/dashboard/components/eventPreview";
 import type { InvitedEvent } from "@/features/event/lib/types";
-import LoadError from "./loadError";
+import LoadError from "@/shared/components/loadError";
 
 export default function EventsTogether({
   events,

@@ -8,6 +8,7 @@ import {
   FaCircleXmark,
   FaCrown,
 } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
 import {
   formatDate,
   formatRelativeDate,
@@ -36,10 +37,7 @@ function ImagePlaceholder({
   className: string;
 }) {
   return (
-    <span
-      aria-hidden
-      className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}
-    >
+    <span aria-hidden className={twMerge("absolute inset-0 flex items-center justify-center px-4 font-serif", className)}>
       <span className="truncate">{title}</span>
     </span>
   );
