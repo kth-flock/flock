@@ -94,6 +94,18 @@ export async function inviteFriendFetch(eventId: number, userId: number) {
   }
 }
 
+export async function deleteEventFetch(eventId: number) {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to delete event");
+  }
+}
+
 export async function rsvpFetch(eventId: number, data: RsvpToEventData) {
   const res = await fetch(`${API_BASE_URL}/events/${eventId}/rsvp`, {
     method: "PATCH",
