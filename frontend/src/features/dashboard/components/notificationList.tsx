@@ -1,33 +1,50 @@
 "use client";
 import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
-import Notification, { NotificationAction } from "./notification";
-import type { DashboardNotification } from "../lib/types";
+import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
+import Notification from "./notification";
+import {
+  acceptFriendRequestFetch,
+  declineFriendRequestFetch,
+} from "@/shared/lib/api";
 
 const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
 
 export default function NotificationList({
   notifications,
+  onFriendRequestHandled,
 }: {
-  notifications: DashboardNotification[];
+  notifications: NotificationData[];
+  onFriendRequestHandled: (
+    notification: NotificationData,
+    accepted: boolean,
+  ) => void;
 }) {
-  // Only affects mobile - list is always shown from md and up
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleAction(
-    notif: DashboardNotification,
-    action: NotificationAction,
+  async function handleFriendRequest(
+    notification: NotificationData,
+    accept: boolean,
   ) {
-    switch (action) {
-      case "ACCEPT":
-        return;
-      // return acceptFriendRequest(notif.id);
-      case "DECLINE":
-        return;
-      // return declineFriendRequest(notif.id);
-      case "VIEW":
-        return;
-      //return router.push(`/events/${notif.eventId}`);
+    setPendingId(notification.id);
+    setError(null);
+    try {
+      await (accept ? acceptFriendRequestFetch : declineFriendRequestFetch)(
+        notification.from.id,
+      );
+      onFriendRequestHandled(notification, accept);
+    } catch (err) {
+      setError(
+        err instanceof TypeError
+          ? "Couldn't reach the server. Try again."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong",
+      );
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -62,10 +79,17 @@ export default function NotificationList({
             {index > 0 && <div className="w-full border-b border-primary/20" />}
             <Notification
               notification={notif}
-              onAction={(action) => handleAction(notif, action)}
+              isPending={pendingId === notif.id}
+              onAccept={() => handleFriendRequest(notif, true)}
+              onDecline={() => handleFriendRequest(notif, false)}
             />
           </Fragment>
         ))}
+        {error && (
+          <p className="p-4 text-center flock-caption text-error!" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );
