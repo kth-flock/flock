@@ -101,6 +101,7 @@ export default function CalendarView() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  // TODO: get RSVP status for invited events
   useEffect(() => {
     let isCurrent = true;
 
@@ -138,10 +139,11 @@ export default function CalendarView() {
     }
 
     void loadEvents();
+
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [user]);
 
   const today = new Date();
   const year = visibleMonth.getFullYear();
