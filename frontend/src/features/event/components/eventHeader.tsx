@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import type { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
@@ -41,20 +42,20 @@ export default function EventHeader({
         <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">
           <div className="flex flex-col gap-3 text-white drop-shadow-md ">
             <h1 className="flock-h1">{event.title}</h1>
-            <div className="flock-body-sm flex items-center gap-2">
+            <Link href={`/profile/${event.createdBy.id}`} className="group/host flock-body-sm flex w-fit items-center gap-2">
               <ProfileImage
                 profileImgSrc={event.createdBy.imageUrl ?? ""}
                 firstName={event.createdBy.firstName}
                 lastName={event.createdBy.lastName}
               />
 
-              <span>
+              <span className="group-hover/host:underline">
                 Hosted by{" "}
                 <span className="flock-ui-label">
                   {isHost ? "you" : fullName(event.createdBy)}
                 </span>
               </span>
-            </div>
+            </Link>
           </div>
           {event.invitees?.length > 0 && (
             <button
