@@ -1,5 +1,3 @@
-import type { PublicUser } from "@/shared/types/user";
-import type { DashboardNotification } from "@/features/dashboard/lib/types";
 import type { ProfileDetails } from "@/features/profile/lib/types";
 import type { ExtendedEvent } from "@/shared/types/event";
 import type { Rsvp } from "./types";
@@ -86,15 +84,6 @@ const grace: ExampleUser = {
   createdAt: new Date("2026-10-03T20:45:00.000Z"),
 };
 
-function toPublicUser(user: ExampleUser): PublicUser {
-  return {
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    imageUrl: user.imageUrl,
-  };
-}
-
 function toProfileDetails(user: ExampleUser): ProfileDetails {
   return {
     id: user.id,
@@ -113,12 +102,6 @@ export const exampleProfiles: ProfileDetails[] = [
   toProfileDetails(erin),
   toProfileDetails(frank),
   toProfileDetails(grace),
-];
-
-export const exampleFriends: PublicUser[] = [
-  toPublicUser(alice),
-  toPublicUser(bob),
-  toPublicUser(clara),
 ];
 
 export const exampleEvent: ExtendedEvent = {
@@ -250,28 +233,4 @@ export const exampleInvitees: {
   { eventId: hemmafest.id, userId: erin.id, rsvp: "DECLINED", rsvpComment: null },
   { eventId: boardGameNight.id, userId: alice.id, rsvp: "PENDING", rsvpComment: null },
   { eventId: boardGameNight.id, userId: bob.id, rsvp: "ACCEPTED", rsvpComment: null },
-];
-
-export const exampleNotifications: DashboardNotification[] = [
-  {
-    id: 1,
-    type: "req",
-    from: toPublicUser(bob),
-    createdAt: "2026-10-05T18:20:00.000Z",
-  },
-  {
-    id: 2,
-    type: "invite",
-    from: toPublicUser(bob),
-    event: { id: hemmafest.id, title: hemmafest.title },
-    createdAt: "2026-10-04T12:00:00.000Z",
-  },
-  {
-    id: 3,
-    type: "RSVP",
-    from: toPublicUser(bob),
-    event: { id: exampleEvent.id, title: exampleEvent.title },
-    RSVPstatus: "ACCEPTED",
-    createdAt: "2026-10-02T08:45:00.000Z",
-  },
 ];

@@ -15,12 +15,12 @@ import {
 } from "@/features/event/lib/api";
 import { getMyFriends } from "@/shared/lib/api";
 
-import type { DashboardNotification } from "@/features/dashboard/lib/types";
+import type { Notification } from "@flock/shared/schemas/notifications";
 import type { PublicUser } from "@/shared/types/user";
 
 type DashboardData = {
   events: UpcomingEvent[];
-  notifications: DashboardNotification[];
+  notifications: Notification[];
   friends: PublicUser[];
 };
 
@@ -51,13 +51,29 @@ export default function PrivateHomePage() {
   }
 
   const { notifications, friends } = data;
+
+  function handleFriendRequest(notification: Notification, accepted: boolean) {
+    setData(
+      (prev) =>
+        prev && {
+          ...prev,
+          notifications: prev.notifications.filter(
+            ({ id }) => id !== notification.id,
+          ),
+          friends: accepted ? [notification.from, ...prev.friends] : prev.friends,
+        },
+    );
+  }
   const [nextEvent, ...upcomingEvents] = data.events;
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:items-start md:gap-16">
       <div className="flex w-full flex-col gap-4 md:sticky md:top-24 md:order-last md:gap-12">
         <FriendPreview friends={friends} />
-        <NotificationList notifications={notifications} />
+        <NotificationList
+          notifications={notifications}
+          onFriendRequestHandled={handleFriendRequest}
+        />
       </div>
       <div className="flex w-full min-w-0 flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
