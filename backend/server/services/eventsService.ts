@@ -100,7 +100,7 @@ export async function getInvitedEvents(userId: UserId) {
   return events;
 }
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
-  const takesPart = (userId: UserId) => ({
+  const isParticipant = (userId: UserId) => ({
     OR: [
       { createdById: userId },
       { invitees: { some: { userId, rsvp: { not: RSVP.DECLINED } } } },
@@ -109,7 +109,7 @@ export async function getEventsTogether(myId: UserId, otherId: UserId) {
 
   const events = await prisma.event.findMany({
     where: {
-      AND: [takesPart(myId), takesPart(otherId)],
+      AND: [isParticipant(myId), isParticipant(otherId)],
       startsAt: { gte: new Date() },
     },
     orderBy: { startsAt: "asc" },

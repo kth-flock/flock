@@ -19,16 +19,9 @@ export async function getMyAccount(userId: UserId) {
 }
 
 export async function deleteMyAccount(userId: UserId) {
-  const onMyEvents = { event: { createdById: userId } };
-
-  await prisma.$transaction([
-    prisma.comment.deleteMany({
-      where: { announcement: { OR: [onMyEvents, { userId }] } },
-    }),
-    prisma.announcement.deleteMany({ where: onMyEvents }),
-    prisma.invitee.deleteMany({ where: onMyEvents }),
-    prisma.user.delete({ where: { id: userId } }),
-  ]);
+  await prisma.user.delete({
+    where: { id: userId },
+  });
 }
 
 export async function editUserInfo(userId: UserId, data: UserInfo) {
@@ -41,7 +34,6 @@ export async function editUserInfo(userId: UserId, data: UserInfo) {
   return updatedUser;
 }
 
-// Throws unless the given password is the user's current one
 async function checkPassword(userId: UserId, password: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
