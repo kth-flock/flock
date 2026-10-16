@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import Button, { IconButton } from "@/shared/components/button";
 import CalendarDay from "./calendarDay";
 import CalendarDayModal from "./calendarDayModal";
+import { getCreatedEvents, getInvitedEvents } from "../lib/api";
+import { useAuth } from "@/shared/auth/authContext";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS = [
@@ -24,54 +26,16 @@ const MONTHS = [
 ];
 
 export type CalendarEvent = {
-  id: string;
+  id: number;
   title: string;
   startsAt: Date;
-  createdBy: {
-    id: string;
+  createdBy?: {
+    id: number;
     firstName: string;
     lastName: string;
     imageUrl: string | null;
   };
 };
-
-// ---- Fake data (remove once you wire up the backend) ----
-function makeFakeEvents(): CalendarEvent[] {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  const creator = {
-    id: "u1",
-    firstName: "Anna",
-    lastName: "Lindberg",
-    imageUrl: null,
-  };
-
-  const at = (day: number, hour: number, minute = 0) =>
-    new Date(y, m, day, hour, minute);
-
-  return [
-    { id: "1", title: "Team lunch", startsAt: at(3, 12), createdBy: creator },
-    {
-      id: "2",
-      title: "Board games",
-      startsAt: at(8, 18, 30),
-      createdBy: creator,
-    },
-    {
-      id: "3",
-      title: "Birthday party",
-      startsAt: at(12, 19),
-      createdBy: creator,
-    },
-    { id: "4", title: "Morning run", startsAt: at(12, 7), createdBy: creator },
-    { id: "5", title: "Movie night", startsAt: at(12, 21), createdBy: creator },
-    { id: "6", title: "Workshop", startsAt: at(18, 10), createdBy: creator },
-    { id: "7", title: "Dinner", startsAt: at(25, 18), createdBy: creator },
-    { id: "8", title: "Hike", startsAt: at(25, 9), createdBy: creator },
-  ];
-}
-// ---------------------------------------------------------
 
 function isSameDay(a: Date, b: Date) {
   return (
@@ -100,10 +64,6 @@ function groupEventsByDay(events: CalendarEvent[]) {
   return map;
 }
 
-function formatTime(d: Date) {
-  return d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-}
-
 function getMonthWeeks(year: number, month: number): (Date | null)[][] {
   const leadingBlanks = new Date(year, month, 0).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -127,11 +87,9 @@ function getMonthWeeks(year: number, month: number): (Date | null)[][] {
   return weeks;
 }
 
-export default function CalendarView({
-  events = makeFakeEvents(), // swap for real events from the backend
-}: {
-  events?: CalendarEvent[];
-}) {
+// TODO: Fix different view on mobile
+export default function CalendarView() {
+  const { user } = useAuth();
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -140,6 +98,50 @@ export default function CalendarView({
     day: Date;
     events: CalendarEvent[];
   } | null>(null);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadEvents() {
+      try {
+        const [invitedEvents, createdEvents] = await Promise.all([
+          getInvitedEvents(),
+          getCreatedEvents(),
+        ]);
+        const uniqueEvents = new Map(
+          [
+            ...createdEvents.map((event: CalendarEvent) => ({
+              ...event,
+              createdBy: user,
+            })),
+            ...invitedEvents,
+          ].map((event) => [event.id, event]),
+        );
+
+        if (isCurrent) {
+          setEvents(
+            [...uniqueEvents.values()].map((event) => ({
+              ...event,
+              startsAt: new Date(event.startsAt),
+            })),
+          );
+        }
+      } catch (error) {
+        if (isCurrent) {
+          setLoadError(
+            error instanceof Error ? error.message : "Failed to load events",
+          );
+        }
+      }
+    }
+
+    void loadEvents();
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
 
   const today = new Date();
   const year = visibleMonth.getFullYear();
@@ -162,12 +164,18 @@ export default function CalendarView({
         />
       )}
       <div className="w-full">
+        {loadError && (
+          <p className="mb-4 text-error" role="alert">
+            {loadError}
+          </p>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-8">
-            <h2 className="flock-h2">
+            <h2 className="flock-h2 w-64">
               {MONTHS[month]} {year}
             </h2>
             <div className="flex gap-2">
+              {/* TODO: Fix so buttons are at the same place always */}
               <IconButton
                 variant="secondary"
                 size="sm"
