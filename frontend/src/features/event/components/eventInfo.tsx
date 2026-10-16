@@ -5,6 +5,7 @@ import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
 import { FaPenToSquare } from "react-icons/fa6";
 import InviteButton from "./inviteModal";
+import type { ExtendedInvitee } from "@/shared/types/event";
 
 export default function EventInfo({
   event,
@@ -31,7 +32,9 @@ export default function EventInfo({
               Edit
             </Button>
             <InviteButton
-              invitees={event.invitees.map((invitee) => invitee.user)}
+              invitees={event.invitees.map(
+                (invitee: ExtendedInvitee) => invitee.user,
+              )}
               eventId={event.id}
             />
           </div>

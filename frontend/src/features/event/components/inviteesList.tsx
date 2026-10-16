@@ -3,8 +3,8 @@ import { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
 import RSVPStatus from "@/shared/components/rsvpStatus";
 import { FaCommentDots } from "react-icons/fa6";
-
-type InviteeRsvp = ExtendedEvent["invitees"][number]["rsvp"];
+import type { Rsvp } from "../lib/types";
+import type { ExtendedInvitee } from "@/shared/types/event";
 
 type InviteesListProps = {
   event: ExtendedEvent;
@@ -13,8 +13,8 @@ type InviteesListProps = {
   onClose?: () => void;
 };
 
-export function sortInviteesByRsvpStatus(invitees: ExtendedEvent["invitees"]) {
-  const priority = {
+export function sortInviteesByRsvpStatus(invitees: ExtendedInvitee[]) {
+  const priority: Record<Rsvp, number> = {
     ACCEPTED: 0,
     MAYBE: 1,
     DECLINED: 2,
@@ -25,8 +25,8 @@ export function sortInviteesByRsvpStatus(invitees: ExtendedEvent["invitees"]) {
 }
 
 export function countInviteesByRsvpStatus(
-  invitees: ExtendedEvent["invitees"],
-): Record<InviteeRsvp, number> {
+  invitees: ExtendedInvitee[],
+): Record<Rsvp, number> {
   return invitees.reduce(
     (counts, { rsvp }) => {
       counts[rsvp] += 1;

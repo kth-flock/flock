@@ -1,4 +1,4 @@
-import { uploadImageFetch } from "./api";
+import { deleteImageFromS3Fetch, uploadImageFetch } from "./api";
 
 export async function uploadSelectedImage(
   imageFile: File | null,
@@ -6,4 +6,18 @@ export async function uploadSelectedImage(
   if (!imageFile) return;
   const { imageUrl } = await uploadImageFetch(imageFile, "events");
   return imageUrl;
+}
+
+export async function withUploadedImage<T>(
+  imageFile: File | null,
+  save: (imageUrl: string | undefined) => Promise<T>,
+): Promise<T> {
+  const imageUrl = await uploadSelectedImage(imageFile);
+
+  try {
+    return await save(imageUrl);
+  } catch (error) {
+    if (imageUrl) deleteImageFromS3Fetch(imageUrl).catch(() => {});
+    throw error;
+  }
 }

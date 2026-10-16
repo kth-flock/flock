@@ -196,7 +196,7 @@ export default function RegisterForm() {
       <span className="inline-flex gap-2 items-center flock-body justify-center">
         Already have an account?
         <Link
-          href="/register"
+          href="/login"
           className="text-secondary font-semibold! hover:underline "
         >
           Log in

@@ -18,4 +18,4 @@ WORKDIR /app/backend
 
 EXPOSE 4000
 
-CMD ["npm", "run", "server"]
+CMD ["npm", "run", "backend"]
