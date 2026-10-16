@@ -13,7 +13,14 @@ type NotificationProps = {
   onDecline: () => void;
 };
 
-function message({ type, event }: NotificationData) {
+const rsvpMessage = {
+  ACCEPTED: "is going to",
+  MAYBE: "might come to",
+  DECLINED: "can't come to",
+  PENDING: "hasn't answered",
+} as const;
+
+function message({ type, event, rsvp }: NotificationData) {
   const eventTitle = <b>{event?.title}</b>;
 
   switch (type) {
@@ -27,6 +34,12 @@ function message({ type, event }: NotificationData) {
       return <>sent you a friend request</>;
     case "FRIEND_REQUEST_ACCEPTED":
       return <>accepted your friend request</>;
+    case "RSVP":
+      return (
+        <>
+          {rsvpMessage[rsvp?.status ?? "PENDING"]} {eventTitle}
+        </>
+      );
   }
 }
 
@@ -80,6 +93,11 @@ export default function Notification({
           {type === "ANNOUNCEMENT" && notification.announcement && (
             <p className="flock-body-sm line-clamp-1 text-(--color-text-muted)">
               {notification.announcement.content}
+            </p>
+          )}
+          {type === "RSVP" && notification.rsvp?.comment && (
+            <p className="flock-body-sm line-clamp-1 text-(--color-text-muted)">
+              {`"${notification.rsvp.comment}"`}
             </p>
           )}
           <time

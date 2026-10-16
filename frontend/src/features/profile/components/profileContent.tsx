@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import {
   FaCalendarCheck,
-  FaHouseChimney,
+  FaCrown,
   FaClock,
   FaUsers,
 } from "react-icons/fa6";
@@ -48,7 +48,7 @@ export default function ProfileContent({
     ...(hostedEvents !== undefined
       ? [
           {
-            icon: <FaHouseChimney />,
+            icon: <FaCrown />,
             value: countOf(hostedEvents),
             label: "Events hosted",
           },

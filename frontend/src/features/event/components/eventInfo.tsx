@@ -10,10 +10,13 @@ import type { ExtendedInvitee } from "@/shared/types/event";
 export default function EventInfo({
   event,
   isHost,
+  userId,
 }: {
   event: ExtendedEvent;
   isHost: boolean;
+  userId: number;
 }) {
+  const myInvite = event.invitees.find((invitee) => invitee.userId === userId);
   const eventEnd = new Date(event.endsAt ?? event.startsAt).getTime();
   const hasPassed = Date.now() > eventEnd;
 
@@ -39,7 +42,11 @@ export default function EventInfo({
             />
           </div>
         ) : (
-          <RsvpButtons />
+          <RsvpButtons
+            eventId={event.id}
+            initialRsvp={myInvite?.rsvp ?? "PENDING"}
+            initialComment={myInvite?.rsvpComment ?? ""}
+          />
         ))}
 
       <EventDetails event={event} hasPassed={hasPassed} />
