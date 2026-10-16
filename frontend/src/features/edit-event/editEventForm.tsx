@@ -13,10 +13,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaCamera, FaPen, FaPenToSquare } from "react-icons/fa6";
-
-// TODO: make enddate optional
-
-// TODO: Wire up image-upload
+import {
+  combineDateTime,
+  getFieldErrors,
+} from "@/features/event/lib/eventFormFieldsUtils";
 
 export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const router = useRouter();
@@ -52,25 +52,12 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
     const result = updateEventSchema.safeParse(payload);
 
     if (!result.success) {
-      const fieldErrors = result.error.issues.reduce<Record<string, string>>(
-        (errors, issue) => {
-          const field = issue.path.join(".") || "form";
-          errors[field] ??= issue.message;
-          return errors;
-        },
-        {},
-      );
-      setValidationError(fieldErrors);
+      setValidationError(getFieldErrors(result.error.issues));
       return null;
     }
 
     setValidationError({});
     return result.data;
-  }
-
-  function combineDateTime(date: string, time: string): Date | null {
-    if (!date || !time) return null;
-    return new Date(`${date}T${time}`);
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
@@ -110,7 +97,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           ? "Couldn't connect to the server. Check your connection and try again."
           : error instanceof Error
             ? error.message
-            : "Couldn't create the event. Please try again.",
+            : "Couldn't update the event. Please try again.",
       );
     } finally {
       setIsSubmitting(false);

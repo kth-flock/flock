@@ -10,6 +10,10 @@ import EventFormFields from "@/features/event/components/eventFormFields";
 import { FaCamera } from "react-icons/fa6";
 import { withUploadedImage } from "@/shared/lib/image";
 import { useToast } from "@/shared/components/toast";
+import {
+  combineDateTime,
+  getFieldErrors,
+} from "@/features/event/lib/eventFormFieldsUtils";
 
 export default function CreateEventForm({
   onCreated,
@@ -44,25 +48,12 @@ export default function CreateEventForm({
     const result = createEventSchema.safeParse(payload);
 
     if (!result.success) {
-      const fieldErrors = result.error.issues.reduce<Record<string, string>>(
-        (errors, issue) => {
-          const field = issue.path.join(".") || "form";
-          errors[field] ??= issue.message;
-          return errors;
-        },
-        {},
-      );
-      setValidationError(fieldErrors);
+      setValidationError(getFieldErrors(result.error.issues));
       return null;
     }
 
     setValidationError({});
     return result.data;
-  }
-
-  function combineDateTime(date: string, time: string): Date | null {
-    if (!date || !time) return null;
-    return new Date(`${date}T${time}`);
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
