@@ -194,6 +194,7 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
     },
     select: {
       createdById: true,
+      imageUrl: true,
     },
   });
 
@@ -210,6 +211,12 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
       id: eventId,
     },
   });
+
+  if (event.imageUrl) {
+    await deleteImageFromS3(event.imageUrl).catch((error) =>
+      console.error("Failed to delete event image from S3:", error),
+    );
+  }
 }
 
 export async function rsvpToEvent(
