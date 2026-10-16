@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { idSchema } from "./common";
-import { UserId } from "./user";
 
 export type EventId = z.infer<typeof idSchema>;
 
@@ -100,6 +99,9 @@ export const rsvpStatusSchema = z.enum([
 
 export const rsvpToEventSchema = z.object({
   rsvp: rsvpStatusSchema,
-  rsvpComment: z.string().optional(),
+  rsvpComment: z
+    .string()
+    .max(200, "Comment can be at most 200 characters")
+    .optional(),
 });
 export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;

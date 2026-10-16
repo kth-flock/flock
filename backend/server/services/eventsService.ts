@@ -78,8 +78,8 @@ export async function getEventById(eventId: EventId, userId: UserId) {
 
   return {
     ...eventWithImage,
-    invitees: eventWithImage.invitees.map(
-      ({ rsvpComment, ...invitee }) => invitee,
+    invitees: eventWithImage.invitees.map(({ rsvpComment, ...invitee }) =>
+      invitee.userId === userId ? { ...invitee, rsvpComment } : invitee,
     ),
   };
 }
@@ -174,7 +174,6 @@ export async function updateEventInfo(
     data: eventData,
   });
 
-  // Replaced image is no longer referenced, so remove it and a failed delete shouldn't fail the update.
   if (
     event.imageUrl &&
     eventData.imageUrl &&
