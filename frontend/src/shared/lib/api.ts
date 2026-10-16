@@ -3,7 +3,7 @@ import type {
   CreateEventData,
   UpdateEventData,
 } from "@flock/shared/schemas/event";
-import { UserSearchResult, PrivateUser } from "../types/user";
+import { UserSearchResult, PrivateUser, PublicUser } from "../types/user";
 import type { ExtendedEvent } from "../types/event";
 
 export const API_BASE_URL =
@@ -65,6 +65,61 @@ export async function searchUsersFetch(
     await res.json();
 
   return response.data;
+}
+
+export async function getMyFriends(): Promise<PublicUser[]> {
+  const res = await fetch(`${API_BASE_URL}/me/friendships/`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to get friends");
+  }
+
+  const response: { status: string; data: PublicUser[] } = await res.json();
+  return response.data;
+}
+
+export async function inviteFriendFetch(eventId: number, userId: number) {
+  const res = await fetch(
+    `${API_BASE_URL}/events/${eventId}/invitees/${userId}`,
+    { method: "POST", credentials: "include" },
+  );
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to invite user");
+  }
+}
+
+export async function batchInviteFetch(eventId: number, userIds: number[]) {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}/invitees`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ inviteeIds: userIds }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to invite users");
+  }
+
+  const response: { status: string; data: { skipped: number } } =
+    await res.json();
+  return response.data.skipped;
+}
+
+export async function uninviteFriendFetch(eventId: number, userId: number) {
+  const res = await fetch(
+    `${API_BASE_URL}/events/${eventId}/invitees/${userId}`,
+    { method: "DELETE", credentials: "include" },
+  );
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to uninvite user");
+  }
 }
 
 export async function uploadImageFetch(

@@ -65,7 +65,7 @@ export default function EventHeader({
               {[...event.invitees].slice(0, 3)?.map(({ user }) => (
                 <div
                   key={user.id}
-                  className="-mr-3 relative rounded-full shadow-sm"
+                  className="not-last:-mr-3 relative rounded-full shadow-sm"
                 >
                   <ProfileImage
                     profileImgSrc={user.imageUrl ?? ""}
@@ -75,7 +75,7 @@ export default function EventHeader({
                   />
                 </div>
               ))}
-              {event.invitees?.length >= 3 && (
+              {event.invitees?.length > 3 && (
                 <div className=" rounded-full overflow-hidden h-8 w-8 shrink-0 group relative shadow-sm">
                   <div className="@container group relative flex h-full w-full items-center justify-center bg-white">
                     <span className="text-[40cqw]! flock-ui-label leading-none">

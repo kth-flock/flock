@@ -3,7 +3,9 @@ import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
-import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
+import { FaPenToSquare } from "react-icons/fa6";
+import InviteButton from "./inviteModal";
+import type { ExtendedInvitee } from "@/shared/types/event";
 
 export default function EventInfo({
   event,
@@ -29,14 +31,12 @@ export default function EventInfo({
             >
               Edit
             </Button>
-            {/* TODO:  Wire up inviting*/}
-            <Button
-              icon={<FaUserPlus aria-hidden />}
-              iconPlacement="right"
-              variant="secondary"
-            >
-              Invite
-            </Button>
+            <InviteButton
+              invitees={event.invitees.map(
+                (invitee: ExtendedInvitee) => invitee.user,
+              )}
+              eventId={event.id}
+            />
           </div>
         ) : (
           <RsvpButtons />

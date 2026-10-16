@@ -10,6 +10,7 @@ import {
   registerUserFormSchema,
 } from "../types/registerTypes";
 import { useAuth } from "@/shared/auth/authContext";
+import Link from "next/link";
 
 export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
@@ -192,6 +193,15 @@ export default function RegisterForm() {
           {isSubmitting ? "Registering..." : "Register"}
         </Button>
       </form>
+      <span className="inline-flex gap-2 items-center flock-body justify-center">
+        Already have an account?
+        <Link
+          href="/login"
+          className="text-secondary font-semibold! hover:underline "
+        >
+          Log in
+        </Link>
+      </span>
     </>
   );
 }

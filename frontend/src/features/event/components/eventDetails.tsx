@@ -57,7 +57,7 @@ export default function EventDetails({
             {formatTimeRange(event.startsAt, event.endsAt)}
           </p>
         </time>
-        {event.locationName && (
+        {(event.locationName || (event.latitude && event.longitude)) && (
           <p className="flock-lead flex items-center gap-2 text-foreground/80">
             <FaLocationDot
               className={twMerge(
@@ -84,17 +84,19 @@ export default function EventDetails({
           >
             Add to Google Calendar
           </Button>
-          <Button
-            href={getGoogleMapsUrl(event)}
-            variant="secondary"
-            externalLink
-            icon={<FaMapLocationDot />}
-            iconPlacement="left"
-            className="text-nowrap"
-            size="md"
-          >
-            Find on Google Maps
-          </Button>
+          {(event.locationName || (event.latitude && event.longitude)) && (
+            <Button
+              href={getGoogleMapsUrl(event)}
+              variant="secondary"
+              externalLink
+              icon={<FaMapLocationDot />}
+              iconPlacement="left"
+              className="text-nowrap"
+              size="md"
+            >
+              Find on Google Maps
+            </Button>
+          )}
         </div>
       )}
     </div>

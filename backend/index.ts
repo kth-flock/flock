@@ -12,7 +12,16 @@ import cookieParser from "cookie-parser";
 import { imageRouter } from "./server/routes/image";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://stage-flock-kth.vercel.app",
+      "https://flock-kth.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json()); //body parsing middleware
 app.use(cookieParser()); //cookie parsing middleware
 

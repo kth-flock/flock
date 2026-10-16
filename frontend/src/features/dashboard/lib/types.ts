@@ -3,6 +3,8 @@ import type { EventDetails, Rsvp } from "@/features/event/lib/types";
 
 // TODO: Add notif endpoint fron backend
 
+export type DashboardRsvpStatus = "ACCEPTED" | "MAYBE" | "DECLINED";
+
 type NotificationBase = {
   id: number;
   from: PublicUser;
@@ -18,6 +20,6 @@ export type DashboardNotification = NotificationBase &
     | {
         type: "RSVP";
         event: NotificationEvent;
-        RSVPstatus: Exclude<Rsvp, "PENDING">;
+        RSVPstatus: DashboardRsvpStatus;
       }
   );
