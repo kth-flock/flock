@@ -1,8 +1,10 @@
 import type { PublicUser } from "@/shared/types/user";
 import type { DashboardNotification } from "@/features/dashboard/lib/types";
+import type { ProfileDetails } from "@/features/profile/lib/types";
 import type { ExtendedEvent } from "@/shared/types/event";
+import type { Rsvp } from "./types";
 
-// Placeholder data used while the event page and dashboard aren't wired to the backend
+// Placeholder data used while frontend pages aren't wired to the backend
 
 type ExampleUser = {
   id: number;
@@ -18,30 +20,70 @@ const alice: ExampleUser = {
   id: 1,
   firstName: "Felix",
   lastName: "Larsson",
-  imageUrl: "",
+  imageUrl: null,
   email: "felix@example.com",
   pwdHash: null,
-  createdAt: new Date("2026-09-01T09:00:00.000Z"),
+  createdAt: new Date("2026-09-16T13:31:00.000Z"),
 };
 
 const bob: ExampleUser = {
   id: 2,
   firstName: "Sandra",
   lastName: "Kåhre",
-  imageUrl: "",
+  imageUrl: null,
   email: "sandra@example.com",
   pwdHash: null,
-  createdAt: new Date("2026-09-02T09:00:00.000Z"),
+  createdAt: new Date("2026-09-16T14:02:00.000Z"),
 };
 
 const clara: ExampleUser = {
   id: 3,
   firstName: "Alice",
   lastName: "Cohen",
-  imageUrl: "",
+  imageUrl: null,
   email: "alice@example.com",
   pwdHash: null,
-  createdAt: new Date("2026-09-03T09:00:00.000Z"),
+  createdAt: new Date("2026-09-22T09:15:00.000Z"),
+};
+
+const dave: ExampleUser = {
+  id: 4,
+  firstName: "John",
+  lastName: "Smith One",
+  imageUrl: null,
+  email: "john.one@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-24T18:40:00.000Z"),
+};
+
+const erin: ExampleUser = {
+  id: 5,
+  firstName: "John",
+  lastName: "Smith Two",
+  imageUrl: null,
+  email: "john.two@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-09-26T11:05:00.000Z"),
+};
+
+const frank: ExampleUser = {
+  id: 6,
+  firstName: "John",
+  lastName: "Smith Three",
+  imageUrl: null,
+  email: "john.three@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-10-01T08:20:00.000Z"),
+};
+
+const grace: ExampleUser = {
+  id: 7,
+  firstName: "John",
+  lastName: "Smith Four",
+  imageUrl: null,
+  email: "john.four@example.com",
+  pwdHash: null,
+  createdAt: new Date("2026-10-03T20:45:00.000Z"),
 };
 
 function toPublicUser(user: ExampleUser): PublicUser {
@@ -52,6 +94,26 @@ function toPublicUser(user: ExampleUser): PublicUser {
     imageUrl: user.imageUrl,
   };
 }
+
+function toProfileDetails(user: ExampleUser): ProfileDetails {
+  return {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    createdAt: user.createdAt.toISOString(),
+  };
+}
+
+export const exampleProfiles: ProfileDetails[] = [
+  toProfileDetails(alice),
+  toProfileDetails(bob),
+  toProfileDetails(clara),
+  toProfileDetails(dave),
+  toProfileDetails(erin),
+  toProfileDetails(frank),
+  toProfileDetails(grace),
+];
 
 export const exampleFriends: PublicUser[] = [
   toPublicUser(alice),
@@ -153,6 +215,41 @@ export const exampleEvents: ExtendedEvent[] = [
   exampleEvent,
   hemmafest,
   boardGameNight,
+];
+
+export const exampleFriendships: {
+  requesterId: number;
+  requesteeId: number;
+  status: "PENDING" | "ACCEPTED";
+}[] = [
+  { requesterId: alice.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: clara.id, requesteeId: alice.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: clara.id, status: "ACCEPTED" },
+  { requesterId: dave.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: erin.id, status: "ACCEPTED" },
+  { requesterId: frank.id, requesteeId: bob.id, status: "ACCEPTED" },
+  { requesterId: bob.id, requesteeId: grace.id, status: "ACCEPTED" },
+  { requesterId: dave.id, requesteeId: erin.id, status: "ACCEPTED" },
+  { requesterId: clara.id, requesteeId: dave.id, status: "PENDING" },
+  { requesterId: alice.id, requesteeId: dave.id, status: "PENDING" },
+  { requesterId: erin.id, requesteeId: alice.id, status: "PENDING" },
+];
+
+// Rows of the backend's Invitee table
+export const exampleInvitees: {
+  eventId: number;
+  userId: number;
+  rsvp: Rsvp;
+  rsvpComment: string | null;
+}[] = [
+  { eventId: exampleEvent.id, userId: bob.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: exampleEvent.id, userId: clara.id, rsvp: "MAYBE", rsvpComment: null },
+  { eventId: exampleEvent.id, userId: dave.id, rsvp: "PENDING", rsvpComment: null },
+  { eventId: hemmafest.id, userId: alice.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: hemmafest.id, userId: clara.id, rsvp: "ACCEPTED", rsvpComment: null },
+  { eventId: hemmafest.id, userId: erin.id, rsvp: "DECLINED", rsvpComment: null },
+  { eventId: boardGameNight.id, userId: alice.id, rsvp: "PENDING", rsvpComment: null },
+  { eventId: boardGameNight.id, userId: bob.id, rsvp: "ACCEPTED", rsvpComment: null },
 ];
 
 export const exampleNotifications: DashboardNotification[] = [

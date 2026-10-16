@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { RSVP } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import {
   CreateEventData,
@@ -75,7 +76,6 @@ export async function getEventById(eventId: EventId, userId: UserId) {
     return eventWithImage;
   }
 
-  //If not host return data without rsvpComments
   return {
     ...eventWithImage,
     invitees: eventWithImage.invitees.map(
@@ -105,6 +105,31 @@ export async function getInvitedEvents(userId: UserId) {
       createdBy: {
         select: publicUserInformationSelect,
       },
+      invitees: {
+        where: { userId },
+        select: { rsvp: true },
+      },
+    },
+  });
+  return events;
+}
+export async function getEventsTogether(myId: UserId, otherId: UserId) {
+  const isParticipant = (userId: UserId) => ({
+    OR: [
+      { createdById: userId },
+      { invitees: { some: { userId, rsvp: { not: RSVP.DECLINED } } } },
+    ],
+  });
+
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [isParticipant(myId), isParticipant(otherId)],
+      startsAt: { gte: new Date() },
+    },
+    orderBy: { startsAt: "asc" },
+    include: {
+      createdBy: { select: publicUserInformationSelect },
+      invitees: { where: { userId: myId }, select: { rsvp: true } },
     },
   });
   return Promise.all(events.map((event) => withSignedImageUrl(event)));
@@ -173,7 +198,6 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
     },
   });
 
-  //TODO: Should we return weather the event exists if they are not authorized to change it????
   if (!event) {
     throw new NotFoundError("Event not found");
   }

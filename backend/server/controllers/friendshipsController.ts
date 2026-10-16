@@ -3,7 +3,7 @@ import * as friendsServices from "../services/friendshipsServices";
 import { directionSchema, idSchema } from "@flock/shared/schemas/common";
 import { getUserById } from "../services/usersServices";
 import { validate } from "../utils/validate";
-import { NotFoundError } from "../utils/errors";
+import { ConflictError, NotFoundError } from "../utils/errors";
 
 export async function getMyFriends(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
@@ -69,8 +69,12 @@ export async function acceptFriendship(req: Request, res: Response) {
     requesteeId,
   );
 
-  if (!friendship) {
+  if (!friendship || friendship.requesteeId !== requesteeId) {
     throw new NotFoundError("Friend request not found");
+  }
+
+  if (friendship.status === "ACCEPTED") {
+    throw new ConflictError("Users already friends");
   }
 
   const updatedFriendship = await friendsServices.updateFriendship(friendship);
@@ -94,7 +98,7 @@ export async function deleteFriendship(req: Request, res: Response) {
     throw new NotFoundError("Friendship not found");
   }
 
-  friendsServices.deleteFriendship(friendship);
+  await friendsServices.deleteFriendship(friendship);
 
   res.status(200).json({ status: "Success", message: " Friendship deleted" });
 }
