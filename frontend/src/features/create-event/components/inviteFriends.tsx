@@ -11,6 +11,7 @@ import {
 } from "@/shared/lib/api";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/shared/components/toast";
 
 export default function InviteFriends({ eventId }: { eventId: number }) {
   const searchRequestRef = useRef(0);
@@ -32,6 +33,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
   const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<UserSearchResult[]>([]);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     const invitedIds = new Set(invitees.map((invitee) => invitee.id));
@@ -148,6 +150,12 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
           Send invites
         </Button>
       </div>
+      <button
+        type="button"
+        onClick={() => toast("Event has been created", "bottom-center")}
+      >
+        test toast
+      </button>
     </div>
   );
 }

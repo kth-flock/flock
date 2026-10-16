@@ -9,6 +9,7 @@ import EventFormFields from "@/features/event/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
 import { withUploadedImage } from "@/shared/lib/image";
+import { useToast } from "@/shared/components/toast";
 
 export default function CreateEventForm({
   onCreated,
@@ -21,6 +22,7 @@ export default function CreateEventForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
   const [eventDraft, setEventDraft] = useState<EventFormValues>({
     title: "",
     description: "",
@@ -95,7 +97,7 @@ export default function CreateEventForm({
         }),
       );
       onCreated(createdEvent.id);
-      console.log("created");
+      toast("Successfully created event!", "bottom-center", "success");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -104,6 +106,7 @@ export default function CreateEventForm({
             ? error.message
             : "Couldn't create the event. Please try again.",
       );
+      toast("Couldn't create event, try again.", "bottom-center", "error");
     } finally {
       setIsSubmitting(false);
     }
