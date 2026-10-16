@@ -1,6 +1,6 @@
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { UserSearchResult } from "@/shared/types/user";
-import Button from "./button";
+import Button, { IconButton } from "./button";
 import { FaUserPlus, FaCheck, FaXmark } from "react-icons/fa6";
 import ProfileImage from "./profileImage";
 
@@ -86,16 +86,16 @@ export default function FriendSearchResult({
         {user.firstName} {user.lastName}
       </p>
       {user.friendshipStatus === "REQUEST_RECEIVED" && (
-        <Button
-          variant={action.variant}
+        <IconButton
+          variant="primary"
           size="sm"
-          icon={<FaXmark aria-hidden />}
-          iconPlacement="right"
           aria-label="decline friend request"
           onClick={onDeclineFriend}
           disabled={action.disabled || isPending}
-          className="px-1.5 bg-error hover:bg-error-dark"
-        />
+          className="bg-error hover:bg-error-dark"
+        >
+          <FaXmark aria-hidden />
+        </IconButton>
       )}
       <Button
         variant={action.variant}
