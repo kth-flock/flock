@@ -19,7 +19,7 @@ export default function ProfileHeader({
   profile,
   bannerColor,
   isOwnProfile = false,
-  friendshipStatus = "NONE",
+  friendshipStatus,
   email = "",
 }: ProfileHeaderProps) {
   return (
@@ -50,7 +50,7 @@ export default function ProfileHeader({
             </div>
           )}
 
-          {!isOwnProfile && (
+          {!isOwnProfile && friendshipStatus && (
             <FriendActions
               key={friendshipStatus}
               profileId={profile.id}

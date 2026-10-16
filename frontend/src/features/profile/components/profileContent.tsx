@@ -11,12 +11,15 @@ import type { UserSearchResult } from "@/shared/types/user";
 import type { ProfileDetails } from "../lib/types";
 import FriendStack from "./friendStack";
 
+const countOf = (list: unknown[] | null) =>
+  list ? String(list.length) : "-";
+
 type ProfileContentProps = {
   profile: ProfileDetails;
-  friends: UserSearchResult[];
+  friends: UserSearchResult[] | null;
   myId?: number;
-  hostedEvents?: EventSummary[];
-  invitedEvents?: InvitedEvent[];
+  hostedEvents?: EventSummary[] | null;
+  invitedEvents?: InvitedEvent[] | null;
   className?: string;
 };
 
@@ -36,24 +39,26 @@ export default function ProfileContent({
     },
     {
       icon: <FaUsers />,
-      value: String(friends.length),
+      value: countOf(friends),
       label: "Friends",
-      extra: friends.length > 0 && <FriendStack friends={friends} myId={myId} />,
+      extra: friends && friends.length > 0 && (
+        <FriendStack friends={friends} myId={myId} />
+      ),
     },
-    ...(hostedEvents
+    ...(hostedEvents !== undefined
       ? [
           {
             icon: <FaHouseChimney />,
-            value: String(hostedEvents.length),
+            value: countOf(hostedEvents),
             label: "Events hosted",
           },
         ]
       : []),
-    ...(invitedEvents
+    ...(invitedEvents !== undefined
       ? [
           {
             icon: <FaCalendarCheck />,
-            value: String(invitedEvents.length),
+            value: countOf(invitedEvents),
             label: "Invitations",
           },
         ]

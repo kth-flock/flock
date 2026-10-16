@@ -9,6 +9,7 @@ import {
   getMyInvitedEvents,
   getMyProfile,
   getProfileFriends,
+  orNull,
 } from "@/features/profile/lib/api";
 import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 
@@ -23,9 +24,9 @@ export default async function MyProfilePage() {
   if (!profile) redirect("/login");
 
   const [friends, hostedEvents, invitedEvents] = await Promise.all([
-    getProfileFriends(profile.id, cookie),
-    getMyHostedEvents(cookie),
-    getMyInvitedEvents(cookie),
+    orNull(getProfileFriends(profile.id, cookie)),
+    orNull(getMyHostedEvents(cookie)),
+    orNull(getMyInvitedEvents(cookie)),
   ]);
 
   return (
@@ -39,10 +40,12 @@ export default async function MyProfilePage() {
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent
           profile={profile}
-          friends={friends.map((friend) => ({
-            ...friend,
-            friendshipStatus: "FRIENDS" as const,
-          }))}
+          friends={
+            friends?.map((friend) => ({
+              ...friend,
+              friendshipStatus: "FRIENDS" as const,
+            })) ?? null
+          }
           hostedEvents={hostedEvents}
           invitedEvents={invitedEvents}
           className="grid-cols-2 md:grid-cols-1"

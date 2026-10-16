@@ -124,3 +124,12 @@ export async function getMyFriendshipStatuses(
   friends?.forEach((user) => statuses.set(user.id, "FRIENDS"));
   return statuses;
 }
+
+export async function orNull<T>(promise: Promise<T>): Promise<T | null> {
+  try {
+    return await promise;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}

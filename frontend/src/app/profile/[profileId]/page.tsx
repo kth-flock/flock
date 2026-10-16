@@ -10,6 +10,7 @@ import {
   getMyProfile,
   getProfile,
   getProfileFriends,
+  orNull,
 } from "@/features/profile/lib/api";
 import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 import { fullName } from "@/shared/lib/user";
@@ -42,16 +43,19 @@ export default async function ProfilePage({
   if (profile.id === myProfile.id) redirect("/profile");
 
   const [friends, myStatuses, eventsTogether] = await Promise.all([
-    getProfileFriends(profile.id, cookie),
-    getMyFriendshipStatuses(cookie),
-    getEventsTogether(profile.id, cookie),
+    orNull(getProfileFriends(profile.id, cookie)),
+    orNull(getMyFriendshipStatuses(cookie)),
+    orNull(getEventsTogether(profile.id, cookie)),
   ]);
 
-  const friendshipStatus = myStatuses.get(profile.id) ?? "NONE";
-  const friendsWithStatus = friends.map((friend) => ({
-    ...friend,
-    friendshipStatus: myStatuses.get(friend.id) ?? "NONE",
-  }));
+  const friendshipStatus = myStatuses
+    ? (myStatuses.get(profile.id) ?? "NONE")
+    : undefined;
+  const friendsWithStatus =
+    friends?.map((friend) => ({
+      ...friend,
+      friendshipStatus: myStatuses?.get(friend.id) ?? "NONE",
+    })) ?? null;
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
@@ -64,7 +68,7 @@ export default async function ProfilePage({
         <ProfileContent
           profile={profile}
           friends={friendsWithStatus}
-          myId={myProfile.id}
+          myId={myStatuses ? myProfile.id : undefined}
           className="grid-cols-2 md:grid-cols-1"
         />
         <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
