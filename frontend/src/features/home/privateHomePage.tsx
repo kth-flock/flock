@@ -9,15 +9,17 @@ import EventPreview, {
 import FriendPreview from "@/features/dashboard/components/friendPreview";
 import NotificationList from "@/features/dashboard/components/notificationList";
 import { getNotifications } from "@/features/dashboard/lib/api";
-import { getUpcomingEvents } from "@/features/event/lib/api";
-import { getMyFriends } from "@/shared/lib/friends";
+import {
+  getUpcomingEvents,
+  type UpcomingEvent,
+} from "@/features/event/lib/api";
+import { getMyFriends } from "@/shared/lib/api";
 
 import type { DashboardNotification } from "@/features/dashboard/lib/types";
-import type { ExtendedEvent } from "@/shared/types/event";
 import type { PublicUser } from "@/shared/types/user";
 
 type DashboardData = {
-  events: ExtendedEvent[];
+  events: UpcomingEvent[];
   notifications: DashboardNotification[];
   friends: PublicUser[];
 };
@@ -59,12 +61,16 @@ export default function PrivateHomePage() {
       </div>
       <div className="flex w-full min-w-0 flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
-        {nextEvent ? <EventPreview event={nextEvent} /> : <NoNextEvent />}
+        {nextEvent ? (
+          <EventPreview event={nextEvent.event} status={nextEvent.status} />
+        ) : (
+          <NoNextEvent />
+        )}
         <h3 className="flock-h3">Upcoming</h3>
         <div className="flex flex-wrap justify-between gap-2">
           {upcomingEvents.length > 0 ? (
-            upcomingEvents.map((event) => (
-              <SmallEventPreview key={event.id} event={event} />
+            upcomingEvents.map(({ event, status }) => (
+              <SmallEventPreview key={event.id} event={event} status={status} />
             ))
           ) : (
             <NoUpcomingEvents />

@@ -16,7 +16,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
-import type { ExtendedEvent } from "@/shared/types/event";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
 
 export type EventStatus = Rsvp | "HOST";
@@ -46,7 +45,10 @@ function ImagePlaceholder({
   );
 }
 
-export default function EventPreview({ event }: { event: ExtendedEvent }) {
+export default function EventPreview({ event, status }: {
+  event: EventSummary;
+  status: EventStatus;
+}) {
   return (
     <Link
       href={`/event/${event.id}`}
@@ -76,10 +78,9 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
           >
             {event.title}
           </span>
-          {/* TODO: Use real RSVP status here */}
-          <span className="inline-flex shrink-0 gap-2 items-center flock-body text-secondary">
-            <FaCircleCheck />
-            Going
+          <span className="inline-flex shrink-0 gap-2 items-center flock-body">
+            {statusIcon[status].icon}
+            {statusIcon[status].label}
           </span>
         </div>
 
@@ -122,7 +123,7 @@ export function SmallEventPreview({
   status,
 }: {
   event: EventSummary;
-  status?: EventStatus;
+  status: EventStatus;
 }) {
   return (
     <Link
@@ -154,37 +155,24 @@ export function SmallEventPreview({
           >
             {event.title}
           </p>
-          {status ? (
-            <span
-              className="mt-0.5 shrink-0"
-              title={statusIcon[status].label}
-              aria-label={statusIcon[status].label}
-            >
-              {statusIcon[status].icon}
-            </span>
-          ) : (
-            <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
-          )}
+          <span
+            className="mt-0.5 shrink-0"
+            title={statusIcon[status].label}
+            aria-label={statusIcon[status].label}
+          >
+            {statusIcon[status].icon}
+          </span>
         </span>
 
-        <span
-          className="inline-flex items-center gap-1 flock-caption"
-          title="Date"
-        >
+        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
           <FaCalendar />
-          <time
-            dateTime={event.startsAt.toISOString()}
-            title={formatDate(event.startsAt)}
-          >
+          <time dateTime={event.startsAt.toISOString()} title={formatDate(event.startsAt)}>
             {formatRelativeDate(event.startsAt)}
           </time>
         </span>
 
         {event.locationName && (
-          <span
-            className="flex items-start gap-1 flock-caption"
-            title={event.locationName}
-          >
+          <span className="flex items-start gap-1 flock-caption" title={event.locationName}>
             <FaLocationDot className="mt-0.5 shrink-0" />
             <span className="min-w-0 line-clamp-2 break-words">
               {event.locationName}
