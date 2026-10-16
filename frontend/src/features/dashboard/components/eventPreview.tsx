@@ -71,7 +71,7 @@ export default function EventPreview({ event, status }: {
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
           <span
-            className="flock-h4 min-w-0 line-clamp-2 wrap-break-words"
+            className="flock-h4 min-w-0 line-clamp-2 wrap-break-word"
             title={event.title}
           >
             {event.title}
@@ -106,7 +106,7 @@ export default function EventPreview({ event, status }: {
             title={event.locationName}
           >
             <FaLocationDot className="mt-1 shrink-0" />
-            <span className="min-w-0 line-clamp-2 wrap-break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-word">
               {event.locationName}
             </span>
           </span>
