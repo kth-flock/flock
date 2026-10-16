@@ -105,6 +105,10 @@ export async function getInvitedEvents(userId: UserId) {
       createdBy: {
         select: publicUserInformationSelect,
       },
+      invitees: {
+        where: { userId },
+        select: { rsvp: true },
+      },
     },
   });
   return Promise.all(events.map((event) => withSignedImageUrl(event)));

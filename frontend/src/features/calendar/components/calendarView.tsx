@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { twMerge } from "tailwind-merge";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import Button, { IconButton } from "@/shared/components/button";
 import CalendarDay from "./calendarDay";
 import CalendarDayModal from "./calendarDayModal";
 import { getCreatedEvents, getInvitedEvents } from "../lib/api";
 import { useAuth } from "@/shared/auth/authContext";
+import type { RsvpStatus } from "@flock/shared/schemas/event";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS = [
@@ -35,6 +35,7 @@ export type CalendarEvent = {
     lastName: string;
     imageUrl: string | null;
   };
+  invitees: { rsvp: RsvpStatus }[];
 };
 
 function isSameDay(a: Date, b: Date) {
