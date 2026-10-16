@@ -111,7 +111,7 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
     e.preventDefault();
     if (!image && !nameChanged) return;
 
-    void save(async () => {
+    save(async () => {
       const changes: UserInfo = {};
       if (image) {
         changes.imageUrl = (await uploadImageFetch(image, "profiles")).imageUrl;
@@ -193,7 +193,7 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    void save(async () => {
+    save(async () => {
       await changeEmailFetch({ email, password });
       setPassword("");
       router.refresh();
@@ -255,7 +255,7 @@ function PasswordForm() {
       return;
     }
 
-    void save(async () => {
+    save(async () => {
       await changePasswordFetch({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
@@ -317,7 +317,7 @@ function DangerZone() {
   const { save, isSaving, result } = useSave();
 
   function handleDeleteAccount() {
-    void save(async () => {
+    save(async () => {
       await deleteMyAccountFetch();
       await logout();
       router.push("/");

@@ -65,9 +65,7 @@ export default function FriendActions({
             icon={<FaUserPlus />}
             iconPlacement="left"
             disabled={isPending}
-            onClick={() =>
-              void runAction(sendFriendRequestFetch, "REQUEST_SENT")
-            }
+            onClick={() => runAction(sendFriendRequestFetch, "REQUEST_SENT")}
             className={positiveStyle}
           >
             Add friend
@@ -80,16 +78,14 @@ export default function FriendActions({
               icon={<FaUserCheck />}
               iconPlacement="left"
               disabled={isPending}
-              onClick={() =>
-                void runAction(acceptFriendRequestFetch, "FRIENDS")
-              }
+              onClick={() => runAction(acceptFriendRequestFetch, "FRIENDS")}
               className={positiveStyle}
             >
               Accept
             </Button>
             <Button
               disabled={isPending}
-              onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+              onClick={() => runAction(removeFriendshipFetch, "NONE")}
               className={negativeStyle}
             >
               Decline
@@ -107,7 +103,7 @@ export default function FriendActions({
               icon={<FaUserXmark />}
               iconPlacement="left"
               disabled={isPending}
-              onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+              onClick={() => runAction(removeFriendshipFetch, "NONE")}
               className={negativeStyle}
             >
               Cancel request
@@ -130,7 +126,7 @@ export default function FriendActions({
                   icon={<FaUserXmark />}
                   iconPlacement="left"
                   disabled={isPending}
-                  onClick={() => void runAction(removeFriendshipFetch, "NONE")}
+                  onClick={() => runAction(removeFriendshipFetch, "NONE")}
                   className={negativeStyle}
                 >
                   Yes, unfriend

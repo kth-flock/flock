@@ -210,7 +210,7 @@ export default function FriendStack({
         pendingId={pendingId}
         error={error}
         onAction={(friendId, action, nextStatus) =>
-          void handleAction(friendId, action, nextStatus)
+          handleAction(friendId, action, nextStatus)
         }
       />
       <button
