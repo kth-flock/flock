@@ -9,7 +9,9 @@ type ImageUploadProps = {
   className?: string;
   accept?: string;
   disabled?: boolean;
-  children?: ReactNode;
+  iconSize?: number;
+  label?: string;
+
   onFileSelect?: (file: File) => void;
   onFileRemove?: () => void;
 };
@@ -18,7 +20,8 @@ export default function ImageUpload({
   className,
   accept = "image/jpeg,image/png,image/gif",
   disabled = false,
-  children,
+  iconSize = 40,
+  label,
   onFileSelect,
   onFileRemove,
 }: ImageUploadProps) {
@@ -60,7 +63,7 @@ export default function ImageUpload({
   };
 
   return (
-    <div className="relative inline-flex">
+    <div className="relative flex">
       <button
         type="button"
         disabled={disabled}
@@ -72,12 +75,14 @@ export default function ImageUpload({
         aria-label={fileName ? `Change image, selected ${fileName}` : undefined}
       >
         <span className={twMerge("contents", previewUrl && "invisible")}>
-          {children ?? (
-            <span className="flex items-center gap-4">
-              <FaCamera className="h-full aspect-square" aria-hidden="true" />
-              <span>Upload</span>
-            </span>
-          )}
+          <span className="flex items-center gap-4  text-primary flock-h4">
+            <FaCamera
+              size={iconSize}
+              className="h-full aspect-square"
+              aria-hidden="true"
+            />
+            {label && <span>{label}</span>}
+          </span>
         </span>
 
         {previewUrl && (

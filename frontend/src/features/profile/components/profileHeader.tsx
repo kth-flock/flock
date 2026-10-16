@@ -22,17 +22,23 @@ export default function ProfileHeader({
   friendshipStatus,
   email = "",
 }: ProfileHeaderProps) {
+  console.log(profile);
   return (
     <header className="flex flex-col gap-6">
-      <div className={twMerge(
+      <div
+        className={twMerge(
           "relative h-48 w-full overflow-hidden rounded-2xl shadow-lg md:h-64",
           bannerColor,
-        )}>
+        )}
+      >
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-6 text-white md:p-8">
           <div className="flex min-w-0 items-center gap-3 drop-shadow-md">
             {profile.imageUrl ? (
-              <ProfileImage className="size-16" profileImgSrc={profile.imageUrl} />
+              <ProfileImage
+                className="size-16"
+                profileImgSrc={profile.imageUrl}
+              />
             ) : (
               <ProfileImage
                 className="size-16"

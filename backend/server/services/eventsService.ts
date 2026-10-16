@@ -177,7 +177,7 @@ export async function updateEventInfo(
   // Replaced image is no longer referenced, so remove it and a failed delete shouldn't fail the update.
   if (
     event.imageUrl &&
-    eventData.imageUrl &&
+    eventData.imageUrl !== undefined &&
     event.imageUrl !== eventData.imageUrl
   ) {
     deleteImageFromS3(event.imageUrl).catch((error) =>

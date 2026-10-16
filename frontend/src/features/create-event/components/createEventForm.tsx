@@ -109,15 +109,11 @@ export default function CreateEventForm({
   return (
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
       <ImageUpload
+        label="Upload"
         onFileSelect={setImageFile}
         onFileRemove={() => setImageFile(null)}
-        className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4"
-      >
-        <span className="flex items-center gap-4">
-          <FaCamera size={40} aria-hidden="true" />
-          <span>Upload</span>
-        </span>
-      </ImageUpload>
+        className="rounded-2xl border border-primary/20 bg-white py-16 px-6"
+      />
       <EventFormFields
         values={eventDraft}
         errors={validationError}

@@ -7,8 +7,9 @@ import {
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
-import { withSignedImageUrl } from "./imageService";
+import { deleteImageFromS3, withSignedImageUrl } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
+import { User } from "../../prisma/generated/client";
 
 export async function getMyAccount(userId: UserId) {
   const account = await prisma.user.findUnique({
@@ -33,6 +34,17 @@ export async function editUserInfo(userId: UserId, data: UserInfo) {
     select: privateUserInformationSelect,
     data,
   });
+
+  // Needs to be fixed so delete of image actually works
+  // if (
+  //   user.imageUrl &&
+  //   data.imageUrl !== undefined &&
+  //   user.imageUrl !== data.imageUrl
+  // ) {
+  //   deleteImageFromS3(user.imageUrl).catch((error) =>
+  //     console.error(`Failed to delete old image ${user.imageUrl}`, error),
+  //   );
+  // }
 
   return updatedUser;
 }

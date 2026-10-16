@@ -4,15 +4,13 @@ import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { passwordSchema } from "@flock/shared/schemas/auth";
-import { FaCamera, FaGear, FaTrash } from "react-icons/fa6";
+import { FaGear, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import Input from "@/shared/components/formInputs";
-import ImageUpload from "@/shared/components/imageUpload";
 import {
   changeEmailFetch,
   changePasswordFetch,
-  deleteImageFromS3Fetch,
   deleteMyAccountFetch,
   updateMyInfoFetch,
   uploadImageFetch,
@@ -20,6 +18,7 @@ import {
 import { useAuth } from "@/shared/auth/authContext";
 import type { UserInfo } from "@flock/shared/schemas/user";
 import type { ProfileDetails } from "../lib/types";
+import EditableImage from "@/shared/components/editableImage";
 
 const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";
 const rowButtonStyle = "shrink-0 md:mt-3.5";
@@ -99,6 +98,9 @@ function SettingsSection({
 function ProfileForm({ profile }: { profile: ProfileDetails }) {
   const router = useRouter();
   const [image, setImage] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+  const [imageKey, setImageKey] = useState(0);
+
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
   const { save, isSaving, result } = useSave();
@@ -109,12 +111,14 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!image && !nameChanged) return;
+    if (!image && !removeImage && !nameChanged) return;
 
     save(async () => {
       const changes: UserInfo = {};
       if (image) {
         changes.imageUrl = (await uploadImageFetch(image, "profiles")).imageUrl;
+      } else if (removeImage) {
+        changes.imageUrl = null;
       }
       if (nameChanged) {
         changes.firstName = firstName.trim();
@@ -123,33 +127,39 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
 
       await updateMyInfoFetch(changes);
 
-      if (image && profile.imageUrl) {
-        deleteImageFromS3Fetch(profile.imageUrl).catch(() => {});
-      }
       setImage(null);
+      setRemoveImage(false);
       router.refresh();
+      setImageKey((k) => k + 1);
     }, "Changes saved");
   }
 
   return (
     <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 md:flex-row md:gap-16">
-        <SettingsSection title="Profile image" bordered={false}>
-          <ImageUpload
-            className="size-28 rounded-full bg-accent/40 text-primary"
+        <SettingsSection
+          title="Profile image"
+          bordered={false}
+          className="flex items-center"
+        >
+          <EditableImage
+            key={profile.imageUrl ?? "none"}
+            className="size-28 rounded-full bg-accent/40"
+            iconSize={24}
+            current={
+              profile.imageUrl && (
+                <img
+                  src={profile.imageUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              )
+            }
             onFileSelect={setImage}
             onFileRemove={() => setImage(null)}
-          >
-            {profile.imageUrl ? (
-              <img
-                src={profile.imageUrl}
-                alt=""
-                className="size-full object-cover"
-              />
-            ) : (
-              <FaCamera className="size-8" aria-hidden />
-            )}
-          </ImageUpload>
+            onDelete={profile.imageUrl ? () => setRemoveImage(true) : undefined}
+            onCancel={() => setRemoveImage(false)}
+          />
         </SettingsSection>
         <SettingsSection title="Name" bordered={false} className="flex-1">
           <Input
@@ -175,7 +185,7 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
         variant="secondary"
         size="sm"
         className="self-end"
-        disabled={isSaving || (!image && !nameChanged)}
+        disabled={isSaving || (!image && !removeImage && !nameChanged)}
       >
         {isSaving ? "Saving..." : "Save changes"}
       </Button>
@@ -299,7 +309,7 @@ function PasswordForm() {
             variant="secondary"
             size="sm"
             className={rowButtonStyle}
-            disabled={isSaving}
+            disabled={!newPassword || isSaving}
           >
             {isSaving ? "Saving..." : "Update password"}
           </Button>
@@ -396,7 +406,11 @@ export default function ProfileSettings({
         Settings
       </Button>
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} bg="bg-background">
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        bg="bg-background"
+      >
         <div className="flex flex-col gap-4 text-foreground md:w-2xl">
           <h2 className="flock-h2 text-primary">Settings</h2>
           <div className="border-t border-primary/20 pt-4">

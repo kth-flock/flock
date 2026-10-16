@@ -12,8 +12,9 @@ import type { Event } from "@prisma/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaCamera, FaPen, FaPenToSquare } from "react-icons/fa6";
+import { FaCamera, FaPen, FaPenToSquare, FaTrash } from "react-icons/fa6";
 import EventImage from "@/shared/components/eventImage";
+import EditableImage from "@/shared/components/editableImage";
 
 // TODO: make enddate optional
 
@@ -38,8 +39,9 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
       lon: event.longitude ?? undefined,
     },
   });
-  const [isEditingImage, setIsEditingImage] = useState(false);
+
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
 
   function handleInputChange<Key extends keyof EventFormValues>(
     field: Key,
@@ -99,7 +101,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
       await withUploadedImage(imageFile, (imageUrl) =>
         updateEventFetch(event.id, {
           ...payload,
-          ...(imageUrl && { imageUrl }),
+          ...(imageUrl ? { imageUrl } : removeImage && { imageUrl: null }),
         }),
       );
       router.push(`/event/${event.id}`);
@@ -118,58 +120,28 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={handleSubmitEvent}>
       <h1 className="flock-h1 text-center">Edit Event</h1>
 
-      {isEditingImage ? (
-        <div className="flex w-full flex-col gap-2">
-          <ImageUpload
-            onFileSelect={setImageFile}
-            onFileRemove={() => setImageFile(null)}
-            className="rounded-2xl h-40 md:h-56 border border-primary/20 bg-white py-16 px-6 text-primary flock-h4 hover:border-primary"
-          >
-            <span className="flex items-center gap-4">
-              <FaCamera size={40} aria-hidden="true" />
-              <span>Upload new image</span>
-            </span>
-          </ImageUpload>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            className="self-center hover:bg-primary-light"
-            onClick={() => setIsEditingImage(false)}
-          >
-            Cancel image editing
-          </Button>
-        </div>
-      ) : (
-        <div className="relative h-40 overflow-hidden rounded-2xl shadow-lg md:h-56">
+      <EditableImage
+        className="h-40 w-full rounded-2xl md:h-56"
+        imageUploadClass="border border-primary/20 bg-white text-primary hover:border-primary"
+        noImage={event.imageUrl == null}
+        current={
           <EventImage
             src={event.imageUrl}
             imageFailed={event.imageFailed}
-            alt=""
+            alt={`Cover image for ${event.title}`}
             fill
             sizes="(min-width: 48rem) 48rem, 100vw"
             loading="eager"
             fetchPriority="high"
             className="object-cover"
           />
-
-          <Button
-            type="button"
-            variant="tertiary"
-            onClick={() => setIsEditingImage(true)}
-            aria-label="Change image"
-            className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-2xl bg-black/20 cursor-pointer"
-          >
-            <span className="flex items-center rounded-full p-4 bg-white/60 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
-              <FaPenToSquare
-                size={40}
-                aria-hidden="true"
-                className="text-primary"
-              />
-            </span>
-          </Button>
-        </div>
-      )}
+        }
+        label="Upload new image"
+        onFileSelect={setImageFile}
+        onFileRemove={() => setImageFile(null)}
+        onDelete={event.imageUrl ? () => setRemoveImage(true) : undefined}
+        onCancel={() => setRemoveImage(false)}
+      />
 
       <EventFormFields
         values={eventDraft}
