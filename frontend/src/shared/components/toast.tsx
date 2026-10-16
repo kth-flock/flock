@@ -32,7 +32,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     variant: Variant = "success",
   ) => {
     setToast({ message, position, variant });
-    setTimeout(() => setToast(null), 5000);
+    setTimeout(() => setToast(null), 8000);
   };
 
   return (

@@ -97,7 +97,7 @@ export default function CreateEventForm({
         }),
       );
       onCreated(createdEvent.id);
-      toast("Successfully created event!", "bottom-center", "success");
+      toast("Successfully created event!", "bottom-right", "success");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -106,7 +106,7 @@ export default function CreateEventForm({
             ? error.message
             : "Couldn't create the event. Please try again.",
       );
-      toast("Couldn't create event, try again.", "bottom-center", "error");
+      toast("Couldn't create event, try again.", "bottom-right", "error");
     } finally {
       setIsSubmitting(false);
     }
