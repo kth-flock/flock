@@ -49,7 +49,7 @@ export function DeleteEventButton({ eventId }: { eventId: number }) {
             size="sm"
             icon={<FaTrash />}
             iconPlacement="left"
-            className="bg-error text-white hover:bg-error-dark"
+            className="bg-error text-background hover:bg-error-dark"
             disabled={isDeleting}
             onClick={handleDelete}
           >

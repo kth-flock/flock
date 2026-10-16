@@ -17,7 +17,6 @@ const rsvpMessage = {
   ACCEPTED: "is going to",
   MAYBE: "might come to",
   DECLINED: "can't come to",
-  PENDING: "hasn't answered",
 } as const;
 
 function message({ type, event, rsvp }: NotificationData) {
@@ -37,7 +36,10 @@ function message({ type, event, rsvp }: NotificationData) {
     case "RSVP":
       return (
         <>
-          {rsvpMessage[rsvp?.status ?? "PENDING"]} {eventTitle}
+          {rsvp && rsvp.status !== "PENDING"
+            ? rsvpMessage[rsvp.status]
+            : "responded to"}{" "}
+          {eventTitle}
         </>
       );
   }
