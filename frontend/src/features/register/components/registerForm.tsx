@@ -11,6 +11,7 @@ import {
 } from "../types/registerTypes";
 import { useAuth } from "@/shared/auth/authContext";
 import Link from "next/link";
+import { useToast } from "@/shared/components/toast";
 
 export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
@@ -31,6 +32,7 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { register } = useAuth();
+  const toast = useToast();
 
   function handleInputChange<Key extends keyof RegisterUserDraft>(
     field: Key,
@@ -90,8 +92,8 @@ export default function RegisterForm() {
         email: payload.email,
         password: payload.password,
       });
-
       router.push("/");
+      toast("Welcome to Flock!", "info");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError

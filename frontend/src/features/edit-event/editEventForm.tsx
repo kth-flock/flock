@@ -1,22 +1,22 @@
 "use client";
 import EventFormFields from "@/features/event/components/eventFormFields";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
-import Button, { IconButton } from "@/shared/components/button";
+import Button from "@/shared/components/button";
 import ImageUpload from "@/shared/components/imageUpload";
 import { updateEventFetch } from "@/shared/lib/api";
 import type { ExtendedEvent } from "@/shared/types/event";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { withUploadedImage } from "@/shared/lib/image";
 import { updateEventSchema } from "@flock/shared/schemas/event";
-import type { Event } from "@prisma/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaCamera, FaPen, FaPenToSquare } from "react-icons/fa6";
+import { FaCamera, FaPenToSquare } from "react-icons/fa6";
 import {
   combineDateTime,
   getFieldErrors,
 } from "@/features/event/lib/eventFormFieldsUtils";
+import { useToast } from "@/shared/components/toast";
 
 export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const router = useRouter();
@@ -40,6 +40,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const [isEditingImage, setIsEditingImage] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   function handleInputChange<Key extends keyof EventFormValues>(
     field: Key,
@@ -90,6 +91,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           ...(imageUrl && { imageUrl }),
         }),
       );
+      toast("Event updated succesfully", "success");
       router.push(`/event/${event.id}`);
     } catch (error) {
       setSubmitError(
@@ -99,6 +101,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
             ? error.message
             : "Couldn't update the event. Please try again.",
       );
+      toast("Couldn't update event, try again", "success");
     } finally {
       setIsSubmitting(false);
     }

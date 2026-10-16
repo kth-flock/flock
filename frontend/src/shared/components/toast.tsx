@@ -2,36 +2,35 @@
 import { createContext, useContext, useState } from "react";
 import { FaCheck, FaXmark } from "react-icons/fa6";
 
-type Position = "bottom-right" | "bottom-center";
-type Variant = "success" | "error";
-
 const ToastContext = createContext<
-  (message: string, position?: Position, variant?: Variant) => void
+  (message: string, variant?: Variant) => void
 >(() => {});
 
-const positionClasses = {
-  "bottom-right": "right-4 items-end",
-  "bottom-center": "left-1/2 -translate-x-1/2 items-center",
-};
+export const useToast = () => useContext(ToastContext);
+
+type Variant = "success" | "error" | "info";
+
+const bottomRight = "right-4 items-end";
 
 const variantClasses = {
-  success: "border-primary text-success",
+  success: "border-success text-success",
   error: "border-error text-error",
+  info: "border-primary text-primary",
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<{
     message: string;
-    position: Position;
+
     variant: Variant;
   } | null>(null);
 
   const show = (
     message: string,
-    position: Position = "bottom-right",
+
     variant: Variant = "success",
   ) => {
-    setToast({ message, position, variant });
+    setToast({ message, variant });
     setTimeout(() => setToast(null), 8000);
   };
 
@@ -41,12 +40,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {toast && (
         <div
           role="status"
-          className={`fixed bottom-4 z-50 w-[min(90vw,40rem)] flex flex-col ${positionClasses[toast.position]}`}
+          className={`fixed bottom-4 z-50 w-[min(90vw,40rem)] flex flex-col ${bottomRight}`}
         >
           <div
             className={` flex flex-row  gap-2 items-center rounded-xl border bg-background px-8 py-4 flock-lead shadow-lg ${variantClasses[toast.variant]}`}
           >
-            {toast.variant === "success" ? <FaCheck /> : <FaXmark />}
+            {toast.variant === "info" ? (
+              <></>
+            ) : toast.variant == "error" ? (
+              <FaXmark />
+            ) : (
+              <FaCheck />
+            )}
             {toast.message}
           </div>
         </div>
@@ -54,5 +59,3 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     </ToastContext.Provider>
   );
 }
-
-export const useToast = () => useContext(ToastContext);
