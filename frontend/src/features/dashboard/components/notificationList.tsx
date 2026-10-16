@@ -1,4 +1,5 @@
 "use client";
+import { twMerge } from "tailwind-merge";
 import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
@@ -14,7 +15,7 @@ export default function NotificationList({
   notifications,
   onFriendRequestHandled,
 }: {
-  notifications: NotificationData[];
+  notifications: NotificationData[] | null | undefined;
   onFriendRequestHandled: (
     notification: NotificationData,
     accepted: boolean,
@@ -50,31 +51,47 @@ export default function NotificationList({
 
   return (
     <div className="flex flex-col rounded-2xl border border-primary overflow-hidden">
-      <div className={`hidden md:block text-center ${headerStyle}`}>
+      <div className={twMerge("hidden md:block text-center", headerStyle)}>
         Notifications
       </div>
       <button
         type="button"
-        className={`md:hidden flex items-center justify-between cursor-pointer ${headerStyle}`}
+        className={twMerge(
+          "md:hidden flex items-center justify-between cursor-pointer",
+          headerStyle,
+        )}
         aria-expanded={isOpen}
         aria-controls="notification-list"
         onClick={() => setIsOpen((open) => !open)}
       >
         Notifications
         <FaChevronDown
-          className={`size-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={twMerge("size-5 transition-transform", isOpen && "rotate-180")}
         />
       </button>
       <div
         id="notification-list"
-        className={`${isOpen ? "flex" : "hidden"} md:flex flex-col w-full`}
+        className={twMerge(
+          "md:flex flex-col w-full",
+          isOpen ? "flex" : "hidden",
+        )}
       >
-        {notifications.length === 0 && (
+        {notifications === undefined && (
+          <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
+            Loading…
+          </p>
+        )}
+        {notifications === null && (
+          <p className="p-4 text-center flock-body-sm text-error" role="alert">
+            {"Couldn't load your notifications"}
+          </p>
+        )}
+        {notifications?.length === 0 && (
           <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
             No new notifications
           </p>
         )}
-        {notifications.map((notif, index) => (
+        {notifications?.map((notif, index) => (
           <Fragment key={notif.id}>
             {index > 0 && <div className="w-full border-b border-primary/20" />}
             <Notification

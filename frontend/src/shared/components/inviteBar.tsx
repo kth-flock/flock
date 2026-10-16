@@ -18,6 +18,13 @@ const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
+const OPEN_SEARCH_EVENT = "flock:open-friend-search";
+
+export function openFriendSearch() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.dispatchEvent(new Event(OPEN_SEARCH_EVENT));
+}
+
 export default function InviteBar() {
   const [results, setResults] = useState<UserSearchResult[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,7 +54,6 @@ export default function InviteBar() {
           }
         },
         300,
-        // First keystroke after a pause searches immediately; further typing waits for a pause.
         { leading: true, trailing: true },
       ),
     [],
@@ -100,7 +106,6 @@ export default function InviteBar() {
   async function handleAcceptFriend(user: UserSearchResult) {
     setPending({ userId: user.id, action: "accept" });
     try {
-      // They sent the request, so their id is requesterId.
       await acceptFriendRequestFetch(user.id);
       updateFriendshipStatus(user.id, "FRIENDS");
     } catch (error) {
@@ -121,6 +126,12 @@ export default function InviteBar() {
       setPending(null);
     }
   }
+
+  useEffect(() => {
+    const open = () => setSearchBarToggle(true);
+    window.addEventListener(OPEN_SEARCH_EVENT, open);
+    return () => window.removeEventListener(OPEN_SEARCH_EVENT, open);
+  }, []);
 
   useEffect(() => {
     if (!searchBarToggle) return;
