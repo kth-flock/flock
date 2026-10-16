@@ -22,7 +22,7 @@ export default function EventDetails({
   return (
     <div
       className={twMerge(
-        "flex flex-col gap-4 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:p-6",
+        "flex flex-col gap-4 rounded-2xl p-4 md:p-6 lg:flex-row lg:items-center lg:justify-between",
         hasPassed ? "bg-error/10" : "bg-accent/10",
       )}
     >

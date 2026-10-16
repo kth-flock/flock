@@ -85,8 +85,8 @@ export default function PrivateHomePage() {
     : upcomingEvents.slice(0, MAX_UPCOMING_EVENTS);
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:items-start md:gap-16">
-      <div className="flex w-full flex-col gap-4 md:sticky md:top-24 md:order-last md:gap-12">
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
+      <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
         <FriendPreview friends={friends} />
         <NotificationList
           notifications={notifications}

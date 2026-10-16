@@ -40,8 +40,8 @@ export default function EventHeader({
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
         <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">
-          <div className="flex flex-col gap-3 text-white drop-shadow-md ">
-            <h1 className="flock-h1">{event.title}</h1>
+          <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
+            <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
             <Link href={`/profile/${event.createdBy.id}`} className="group/host flock-body-sm flex w-fit items-center gap-2">
               <ProfileImage
                 profileImgSrc={event.createdBy.imageUrl ?? ""}
