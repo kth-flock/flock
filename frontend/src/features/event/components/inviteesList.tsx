@@ -1,11 +1,7 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import Modal from "@/shared/components/modal";
 import { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
-import Button from "@/shared/components/button";
 import RSVPStatus from "@/shared/components/rsvpStatus";
 import { FaCommentDots } from "react-icons/fa6";
 import type { Rsvp } from "../lib/types";
@@ -49,14 +45,7 @@ export default function InviteesList({
   isOpen,
   onClose,
 }: InviteesListProps) {
-  const [showCommentsOnly, setShowCommentsOnly] = useState(false);
   const inviteeCounts = countInviteesByRsvpStatus(event.invitees);
-  const commentCount = event.invitees.filter(
-    ({ rsvpComment }) => rsvpComment,
-  ).length;
-  const shownInvitees = showCommentsOnly
-    ? event.invitees.filter(({ rsvpComment }) => rsvpComment)
-    : event.invitees;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -66,24 +55,7 @@ export default function InviteesList({
           {inviteeCounts.ACCEPTED} going · {inviteeCounts.MAYBE} maybe ·{" "}
           {inviteeCounts.DECLINED} {"can't go"} · {inviteeCounts.PENDING} not
           answered
-          {isHost && commentCount > 0 && (
-            <>
-              {" "}
-              · {commentCount} {commentCount === 1 ? "comment" : "comments"}
-            </>
-          )}
         </span>
-        {isHost && commentCount > 0 && (
-          <Button
-            variant="tertiary"
-            size="sm"
-            icon={<FaCommentDots aria-hidden />}
-            iconPlacement="left"
-            onClick={() => setShowCommentsOnly((shown) => !shown)}
-          >
-            {showCommentsOnly ? "Show everyone" : "Show comments only"}
-          </Button>
-        )}
 
         {event.invitees.length === 0 && (
           <p className="flock-body-sm text-(--color-text-muted)">
@@ -92,7 +64,7 @@ export default function InviteesList({
         )}
 
         {rsvpGroups.map(({ rsvp, label }) => {
-          const group = shownInvitees.filter(
+          const group = event.invitees.filter(
             (invitee) => invitee.rsvp === rsvp,
           );
           if (group.length === 0) return null;
@@ -117,8 +89,8 @@ export default function InviteesList({
                       </span>
                     </Link>
                     {isHost && rsvpComment && (
-                      <p className="ml-10 flex items-start gap-2 rounded-lg border border-neutral p-1 flock-caption text-foreground!">
-                        <FaCommentDots aria-hidden className="mt-0.5 shrink-0 fill-secondary" />
+                      <p className="ml-10 flex items-start gap-2 rounded-lg border border-neutral px-2 py-1.5 flock-body-sm">
+                        <FaCommentDots aria-hidden className="mt-1 shrink-0 fill-secondary" />
                         {rsvpComment}
                       </p>
                     )}
