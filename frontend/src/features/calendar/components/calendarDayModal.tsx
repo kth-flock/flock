@@ -1,5 +1,5 @@
 import Modal from "@/shared/components/modal";
-import type { CalendarEvent } from "./calendarView";
+import type { CalendarEvent } from "../lib/utils";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { EventPillDetails } from "./eventPill";
 

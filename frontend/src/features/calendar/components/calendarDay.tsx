@@ -1,6 +1,6 @@
 "use client";
 import { twMerge } from "tailwind-merge";
-import type { CalendarEvent } from "./calendarView";
+import type { CalendarEvent } from "../lib/utils";
 import EventPill from "./eventPill";
 import { useState } from "react";
 import CalendarDayModal from "./calendarDayModal";
@@ -40,14 +40,14 @@ export default function CalendarDay({
         >
           <span
             className={twMerge(
-              "self-start",
-              isSameDay ? "font-bold relative" : "",
+              "relative flex size-7 shrink-0 items-center justify-center self-start leading-none",
+              isSameDay ? "font-bold" : "",
             )}
           >
-            <span className="relative z-10">{day.getDate()}</span>
             {isSameDay && (
-              <span className="absolute inset-0 h-full scale-120 bg-secondary/50 z-0 rounded-full aspect-square" />
+              <span className="absolute inset-0 rounded-full bg-secondary/50" />
             )}
+            <span className="relative">{day.getDate()}</span>
           </span>
 
           {visible.map((event) => (

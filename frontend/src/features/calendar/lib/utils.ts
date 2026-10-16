@@ -1,0 +1,79 @@
+import type { RsvpStatus } from "@flock/shared/schemas/event";
+
+export type CalendarEvent = {
+  id: number;
+  title: string;
+  startsAt: Date;
+  createdBy?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    imageUrl: string | null;
+  };
+  invitees: { rsvp: RsvpStatus }[];
+};
+
+export type CalendarViewProps = {
+  year: number;
+  month: number;
+  today: Date;
+  weeks: (Date | null)[][];
+  eventsByDay: Map<string, CalendarEvent[]>;
+};
+
+export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+export function isSameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+// Local-time key, e.g. "2026-9-12" (don't use toISOString, it shifts to UTC)
+export function dayKey(d: Date) {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+// Assumed implementation, since yours wasn't in the file you shared
+export function groupEventsByDay(events: CalendarEvent[]) {
+  const map = new Map<string, CalendarEvent[]>();
+  for (const event of events) {
+    const key = dayKey(event.startsAt);
+    map.set(key, [...(map.get(key) ?? []), event]);
+  }
+  return map;
+}
+
+export function getMonthWeeks(year: number, month: number): (Date | null)[][] {
+  const leadingBlanks = (new Date(year, month, 1).getDay() + 6) % 7; // Monday-first
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const cells: (Date | null)[] = [
+    ...Array<null>(leadingBlanks).fill(null),
+    ...Array.from(
+      { length: daysInMonth },
+      (_, i) => new Date(year, month, i + 1),
+    ),
+  ];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const weeks: (Date | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}

@@ -1,4 +1,4 @@
-import type { CalendarEvent } from "./calendarView";
+import type { CalendarEvent } from "../lib/utils";
 import { formatTime } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
 import { FaCrown } from "react-icons/fa6";
