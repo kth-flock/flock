@@ -16,8 +16,8 @@ import {
   sendFriendRequestFetch,
 } from "@/shared/lib/api";
 
-const positiveStyle = "bg-success/60 text-white hover:bg-success/40";
-const negativeStyle = "bg-error/60 text-white hover:bg-error/40";
+const positiveStyle = "bg-success/60 text-background hover:bg-success/40";
+const negativeStyle = "bg-error/60 text-background hover:bg-error/40";
 
 export default function FriendActions({
   profileId,
@@ -99,7 +99,7 @@ export default function FriendActions({
 
         {status === "REQUEST_SENT" && (
           <>
-            <span className="inline-flex items-center gap-1.5 px-2 text-sm text-white/80 md:text-base">
+            <span className="flock-body inline-flex items-center gap-1.5 px-2 text-background/80">
               <FaUserClock aria-hidden />
               Pending
             </span>
@@ -122,7 +122,7 @@ export default function FriendActions({
                 <Button
                   disabled={isPending}
                   onClick={() => setIsConfirmingUnfriend(false)}
-                  className="bg-white/15 text-white hover:bg-white/25"
+                  className="bg-white/15 text-background hover:bg-white/25"
                 >
                   Cancel
                 </Button>
@@ -150,7 +150,7 @@ export default function FriendActions({
         )}
       </div>
       {error && (
-        <p className="flock-caption text-white!" role="alert">
+        <p className="flock-caption text-background!" role="alert">
           {error}
         </p>
       )}

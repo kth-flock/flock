@@ -32,12 +32,12 @@ export default function LogoutButton() {
         iconPlacement="left"
         disabled={isLoggingOut}
         onClick={handleLogout}
-        className="bg-error/60 text-white hover:bg-error/40"
+        className="bg-error/60 text-background hover:bg-error/40"
       >
         {isLoggingOut ? "Logging out..." : "Log out"}
       </Button>
       {error && (
-        <p className="flock-caption text-white!" role="alert">
+        <p className="flock-caption text-background!" role="alert">
           {error}
         </p>
       )}

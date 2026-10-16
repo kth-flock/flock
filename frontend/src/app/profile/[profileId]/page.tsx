@@ -13,7 +13,6 @@ import {
 } from "@/features/profile/lib/api";
 import { randomBannerColor } from "@/features/profile/lib/bannerColor";
 import { fullName } from "@/shared/lib/user";
-import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
 export async function generateMetadata({
   params,
@@ -38,19 +37,17 @@ export default async function ProfilePage({
 
   if (!profile) notFound();
 
-  if (profile.id === myProfile?.id) redirect("/profile");
+  if (!myProfile) redirect("/login");
+
+  if (profile.id === myProfile.id) redirect("/profile");
 
   const [friends, myStatuses, eventsTogether] = await Promise.all([
     getProfileFriends(profile.id, cookie),
-    myProfile
-      ? getMyFriendshipStatuses(cookie)
-      : new Map<number, FriendshipStatus>(),
-    myProfile ? getEventsTogether(profile.id, cookie) : [],
+    getMyFriendshipStatuses(cookie),
+    getEventsTogether(profile.id, cookie),
   ]);
 
-  const friendshipStatus = myProfile
-    ? (myStatuses.get(profile.id) ?? "NONE")
-    : undefined;
+  const friendshipStatus = myStatuses.get(profile.id) ?? "NONE";
   const friendsWithStatus = friends.map((friend) => ({
     ...friend,
     friendshipStatus: myStatuses.get(friend.id) ?? "NONE",
@@ -63,21 +60,17 @@ export default async function ProfilePage({
         bannerColor={randomBannerColor()}
         friendshipStatus={friendshipStatus}
       />
-      {myProfile ? (
-        <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
-          <ProfileContent
-            profile={profile}
-            friends={friendsWithStatus}
-            myId={myProfile.id}
-            className="grid-cols-2 md:grid-cols-1"
-          />
-          <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
-            <EventsTogether events={eventsTogether} myId={myProfile.id} />
-          </div>
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
+        <ProfileContent
+          profile={profile}
+          friends={friendsWithStatus}
+          myId={myProfile.id}
+          className="grid-cols-2 md:grid-cols-1"
+        />
+        <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
+          <EventsTogether events={eventsTogether} myId={myProfile.id} />
         </div>
-      ) : (
-        <ProfileContent profile={profile} friends={friendsWithStatus} />
-      )}
+      </div>
     </main>
   );
 }

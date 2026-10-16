@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import {
   FaCalendarCheck,
   FaHouseChimney,
@@ -60,7 +61,7 @@ export default function ProfileContent({
   ];
 
   return (
-    <section className={`grid gap-6 ${className}`} aria-label="Profile content">
+    <section className={twMerge("grid gap-6", className)} aria-label="Profile content">
       {content.map(({ icon, value, label, extra }) => (
         <div
           key={label}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FaCheck, FaUserClock, FaUserPlus, FaXmark } from "react-icons/fa6";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
-import Button from "@/shared/components/button";
+import { IconButton } from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import ProfileImage from "@/shared/components/profileImage";
 import {
@@ -19,8 +19,6 @@ const MAX_FRIEND_IMAGES = 4;
 
 const stackedImageStyle =
   "isolate rounded-full bg-background ring-2 ring-background";
-
-const actionButtonStyle = "px-1.5";
 
 function FriendRowActions({
   friend,
@@ -43,37 +41,35 @@ function FriendRowActions({
   switch (friend.friendshipStatus) {
     case "NONE":
       return (
-        <Button
+        <IconButton
           size="sm"
-          icon={<FaUserPlus aria-hidden />}
-          iconPlacement="right"
           aria-label={`Add ${fullName(friend)} as friend`}
           disabled={isPending}
           onClick={() => onAction(sendFriendRequestFetch, "REQUEST_SENT")}
-          className={actionButtonStyle}
-        />
+        >
+          <FaUserPlus aria-hidden />
+        </IconButton>
       );
     case "REQUEST_RECEIVED":
       return (
         <div className="flex shrink-0 items-center gap-1">
-          <Button
+          <IconButton
             size="sm"
-            icon={<FaXmark aria-hidden />}
-            iconPlacement="right"
             aria-label={`Decline friend request from ${fullName(friend)}`}
             disabled={isPending}
             onClick={() => onAction(declineFriendRequestFetch, "NONE")}
-            className={`${actionButtonStyle} bg-error hover:bg-error-dark`}
-          />
-          <Button
+            className="bg-error hover:bg-error-dark"
+          >
+            <FaXmark aria-hidden />
+          </IconButton>
+          <IconButton
             size="sm"
-            icon={<FaCheck aria-hidden />}
-            iconPlacement="right"
             aria-label={`Accept friend request from ${fullName(friend)}`}
             disabled={isPending}
             onClick={() => onAction(acceptFriendRequestFetch, "FRIENDS")}
-            className={actionButtonStyle}
-          />
+          >
+            <FaCheck aria-hidden />
+          </IconButton>
         </div>
       );
     case "REQUEST_SENT":

@@ -1,5 +1,6 @@
 "use client";
 
+import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { passwordSchema } from "@flock/shared/schemas/auth";
@@ -17,6 +18,7 @@ import {
   uploadImageFetch,
 } from "@/shared/lib/api";
 import { useAuth } from "@/shared/auth/authContext";
+import type { UserInfo } from "@flock/shared/schemas/user";
 import type { ProfileDetails } from "../lib/types";
 
 const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";
@@ -57,7 +59,10 @@ function SaveResult({ result }: { result: Result | null }) {
   return (
     <p
       role={result.ok ? "status" : "alert"}
-      className={`flock-ui-label ${result.ok ? "text-success" : "text-error"}`}
+      className={twMerge(
+        "flock-ui-label",
+        result.ok ? "text-success" : "text-error",
+      )}
     >
       {result.message}
     </p>
@@ -77,7 +82,11 @@ function SettingsSection({
 }) {
   return (
     <section
-      className={`flex flex-col gap-2 ${bordered ? "border-t border-primary/20 pt-4" : ""} ${className}`}
+      className={twMerge(
+        "flex flex-col gap-2",
+        bordered && "border-t border-primary/20 pt-4",
+        className,
+      )}
     >
       <h3 className="flock-h5 text-primary">{title}</h3>
       {children}
@@ -85,85 +94,168 @@ function SettingsSection({
   );
 }
 
-export default function ProfileSettings({
-  profile,
-  email: currentEmail,
-}: {
-  profile: ProfileDetails;
-  email: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
+// Image and name both go through PATCH /me, so they're saved together and only
+// the fields that changed are sent
+function ProfileForm({ profile }: { profile: ProfileDetails }) {
   const router = useRouter();
-
-  const [picture, setPicture] = useState<File | null>(null);
+  const [image, setImage] = useState<File | null>(null);
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
-  const [email, setEmail] = useState(currentEmail);
-  const [emailPassword, setEmailPassword] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const { save, isSaving, result } = useSave();
 
-  const pictureSave = useSave();
-  const nameSave = useSave();
-  const emailSave = useSave();
-  const passwordSave = useSave();
-  const deleteSave = useSave();
-  const { logout } = useAuth();
+  const nameChanged =
+    firstName.trim() !== profile.firstName ||
+    lastName.trim() !== profile.lastName;
 
-  function handlePictureSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!picture) return;
+    if (!image && !nameChanged) return;
 
-    void pictureSave.save(async () => {
-      const { imageUrl } = await uploadImageFetch(picture, "profiles");
-      await updateMyInfoFetch({ imageUrl });
-      if (profile.imageUrl) {
+    void save(async () => {
+      const changes: UserInfo = {};
+      if (image) {
+        changes.imageUrl = (await uploadImageFetch(image, "profiles")).imageUrl;
+      }
+      if (nameChanged) {
+        changes.firstName = firstName.trim();
+        changes.lastName = lastName.trim();
+      }
+
+      await updateMyInfoFetch(changes);
+
+      if (image && profile.imageUrl) {
         deleteImageFromS3Fetch(profile.imageUrl).catch(() => {});
       }
+      setImage(null);
       router.refresh();
-    }, "Picture saved");
+    }, "Changes saved");
   }
 
-  function handleNameSubmit(e: React.FormEvent<HTMLFormElement>) {
+  return (
+    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-4 md:flex-row md:gap-16">
+        <SettingsSection title="Profile image" bordered={false}>
+          <ImageUpload
+            className="size-28 rounded-full bg-accent/40 text-primary"
+            onFileSelect={setImage}
+            onFileRemove={() => setImage(null)}
+          >
+            {profile.imageUrl ? (
+              <img
+                src={profile.imageUrl}
+                alt=""
+                className="size-full object-cover"
+              />
+            ) : (
+              <FaCamera className="size-8" aria-hidden />
+            )}
+          </ImageUpload>
+        </SettingsSection>
+        <SettingsSection title="Name" bordered={false} className="flex-1">
+          <Input
+            id="settings-first-name"
+            aria-label="First name"
+            placeholder="First name"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <Input
+            id="settings-last-name"
+            aria-label="Last name"
+            placeholder="Last name"
+            required
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </SettingsSection>
+      </div>
+      <Button
+        type="submit"
+        variant="secondary"
+        size="sm"
+        className="self-end"
+        disabled={isSaving || (!image && !nameChanged)}
+      >
+        {isSaving ? "Saving..." : "Save changes"}
+      </Button>
+      <SaveResult result={result} />
+    </form>
+  );
+}
+
+function EmailForm({ currentEmail }: { currentEmail: string }) {
+  const router = useRouter();
+  const [email, setEmail] = useState(currentEmail);
+  const [password, setPassword] = useState("");
+  const { save, isSaving, result } = useSave();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    void nameSave.save(async () => {
-      await updateMyInfoFetch({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-      });
+    void save(async () => {
+      await changeEmailFetch({ email, password });
+      setPassword("");
       router.refresh();
-    }, "Name saved");
-  }
-
-  function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    void emailSave.save(async () => {
-      await changeEmailFetch({ email, password: emailPassword });
-      setEmailPassword("");
     }, "Email changed");
   }
 
-  function handlePasswordSubmit(e: React.FormEvent<HTMLFormElement>) {
+  return (
+    <SettingsSection title="Email">
+      <form className={formRowStyle} onSubmit={handleSubmit}>
+        <Input
+          id="settings-email"
+          type="email"
+          aria-label="Email"
+          placeholder="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          id="settings-email-password"
+          type="password"
+          aria-label="Current password"
+          placeholder="Current password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button
+          type="submit"
+          variant="secondary"
+          size="sm"
+          className={rowButtonStyle}
+          disabled={isSaving || email === currentEmail}
+        >
+          {isSaving ? "Saving..." : "Update email"}
+        </Button>
+      </form>
+      <SaveResult result={result} />
+    </SettingsSection>
+  );
+}
+
+function PasswordForm() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { save, isSaving, result, setResult } = useSave();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      passwordSave.setResult({ ok: false, message: "Passwords do not match" });
+      setResult({ ok: false, message: "Passwords do not match" });
       return;
     }
     const passwordCheck = passwordSchema.safeParse(newPassword);
     if (!passwordCheck.success) {
-      passwordSave.setResult({
-        ok: false,
-        message: passwordCheck.error.issues[0].message,
-      });
+      setResult({ ok: false, message: passwordCheck.error.issues[0].message });
       return;
     }
 
-    void passwordSave.save(async () => {
+    void save(async () => {
       await changePasswordFetch({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
@@ -171,14 +263,127 @@ export default function ProfileSettings({
     }, "Password changed");
   }
 
+  return (
+    <SettingsSection title="Password">
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+        <Input
+          id="settings-current-password"
+          type="password"
+          aria-label="Current password"
+          placeholder="Current password"
+          required
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+        />
+        <div className={formRowStyle}>
+          <Input
+            id="settings-new-password"
+            type="password"
+            aria-label="New password"
+            placeholder="New password"
+            required
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <Input
+            id="settings-confirm-password"
+            type="password"
+            aria-label="Confirm new password"
+            placeholder="Confirm new password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            variant="secondary"
+            size="sm"
+            className={rowButtonStyle}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : "Update password"}
+          </Button>
+        </div>
+      </form>
+      <SaveResult result={result} />
+    </SettingsSection>
+  );
+}
+
+function DangerZone() {
+  const router = useRouter();
+  const { logout } = useAuth();
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const { save, isSaving, result } = useSave();
+
   function handleDeleteAccount() {
-    void deleteSave.save(async () => {
+    void save(async () => {
       await deleteMyAccountFetch();
       await logout();
       router.push("/");
       router.refresh();
     }, "Account deleted");
   }
+
+  return (
+    <section className="flex flex-col gap-3 rounded-2xl border-2 border-error/60 p-4">
+      <h3 className="flock-h5 text-error">Danger zone</h3>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col">
+          <p className="flock-ui-label">Delete account</p>
+          <p className="flock-caption">
+            {"Deletes your account and everything you've created."}
+            <br />
+            {"This action cannot be undone."}
+          </p>
+        </div>
+        {isConfirmingDelete ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button
+              variant="tertiary"
+              size="sm"
+              disabled={isSaving}
+              onClick={() => setIsConfirmingDelete(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              icon={<FaTrash />}
+              iconPlacement="left"
+              className="bg-error text-white hover:bg-error-dark"
+              disabled={isSaving}
+              onClick={handleDeleteAccount}
+            >
+              {isSaving ? "Deleting..." : "Yes, delete my account"}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<FaTrash />}
+            iconPlacement="left"
+            className="shrink-0 border-error text-error hover:border-error-dark hover:bg-error/10 hover:text-error-dark"
+            onClick={() => setIsConfirmingDelete(true)}
+          >
+            Delete account
+          </Button>
+        )}
+      </div>
+      <SaveResult result={result} />
+    </section>
+  );
+}
+
+export default function ProfileSettings({
+  profile,
+  email,
+}: {
+  profile: ProfileDetails;
+  email: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -191,219 +396,15 @@ export default function ProfileSettings({
         Settings
       </Button>
 
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-          setIsConfirmingDelete(false);
-        }}
-        bg="bg-background"
-      >
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} bg="bg-background">
         <div className="flex flex-col gap-4 text-foreground md:w-2xl">
           <h2 className="flock-h2 text-primary">Settings</h2>
-          <div className="flex flex-col gap-4 border-t border-primary/20 pt-4 md:flex-row md:gap-16">
-            <SettingsSection title="Profile picture" bordered={false}>
-              <form
-                className="flex flex-1 flex-col items-start gap-2"
-                onSubmit={handlePictureSubmit}
-              >
-                <ImageUpload
-                  className="size-28 rounded-full bg-accent/40 text-primary"
-                  onFileSelect={setPicture}
-                  onFileRemove={() => setPicture(null)}
-                >
-                  {profile.imageUrl ? (
-                    <img
-                      src={profile.imageUrl}
-                      alt=""
-                      className="size-full object-cover"
-                    />
-                  ) : (
-                    <FaCamera className="size-8" aria-hidden />
-                  )}
-                </ImageUpload>
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  size="sm"
-                  className="mt-auto"
-                  disabled={!picture || pictureSave.isSaving}
-                >
-                  {pictureSave.isSaving ? "Saving..." : "Save picture"}
-                </Button>
-              </form>
-              <SaveResult result={pictureSave.result} />
-            </SettingsSection>
-            <div className="flex flex-1 flex-col">
-              <SettingsSection title="Name" bordered={false} className="flex-1">
-                <form
-                  className="flex flex-1 flex-col gap-2"
-                  onSubmit={handleNameSubmit}
-                >
-                  <Input
-                    id="settings-first-name"
-                    aria-label="First name"
-                    placeholder="First name"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                  />
-                  <Input
-                    id="settings-last-name"
-                    aria-label="Last name"
-                    placeholder="Last name"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                  />
-                  <Button
-                    type="submit"
-                    variant="secondary"
-                    size="sm"
-                    className="mt-auto self-start"
-                    disabled={
-                      nameSave.isSaving ||
-                      (firstName === profile.firstName &&
-                        lastName === profile.lastName)
-                    }
-                  >
-                    {nameSave.isSaving ? "Saving..." : "Save name"}
-                  </Button>
-                </form>
-                <SaveResult result={nameSave.result} />
-              </SettingsSection>
-            </div>
+          <div className="border-t border-primary/20 pt-4">
+            <ProfileForm profile={profile} />
           </div>
-
-          <SettingsSection title="Email">
-            <form className={formRowStyle} onSubmit={handleEmailSubmit}>
-              <Input
-                id="settings-email"
-                type="email"
-                aria-label="Email"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                id="settings-email-password"
-                type="password"
-                aria-label="Current password"
-                placeholder="Current password"
-                required
-                value={emailPassword}
-                onChange={(e) => setEmailPassword(e.target.value)}
-              />
-              <Button
-                type="submit"
-                variant="secondary"
-                size="sm"
-                className={rowButtonStyle}
-                disabled={emailSave.isSaving || email === currentEmail}
-              >
-                {emailSave.isSaving ? "Saving..." : "Update email"}
-              </Button>
-            </form>
-            <SaveResult result={emailSave.result} />
-          </SettingsSection>
-
-          <SettingsSection title="Password">
-            <form
-              className="flex flex-col gap-2"
-              onSubmit={handlePasswordSubmit}
-            >
-              <Input
-                id="settings-current-password"
-                type="password"
-                aria-label="Current password"
-                placeholder="Current password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-              <div className={formRowStyle}>
-                <Input
-                  id="settings-new-password"
-                  type="password"
-                  aria-label="New password"
-                  placeholder="New password"
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <Input
-                  id="settings-confirm-password"
-                  type="password"
-                  aria-label="Confirm new password"
-                  placeholder="Confirm new password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  size="sm"
-                  className={rowButtonStyle}
-                  disabled={passwordSave.isSaving}
-                >
-                  {passwordSave.isSaving ? "Saving..." : "Update password"}
-                </Button>
-              </div>
-            </form>
-            <SaveResult result={passwordSave.result} />
-          </SettingsSection>
-
-          <section className="flex flex-col gap-3 rounded-2xl border-2 border-error/60 p-4">
-            <h3 className="flock-h5 text-error">Danger zone</h3>
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-col">
-                <p className="flock-ui-label">Delete account</p>
-                <p className="flock-caption">
-                  {"Deletes your account and everything you've created."}
-                  <br />
-                  {"This action cannot be undone."}
-                </p>
-              </div>
-              {isConfirmingDelete ? (
-                <div className="flex shrink-0 flex-wrap items-center gap-2">
-                  <Button
-                    variant="tertiary"
-                    size="sm"
-                    disabled={deleteSave.isSaving}
-                    onClick={() => setIsConfirmingDelete(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    icon={<FaTrash />}
-                    iconPlacement="left"
-                    className="bg-error text-white hover:bg-error-dark"
-                    disabled={deleteSave.isSaving}
-                    onClick={handleDeleteAccount}
-                  >
-                    {deleteSave.isSaving
-                      ? "Deleting..."
-                      : "Yes, delete my account"}
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  icon={<FaTrash />}
-                  iconPlacement="left"
-                  className="shrink-0 border-error text-error hover:border-error-dark hover:bg-error/10 hover:text-error-dark"
-                  onClick={() => setIsConfirmingDelete(true)}
-                >
-                  Delete account
-                </Button>
-              )}
-            </div>
-            <SaveResult result={deleteSave.result} />
-          </section>
+          <EmailForm currentEmail={email} />
+          <PasswordForm />
+          <DangerZone />
         </div>
       </Modal>
     </>
