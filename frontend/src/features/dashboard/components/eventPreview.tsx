@@ -4,6 +4,9 @@ import {
   FaLocationDot,
   FaCircleCheck,
   FaCirclePlus,
+  FaCircleQuestion,
+  FaCircleXmark,
+  FaCrown,
 } from "react-icons/fa6";
 import {
   formatDate,
@@ -14,6 +17,17 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { ExtendedEvent } from "@/shared/types/event";
+import type { EventSummary, Rsvp } from "@/features/event/lib/types";
+
+export type EventStatus = Rsvp | "HOST";
+
+const statusIcon: Record<EventStatus, { icon: React.ReactElement; label: string }> = {
+  HOST: { icon: <FaCrown className="fill-primary" />, label: "Hosting" },
+  ACCEPTED: { icon: <FaCircleCheck className="fill-secondary" />, label: "Going" },
+  MAYBE: { icon: <FaCircleQuestion className="fill-warn" />, label: "Maybe" },
+  DECLINED: { icon: <FaCircleXmark className="fill-error" />, label: "Not going" },
+  PENDING: { icon: <FaClock className="fill-(--color-text-muted)" />, label: "Not answered" },
+};
 
 function ImagePlaceholder({
   title,
@@ -103,7 +117,13 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
   );
 }
 
-export function SmallEventPreview({ event }: { event: ExtendedEvent }) {
+export function SmallEventPreview({
+  event,
+  status,
+}: {
+  event: EventSummary;
+  status?: EventStatus;
+}) {
   return (
     <Link
       href={`/event/${event.id}`}
@@ -134,8 +154,17 @@ export function SmallEventPreview({ event }: { event: ExtendedEvent }) {
           >
             {event.title}
           </p>
-          {/* TODO: Use the user's real RSVP status */}
-          <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
+          {status ? (
+            <span
+              className="mt-0.5 shrink-0"
+              title={statusIcon[status].label}
+              aria-label={statusIcon[status].label}
+            >
+              {statusIcon[status].icon}
+            </span>
+          ) : (
+            <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
+          )}
         </span>
 
         <span
