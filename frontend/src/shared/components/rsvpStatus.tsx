@@ -13,9 +13,7 @@ type RSVPStatusProps = {
 function getRSVPIndicator(status: RSVP) {
   switch (status) {
     case "PENDING":
-      return (
-        <FaCircleQuestion className="fill-(--color-text-muted) w-full h-full" />
-      );
+      return <FaCircleQuestion className="fill-text-muted w-full h-full" />;
     case "ACCEPTED":
       return <FaCircleCheck className="fill-success w-full h-full" />;
     case "DECLINED":

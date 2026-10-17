@@ -122,7 +122,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           <ImageUpload
             onFileSelect={setImageFile}
             onFileRemove={() => setImageFile(null)}
-            className="rounded-2xl h-40 md:h-56 border border-primary/20 bg-white py-16 px-6 text-primary flock-h4 hover:border-primary"
+            className="rounded-2xl h-40 md:h-56 border border-primary/20 bg-background py-16 px-6 text-primary flock-h4 hover:border-primary"
           >
             <span className="flex items-center gap-4">
               <FaCamera size={40} aria-hidden="true" />
@@ -133,7 +133,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
             type="button"
             variant="secondary"
             size="sm"
-            className="self-center hover:bg-primary-light"
+            className="self-center hover:bg-success-light"
             onClick={() => setIsEditingImage(false)}
           >
             Cancel image editing
@@ -156,9 +156,9 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
             variant="tertiary"
             onClick={() => setIsEditingImage(true)}
             aria-label="Change image"
-            className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-2xl bg-black/20 cursor-pointer"
+            className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-2xl bg-foreground/20 cursor-pointer"
           >
-            <span className="flex items-center rounded-full p-4 bg-white/60 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
+            <span className="flex items-center rounded-full p-4 bg-background/60 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
               <FaPenToSquare
                 size={40}
                 aria-hidden="true"

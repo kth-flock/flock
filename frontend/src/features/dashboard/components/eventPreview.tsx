@@ -50,7 +50,7 @@ export default function EventPreview({ event, status }: {
   return (
     <Link
       href={`/event/${event.id}`}
-      className="block rounded-2xl shadow-md bg-white dark:bg-white/10 w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
+      className="block rounded-2xl shadow-md bg-neutral/20  w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
       <div className="relative bg-neutral w-full h-36">
         {event.imageUrl ? (
@@ -140,7 +140,7 @@ export function SmallEventPreview({
         ) : (
           <ImagePlaceholder
             title={event.title}
-            className="text-lg text-white/70"
+            className="text-lg text-background/70"
           />
         )}
       </div>
@@ -148,7 +148,7 @@ export function SmallEventPreview({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
         <span className="flex justify-between items-start gap-2">
           <p
-            className="flock-ui-label min-w-0 line-clamp-2 break-words"
+            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-words"
             title={event.title}
           >
             {event.title}
@@ -172,7 +172,7 @@ export function SmallEventPreview({
         {event.locationName && (
           <span className="flex items-start gap-1 flock-caption" title={event.locationName}>
             <FaLocationDot className="mt-0.5 shrink-0" />
-            <span className="min-w-0 line-clamp-2 break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-words">
               {event.locationName}
             </span>
           </span>
@@ -187,7 +187,7 @@ export function NoNextEvent() {
     <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-accent p-8 text-center">
       <div className="flex flex-col gap-1">
         <p className="flock-h4">No events coming up</p>
-        <p className="flock-body-sm text-(--color-text-muted)">
+        <p className="flock-body-sm text-text-muted">
           Create one and invite your friends!
         </p>
       </div>
@@ -200,7 +200,7 @@ export function NoNextEvent() {
 
 export function NoUpcomingEvents() {
   return (
-    <p className="w-full rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-(--color-text-muted)">
+    <p className="w-full rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
       Nothing else planned yet.
     </p>
   );

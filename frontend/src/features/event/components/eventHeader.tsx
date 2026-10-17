@@ -78,7 +78,7 @@ export default function EventHeader({
               ))}
               {event.invitees?.length > 3 && (
                 <div className=" rounded-full overflow-hidden h-8 w-8 shrink-0 group relative shadow-sm">
-                  <div className="@container group relative flex h-full w-full items-center justify-center bg-white">
+                  <div className="@container group relative flex h-full w-full items-center justify-center bg-background">
                     <span className="text-[40cqw]! flock-ui-label leading-none">
                       +{event.invitees.length - 3}
                     </span>
