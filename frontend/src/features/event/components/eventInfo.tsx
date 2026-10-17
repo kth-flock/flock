@@ -1,5 +1,5 @@
 import type { ExtendedEvent } from "@/shared/types/event";
-import { DeleteEventButton } from "./deleteEvent";
+import { DeleteEventButton } from "../../event-form/components/deleteEvent";
 import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
@@ -51,7 +51,7 @@ export default function EventInfo({
         ))}
 
       <EventDetails event={event} hasPassed={hasPassed} />
-      
+
       {hasPassed && isHost && (
         <div className="flex justify-center">
           <DeleteEventButton eventId={event.id} />
