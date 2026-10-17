@@ -25,7 +25,7 @@ export default function CreateEventForm({
   >({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const [eventDraft, setEventDraft] = useState<EventFormValues>({
     title: "",
