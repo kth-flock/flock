@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { FaUserPlus, FaUsers } from "react-icons/fa6";
 import ProfileImage from "@/shared/components/profileImage";
 import { IconButton } from "@/shared/components/button";
-import { openFriendSearch } from "@/shared/components/inviteBar";
+import { openFriendSearch } from "@/features/search/components/inviteBar";
 import { FriendsModal } from "@/features/profile/components/friendStack";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";

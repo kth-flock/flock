@@ -1,4 +1,3 @@
-// Used to show in place of a section whose data couldn't be loaded
 export default function LoadError({ children }: { children: React.ReactNode }) {
   return (
     <p

@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import Button from "@/shared/components/button";
-import { rsvpFetch } from "@/shared/lib/api";
+import { updateRsvp } from "@/shared/lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 import type { Rsvp } from "../lib/types";
 
@@ -62,7 +62,7 @@ export default function RsvpChoice({
     setIsSaving(true);
     setError(null);
     try {
-      await rsvpFetch(eventId, { rsvp: value });
+      await updateRsvp(eventId, { rsvp: value });
       onChange();
     } catch (err) {
       onRsvpChange(previous);

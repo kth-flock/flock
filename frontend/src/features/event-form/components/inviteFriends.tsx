@@ -1,14 +1,11 @@
 "use client";
-import SearchBar from "@/shared/components/searchBar";
+import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
 import { useState, useEffect, useRef } from "react";
 import Button from "@/shared/components/button";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
-import {
-  searchUsersFetch,
-  getMyFriends,
-  batchInviteFetch,
-} from "@/shared/lib/api";
+import { getMyFriends, batchInvite } from "@/shared/lib/api";
+import { searchUsers } from "@/features/search/lib/api";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/shared/components/toast";
@@ -18,7 +15,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
   const debouncedSearch = useRef(
     debounce(async (query: string, requestId: number) => {
       try {
-        const results = await searchUsersFetch(query);
+        const results = await searchUsers(query);
         if (requestId === searchRequestRef.current) setSearchResults(results);
       } catch (error) {
         if (requestId === searchRequestRef.current) {
@@ -87,7 +84,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
     setIsLoading(true);
     try {
       if (invitees.length > 0) {
-        await batchInviteFetch(
+        await batchInvite(
           eventId,
           invitees.map((invitee) => invitee.id),
         );

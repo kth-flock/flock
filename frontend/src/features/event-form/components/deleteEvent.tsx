@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
-import { deleteEventFetch } from "@/shared/lib/api";
+import { deleteEvent } from "../lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 
 export function DeleteEventButton({ eventId }: { eventId: number }) {
@@ -17,7 +17,7 @@ export function DeleteEventButton({ eventId }: { eventId: number }) {
     setIsDeleting(true);
     setError(null);
     try {
-      await deleteEventFetch(eventId);
+      await deleteEvent(eventId);
       router.push("/");
     } catch (err) {
       setError(

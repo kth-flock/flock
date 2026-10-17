@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import DeleteEvent from "@/features/event-form/components/deleteEvent";
 import { useAuth } from "@/shared/auth/authContext";
 import { useEvent } from "@/shared/hooks/useEvent";
-import { updateEventFetch } from "@/shared/lib/api";
-import { withUploadedImage } from "@/shared/lib/image";
+import { updateEvent } from "../lib/api";
+import { withUploadedImage } from "@/features/images/lib/image";
 import { updateEventSchema } from "@flock/shared/schemas/event";
 import { useRouter } from "next/navigation";
 import EventForm from "./eventForm";
@@ -33,7 +33,7 @@ export default function EditEventClient({ eventId }: { eventId: number }) {
         fallbackError="Couldn't update the event. Please try again."
         onSubmit={async (payload, imageFile) => {
           await withUploadedImage(imageFile, (imageUrl) =>
-            updateEventFetch(event.id, {
+            updateEvent(event.id, {
               ...payload,
               ...(imageUrl && { imageUrl }),
             }),

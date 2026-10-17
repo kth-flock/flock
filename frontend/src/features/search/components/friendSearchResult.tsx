@@ -1,8 +1,8 @@
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { UserSearchResult } from "@/shared/types/user";
-import Button, { IconButton } from "./button";
+import Button, { IconButton } from "../../../shared/components/button";
 import { FaUserPlus, FaCheck, FaXmark } from "react-icons/fa6";
-import ProfileImage from "./profileImage";
+import ProfileImage from "../../../shared/components/profileImage";
 
 type PendingAction = "add" | "accept" | "decline";
 

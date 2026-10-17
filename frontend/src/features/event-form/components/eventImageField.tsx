@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ImageUpload from "@/shared/components/imageUpload";
+import ImageUpload from "@/features/images/components/imageUpload";
 import { FaCamera, FaPenToSquare } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import Image from "next/image";

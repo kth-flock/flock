@@ -5,7 +5,7 @@ import { FaComment } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
-import { rsvpFetch } from "@/shared/lib/api";
+import { updateRsvp } from "@/shared/lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 import type { Rsvp } from "../lib/types";
 
@@ -36,7 +36,7 @@ export default function RsvpCommentForm({
     setIsSaving(true);
     setResult(null);
     try {
-      await rsvpFetch(eventId, { rsvp, rsvpComment: trimmed });
+      await updateRsvp(eventId, { rsvp, rsvpComment: trimmed });
       setComment(trimmed);
       setSavedComment(trimmed);
       setResult({

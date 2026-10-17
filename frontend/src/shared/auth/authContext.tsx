@@ -7,12 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  API_BASE_URL,
-  getCurrentUser,
-  loginFetch,
-  registerFetch,
-} from "@/shared/lib/api";
+import { API_BASE_URL, getCurrentUser } from "@/shared/lib/api";
+import * as api from "./api";
 import type { PrivateUser } from "@/shared/types/user";
 import { LoginUser, RegisterUser } from "@flock/shared/schemas/auth";
 import { useRouter } from "next/navigation";
@@ -58,13 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(data: LoginUser) {
-    const { user } = await loginFetch(data);
+    const { user } = await api.login(data);
     setUser(user);
     router.refresh();
   }
 
   async function register(data: RegisterUser) {
-    const { user } = await registerFetch(data);
+    const { user } = await api.register(data);
     setUser(user);
     router.refresh();
   }

@@ -11,9 +11,9 @@ import {
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import Button from "@/shared/components/button";
 import {
-  acceptFriendRequestFetch,
-  removeFriendshipFetch,
-  sendFriendRequestFetch,
+  acceptFriendRequest,
+  removeFriendship,
+  sendFriendRequest,
 } from "@/shared/lib/api";
 
 const positiveStyle = "bg-success/60 text-background hover:bg-success/40";
@@ -65,7 +65,7 @@ export default function FriendActions({
             icon={<FaUserPlus />}
             iconPlacement="left"
             disabled={isPending}
-            onClick={() => runAction(sendFriendRequestFetch, "REQUEST_SENT")}
+            onClick={() => runAction(sendFriendRequest, "REQUEST_SENT")}
             className={positiveStyle}
           >
             Add friend
@@ -78,14 +78,14 @@ export default function FriendActions({
               icon={<FaUserCheck />}
               iconPlacement="left"
               disabled={isPending}
-              onClick={() => runAction(acceptFriendRequestFetch, "FRIENDS")}
+              onClick={() => runAction(acceptFriendRequest, "FRIENDS")}
               className={positiveStyle}
             >
               Accept
             </Button>
             <Button
               disabled={isPending}
-              onClick={() => runAction(removeFriendshipFetch, "NONE")}
+              onClick={() => runAction(removeFriendship, "NONE")}
               className={negativeStyle}
             >
               Decline
@@ -103,7 +103,7 @@ export default function FriendActions({
               icon={<FaUserXmark />}
               iconPlacement="left"
               disabled={isPending}
-              onClick={() => runAction(removeFriendshipFetch, "NONE")}
+              onClick={() => runAction(removeFriendship, "NONE")}
               className={negativeStyle}
             >
               Cancel request
@@ -126,7 +126,7 @@ export default function FriendActions({
                   icon={<FaUserXmark />}
                   iconPlacement="left"
                   disabled={isPending}
-                  onClick={() => runAction(removeFriendshipFetch, "NONE")}
+                  onClick={() => runAction(removeFriendship, "NONE")}
                   className={negativeStyle}
                 >
                   Yes, unfriend
