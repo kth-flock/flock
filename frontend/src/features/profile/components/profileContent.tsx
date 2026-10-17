@@ -1,18 +1,12 @@
 import { twMerge } from "tailwind-merge";
-import {
-  FaCalendarCheck,
-  FaCrown,
-  FaClock,
-  FaUsers,
-} from "react-icons/fa6";
+import { FaCalendarCheck, FaCrown, FaClock, FaUsers } from "react-icons/fa6";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { UserSearchResult } from "@/shared/types/user";
 import type { ProfileDetails } from "../lib/types";
 import FriendStack from "./friendStack";
 
-const countOf = (list: unknown[] | null) =>
-  list ? String(list.length) : "-";
+const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
 
 type ProfileContentProps = {
   profile: ProfileDetails;
@@ -31,6 +25,7 @@ export default function ProfileContent({
   invitedEvents,
   className = "grid-cols-2",
 }: ProfileContentProps) {
+  console.log(profile);
   const content = [
     {
       icon: <FaClock />,
@@ -66,11 +61,20 @@ export default function ProfileContent({
   ];
 
   return (
-    <section className={twMerge("grid gap-6", className)} aria-label="Profile content">
+    <section
+      className={twMerge("grid gap-6", className)}
+      aria-label="Profile content"
+    >
       {content.map(({ icon, value, label, extra }) => (
-        <div key={label} className="@container rounded-2xl bg-accent/10 p-4 md:p-6">
+        <div
+          key={label}
+          className="@container rounded-2xl bg-accent/10 p-4 md:p-6"
+        >
           <div className="flex flex-col items-start gap-2 @[15rem]:flex-row @[15rem]:flex-wrap @[15rem]:items-center @[15rem]:gap-4">
-            <span className="text-secondary shrink-0 [&>svg]:size-8" aria-hidden>
+            <span
+              className="text-secondary shrink-0 [&>svg]:size-8"
+              aria-hidden
+            >
               {icon}
             </span>
             <div className="flex flex-col">

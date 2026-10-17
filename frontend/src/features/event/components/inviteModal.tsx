@@ -1,16 +1,13 @@
 "use client";
 import Modal from "@/shared/components/modal";
 import { useState, useRef, useEffect, useMemo } from "react";
-import SearchBar from "@/shared/components/searchBar";
+import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "@/features/invite-friends/inviteFriendCard";
 import { debounce } from "lodash";
-import {
-  searchUsersFetch,
-  inviteFriendFetch,
-  uninviteFriendFetch,
-} from "@/shared/lib/api";
+import { inviteFriend, uninviteFriend } from "@/shared/lib/api";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
 import { getErrorMessage } from "@/shared/lib/errors";
+import { searchUsers } from "@/features/search/lib/api";
 
 type InviteModalProps = {
   onClose: () => void;
@@ -35,7 +32,7 @@ export default function InviteModal({
     () =>
       debounce(async (query: string, requestId: number) => {
         try {
-          const results = await searchUsersFetch(query);
+          const results = await searchUsers(query);
           if (requestId === searchRequestRef.current) setSearchResults(results);
         } catch (error) {
           if (requestId === searchRequestRef.current) {
@@ -82,10 +79,10 @@ export default function InviteModal({
 
     try {
       if (action === "add") {
-        await inviteFriendFetch(eventId, user.id);
+        await inviteFriend(eventId, user.id);
         setInvitedUserIds((invited) => new Set(invited).add(user.id));
       } else {
-        await uninviteFriendFetch(eventId, user.id);
+        await uninviteFriend(eventId, user.id);
         setInvitedUserIds((invited) => {
           const updated = new Set(invited);
           updated.delete(user.id);

@@ -4,8 +4,8 @@ import { useState } from "react";
 import InviteFriends from "./inviteFriends";
 import EventForm from "@/features/event-form/components/eventForm";
 import { createEventSchema } from "@flock/shared/schemas/event";
-import { createEventFetch } from "@/shared/lib/api";
-import { withUploadedImage } from "@/shared/lib/image";
+import { createEvent } from "../lib/api";
+import { withUploadedImage } from "@/features/images/lib/image";
 import { emptyEventFormValues } from "@/features/event-form/lib/formValueFormat";
 
 export default function CreateEventFlow() {
@@ -26,7 +26,7 @@ export default function CreateEventFlow() {
           fallbackError="Couldn't create the event. Please try again."
           onSubmit={async (payload, imageFile) => {
             const created = await withUploadedImage(imageFile, (imageUrl) =>
-              createEventFetch({ ...payload, imageUrl }),
+              createEvent({ ...payload, imageUrl }),
             );
             setEventId(created.id);
           }}

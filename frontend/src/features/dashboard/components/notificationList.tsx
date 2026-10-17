@@ -4,10 +4,7 @@ import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
 import Notification from "./notification";
-import {
-  acceptFriendRequestFetch,
-  declineFriendRequestFetch,
-} from "@/shared/lib/api";
+import { acceptFriendRequest, declineFriendRequest } from "@/shared/lib/api";
 
 const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
 
@@ -32,7 +29,7 @@ export default function NotificationList({
     setPendingId(notification.id);
     setError(null);
     try {
-      await (accept ? acceptFriendRequestFetch : declineFriendRequestFetch)(
+      await (accept ? acceptFriendRequest : declineFriendRequest)(
         notification.from.id,
       );
       onFriendRequestHandled(notification, accept);
@@ -66,7 +63,10 @@ export default function NotificationList({
       >
         Notifications
         <FaChevronDown
-          className={twMerge("size-5 transition-transform", isOpen && "rotate-180")}
+          className={twMerge(
+            "size-5 transition-transform",
+            isOpen && "rotate-180",
+          )}
         />
       </button>
       <div

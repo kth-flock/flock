@@ -3,6 +3,11 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { API_BASE_URL } from "@/shared/lib/api";
 import type { PublicUser } from "@/shared/types/user";
 import type { MyProfileDetails, ProfileDetails } from "./types";
+import type {
+  UserInfo,
+  ChangeEmail,
+  ChangePassword,
+} from "@flock/shared/schemas/user";
 
 async function fetchFromBackend<T>(
   path: string,
@@ -44,7 +49,6 @@ export async function getProfile(
 export async function getMyProfile(
   cookie: string,
 ): Promise<MyProfileDetails | null> {
-
   const res = await fetch(`${API_BASE_URL}/me`, { headers: { cookie } });
   if (res.status === 401) return null;
   if (!res.ok) throw new Error("Failed to get your profile");
@@ -96,7 +100,6 @@ export async function getEventsTogether(
 export async function getMyFriendshipStatuses(
   cookie: string,
 ): Promise<Map<number, FriendshipStatus>> {
-
   const [friends, sent, received] = await Promise.all([
     fetchData<PublicUser[]>("/me/friendships", cookie),
     fetchData<PublicUser[]>("/me/friendships/requests?direction=sent", cookie),
@@ -119,5 +122,43 @@ export async function orNull<T>(promise: Promise<T>): Promise<T | null> {
   } catch (err) {
     console.error(err);
     return null;
+  }
+}
+
+async function patchMe(path: string, body: unknown, fallbackError: string) {
+  const res = await fetch(`${API_BASE_URL}/me${path}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? fallbackError);
+  }
+}
+
+export async function updateMyInfo(data: UserInfo) {
+  await patchMe("", data, "Failed to update your profile");
+}
+
+export async function changeEmail(data: ChangeEmail) {
+  await patchMe("/email", data, "Failed to change your email");
+}
+
+export async function changePassword(data: ChangePassword) {
+  await patchMe("/password", data, "Failed to change your password");
+}
+
+export async function deleteMyAccount() {
+  const res = await fetch(`${API_BASE_URL}/me`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to delete your account");
   }
 }

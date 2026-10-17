@@ -1,9 +1,27 @@
 import type { EventStatus } from "@/features/dashboard/components/eventPreview";
 import { API_BASE_URL } from "@/shared/lib/api";
 import type { EventSummary, InvitedEvent } from "./types";
-import type { CalendarEvent } from "@/features/calendar/lib/utils";
+import type { CalendarEvent } from "@/features/calendar/lib/types";
+import type { ExtendedEvent } from "@/shared/types/event";
 
 export type UpcomingEvent = { event: EventSummary; status: EventStatus };
+
+export async function getEvent(
+  eventId: number,
+  cookie?: string,
+): Promise<ExtendedEvent> {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    credentials: "include",
+    headers: cookie ? { cookie } : {},
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to get event");
+  }
+
+  return res.json();
+}
 
 async function fetchEvents<T extends EventSummary>(path: string): Promise<T[]> {
   const res = await fetch(`${API_BASE_URL}${path}`, { credentials: "include" });

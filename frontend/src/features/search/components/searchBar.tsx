@@ -1,7 +1,7 @@
 "use client";
 
-import { FieldWrapper } from "./formInputs";
-import { useFocusWithin } from "../hooks/useFocusWithin";
+import { FieldWrapper } from "../../../shared/components/formInputs";
+import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
 import { FaMagnifyingGlass, FaX } from "react-icons/fa6";
 import { useState, type ReactElement } from "react";
 import { twMerge } from "tailwind-merge";

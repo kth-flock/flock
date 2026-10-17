@@ -1,14 +1,15 @@
 "use client";
-import ImageUpload from "@/shared/components/imageUpload";
+import ImageUpload from "@/features/images/components/imageUpload";
 import Button from "@/shared/components/button";
 import { useState } from "react";
 import { createEventSchema } from "@flock/shared/schemas/event";
-import { createEventFetch, deleteImageFromS3Fetch } from "@/shared/lib/api";
+import { createEvent } from "@/features/event-form/lib/api";
+import { deleteImageFromS3Fetch } from "@/features/images/lib/api";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import EventFormFields from "@/features/event-form/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
-import { uploadSelectedImage, withUploadedImage } from "@/shared/lib/image";
+import { withUploadedImage } from "@/features/images/lib/image";
 
 // TODO: make enddate optional
 
@@ -89,7 +90,7 @@ export default function CreateEventForm({
 
     try {
       const createdEvent = await withUploadedImage(imageFile, (imageUrl) =>
-        createEventFetch({
+        createEvent({
           ...payload,
           imageUrl,
         }),
@@ -122,7 +123,6 @@ export default function CreateEventForm({
         values={eventDraft}
         errors={validationError}
         onChange={handleInputChange}
-        onLocationChange={(location) => handleInputChange("location", location)}
       />
       {submitError && (
         <p className="flock-ui-label text-error" role="alert">
