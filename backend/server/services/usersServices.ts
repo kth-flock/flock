@@ -4,7 +4,6 @@ import {
   profileUserInformationSelect,
 } from "../utils/selectors";
 import { FriendshipStatus, UserId } from "@flock/shared/schemas/user";
-import { getObjectWithImage } from "./imageService";
 import { NotFoundError } from "../utils/errors";
 
 export async function getUsers() {
@@ -12,7 +11,7 @@ export async function getUsers() {
     select: publicUserInformationSelect,
   });
 
-  return Promise.all(users.map((user) => getObjectWithImage(user)));
+  return users;
 }
 
 export async function getUserById(id: UserId) {
@@ -25,7 +24,7 @@ export async function getUserById(id: UserId) {
     throw new NotFoundError("User not found");
   }
 
-  return await getObjectWithImage(user);
+  return user;
 }
 
 export async function getUserProfile(id: UserId) {
@@ -33,6 +32,9 @@ export async function getUserProfile(id: UserId) {
     where: { id },
     select: profileUserInformationSelect,
   });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
   return user;
 }
 
@@ -79,11 +81,7 @@ export async function searchUsers(myId: UserId, query = "") {
     );
   }
 
-  const usersWithImages = await Promise.all(
-    users.map((user) => getObjectWithImage(user)),
-  );
-
-  return usersWithImages.map((user) => ({
+  return users.map((user) => ({
     ...user,
     friendshipStatus: statusById.get(user.id) ?? "NONE",
   }));

@@ -7,7 +7,7 @@ import {
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
-import { deleteImageFromS3, getObjectWithImage } from "./imageService";
+import { deleteImageFromS3 } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
 import { User } from "../../prisma/generated/client";
 
@@ -19,7 +19,7 @@ export async function getMyAccount(userId: UserId) {
 
   if (!account) throw new NotFoundError("User not found");
 
-  return getObjectWithImage(account);
+  return account;
 }
 
 export async function deleteMyAccount(userId: UserId) {
@@ -35,7 +35,6 @@ export async function editUserInfo(userId: UserId, data: UserInfo) {
     data,
   });
 
-  // Needs to be fixed so delete of image actually works
   // if (
   //   user.imageUrl &&
   //   data.imageUrl !== undefined &&

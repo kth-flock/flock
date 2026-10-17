@@ -13,16 +13,12 @@ import {
   ValidationError,
 } from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
-import {
-  deleteImageFromS3,
-  getEventAndUserWithImage,
-  getObjectWithImage,
-} from "./imageService";
+import { deleteImageFromS3 } from "./imageService";
 
 export async function getEvents() {
   const events = await prisma.event.findMany();
 
-  return Promise.all(events.map((event) => getObjectWithImage(event)));
+  return events;
 }
 
 export async function getEventById(eventId: EventId, userId: UserId) {
@@ -70,15 +66,13 @@ export async function getEventById(eventId: EventId, userId: UserId) {
     throw new ForbiddenError("User is not authorized to view this event");
   }
 
-  const eventWithImage = await getEventAndUserWithImage(event);
-
   if (isHost) {
-    return eventWithImage;
+    return event;
   }
 
   return {
-    ...eventWithImage,
-    invitees: eventWithImage.invitees.map(({ rsvpComment, ...invitee }) =>
+    ...event,
+    invitees: event.invitees.map(({ rsvpComment, ...invitee }) =>
       invitee.userId === userId ? { ...invitee, rsvpComment } : invitee,
     ),
   };
@@ -88,7 +82,7 @@ export async function getCreatedEvents(userId: UserId) {
   const events = await prisma.event.findMany({
     where: { createdById: userId },
   });
-  return Promise.all(events.map((event) => getObjectWithImage(event)));
+  return events;
 }
 
 export async function getInvitedEvents(userId: UserId) {
@@ -111,7 +105,7 @@ export async function getInvitedEvents(userId: UserId) {
       },
     },
   });
-  return Promise.all(events.map((event) => getObjectWithImage(event)));
+  return events;
 }
 
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
@@ -133,7 +127,7 @@ export async function getEventsTogether(myId: UserId, otherId: UserId) {
       invitees: { where: { userId: myId }, select: { rsvp: true } },
     },
   });
-  return Promise.all(events.map((event) => getObjectWithImage(event)));
+  return events;
 }
 
 export async function createNewEvent(
