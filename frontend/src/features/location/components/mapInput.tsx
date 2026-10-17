@@ -43,25 +43,24 @@ export default function LocationPicker({
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();
 
-  const { search: debouncedSearch, cancel: cancelSearch } =
-    useDebouncedSearch(
-      async (searchQuery: string, isCurrent: () => boolean) => {
-        setLoading(true);
-        try {
-          const data = await geocodeFetch<Location[]>("search", {
-            q: searchQuery,
-          });
-          if (isCurrent()) setResults(data);
-        } catch (err) {
-          if (isCurrent()) {
-            console.error("Geocoding search failed:", err);
-          }
-        } finally {
-          if (isCurrent()) setLoading(false);
+  const { search: debouncedSearch, cancel: cancelSearch } = useDebouncedSearch(
+    async (searchQuery: string, isCurrent: () => boolean) => {
+      setLoading(true);
+      try {
+        const data = await geocodeFetch<Location[]>("search", {
+          q: searchQuery,
+        });
+        if (isCurrent()) setResults(data);
+      } catch (err) {
+        if (isCurrent()) {
+          console.error("Geocoding search failed:", err);
         }
-      },
-      400,
-    );
+      } finally {
+        if (isCurrent()) setLoading(false);
+      }
+    },
+    400,
+  );
 
   // Close map and dropdown when clicking outside
   useEffect(() => {

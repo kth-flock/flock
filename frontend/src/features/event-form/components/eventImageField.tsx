@@ -20,12 +20,7 @@ export default function EventImageField({
           onFileSelect={onChange}
           onFileRemove={() => onChange(null)}
           className="rounded-2xl h-40 md:h-56 border border-primary/20 bg-background py-16 px-6 text-primary flock-h4 hover:border-primary"
-        >
-          <span className="flex items-center gap-4">
-            <FaCamera size={40} aria-hidden="true" />
-            <span>Upload new image</span>
-          </span>
-        </ImageUpload>
+        />
         <Button
           type="button"
           variant="secondary"
