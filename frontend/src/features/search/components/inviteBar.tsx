@@ -35,25 +35,24 @@ export default function InviteBar() {
   const [searchBarToggle, setSearchBarToggle] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
 
-  const { search: debouncedSearch, cancel: cancelSearch } =
-    useDebouncedSearch(
-      async (query: string, isCurrent: () => boolean) => {
-        setLoading(true);
-        try {
-          const data = await searchUsers(query);
-          if (isCurrent()) setResults(data);
-        } catch (err) {
-          if (isCurrent()) {
-            console.error(err);
-            setResults([]);
-          }
-        } finally {
-          if (isCurrent()) setLoading(false);
+  const { search: debouncedSearch, cancel: cancelSearch } = useDebouncedSearch(
+    async (query: string, isCurrent: () => boolean) => {
+      setLoading(true);
+      try {
+        const data = await searchUsers(query);
+        if (isCurrent()) setResults(data);
+      } catch (err) {
+        if (isCurrent()) {
+          console.error(err);
+          setResults([]);
         }
-      },
-      300,
-      { leading: true, trailing: true },
-    );
+      } finally {
+        if (isCurrent()) setLoading(false);
+      }
+    },
+    300,
+    { leading: true, trailing: true },
+  );
 
   function onSearch(query: string) {
     if (!query.trim()) {

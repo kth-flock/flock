@@ -12,13 +12,12 @@ import type { Serialized } from "@/shared/types/serialized";
 import { withEventDates } from "@/features/event/lib/api";
 
 export async function getProfile(id: number): Promise<PublicUser | null> {
-  const user = await apiDataOrNull<Serialized<PublicUser & { createdAt: Date }>>(
-    `/users/${id}`,
-    {
-      nullOn: [404],
-      fallbackError: "Failed to get profile",
-    },
-  );
+  const user = await apiDataOrNull<
+    Serialized<PublicUser & { createdAt: Date }>
+  >(`/users/${id}`, {
+    nullOn: [404],
+    fallbackError: "Failed to get profile",
+  });
   return user && withCreatedAt(user);
 }
 

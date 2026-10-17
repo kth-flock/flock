@@ -24,6 +24,7 @@ export default function ProfileContent({
   invitedEvents,
   className = "grid-cols-2",
 }: ProfileContentProps) {
+  console.log(profile);
   const content = [
     {
       icon: <FaClock />,
