@@ -179,7 +179,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           Cancel
         </Button>
         <Button type="submit" isLoading={isSubmitting}>
-          {isSubmitting ? "Updating event" : "Update"}
+          {isSubmitting ? "Updating..." : "Update"}
         </Button>
       </div>
     </form>

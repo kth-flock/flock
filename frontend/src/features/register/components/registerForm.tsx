@@ -192,7 +192,7 @@ export default function RegisterForm() {
           className="w-full justify-center"
           isLoading={isSubmitting}
         >
-          {isSubmitting ? "Registering account" : "Register"}
+          {isSubmitting ? "Registering..." : "Register"}
         </Button>
       </form>
       <span className="inline-flex gap-2 items-center flock-body justify-center">

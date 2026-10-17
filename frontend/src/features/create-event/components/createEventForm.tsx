@@ -25,7 +25,7 @@ export default function CreateEventForm({
   >({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(true);
   const toast = useToast();
   const [eventDraft, setEventDraft] = useState<EventFormValues>({
     title: "",
@@ -131,7 +131,7 @@ export default function CreateEventForm({
           Cancel
         </Button>
         <Button type="submit" isLoading={isSubmitting}>
-          {isSubmitting ? "Creating event" : "Create"}
+          {isSubmitting ? "Creating..." : "Create"}
         </Button>
       </div>
     </form>

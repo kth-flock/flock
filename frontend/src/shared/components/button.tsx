@@ -83,6 +83,12 @@ const iconButtonSizeStyles: Record<ButtonSize, string> = {
   lg: "p-4 [&>svg]:size-6",
 };
 
+const spinnerSizeStyles: Record<ButtonSize, string> = {
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
+};
+
 const iconHoverClasses =
   "group-hover:scale-110 group-hover:-rotate-[7deg] group-active:scale-100 group-active:rotate-0";
 
@@ -199,7 +205,7 @@ export default function Button({
       })}
       {...props}
     >
-      {isLoading && <Spinner className="size-4" />}
+      {isLoading && <Spinner className={spinnerSizeStyles[size]} />}
       {children}
 
       {icon && !isLoading && (
