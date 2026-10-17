@@ -1,40 +1,44 @@
-import { useState } from "react";
-import { TextArea } from "@/shared/components/formInputs";
-import Button from "@/shared/components/button";
-import { FaPaperPlane } from "react-icons/fa6";
+"use client";
 
-type NewAnnouncementFormProps = {
-  eventId: number;
-  onClose: () => void;
-};
+import { useState } from "react";
+import { FaPaperPlane } from "react-icons/fa6";
+import Button from "@/shared/components/button";
+import { TextArea } from "@/shared/components/formInputs";
 
 export default function NewAnnouncementForm({
   eventId,
   onClose,
-}: NewAnnouncementFormProps) {
+  onChange,
+}: {
+  eventId: number;
+  onClose: () => void;
+  onChange: () => void;
+}) {
   const [announcement, setAnnouncement] = useState("");
-  const inputId = `announcement-${eventId}`;
+  const trimmed = announcement.trim();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!announcement.trim()) return;
+    if (!trimmed) return;
 
     // TODO: post announcement to event
     setAnnouncement("");
+    onChange();
     onClose();
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
       <TextArea
-        id={inputId}
+        id={`announcement-${eventId}`}
         aria-label="New announcement"
         placeholder="Write an update..."
         value={announcement}
         onChange={(e) => setAnnouncement(e.target.value)}
+        autoFocus
         className="-my-2"
       />
-      <div className="w-full flex justify-between">
+      <div className="flex w-full justify-between">
         <Button
           type="button"
           className="shrink-0"
@@ -48,7 +52,7 @@ export default function NewAnnouncementForm({
           type="submit"
           icon={<FaPaperPlane />}
           iconPlacement="left"
-          disabled={!announcement.trim()}
+          disabled={!trimmed}
           className="shrink-0"
           size="sm"
         >

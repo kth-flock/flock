@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { CalendarEvent } from "../lib/types";
 import EventPill from "./eventPill";
 import { formatDate } from "@/shared/lib/dateFormat";
+import DayNumber from "./dayNumber";
 
 const MAX_PILLS_PER_DAY = 2;
 
@@ -38,17 +39,7 @@ export default function CalendarDay({
           onClick={() => onClick(day)}
           disabled={events.length <= 0}
         >
-          <span
-            className={twMerge(
-              "relative flex size-7 shrink-0 items-center justify-center self-start leading-none",
-              isToday ? "font-bold" : "",
-            )}
-          >
-            {isToday && (
-              <span className="absolute inset-0 rounded-full bg-secondary/50" />
-            )}
-            <span className="relative">{day.getDate()}</span>
-          </span>
+          <DayNumber day={day} isToday={isToday} className="size-7" />
 
           {visible.map((event) => (
             <EventPill key={event.id} event={event} />

@@ -1,9 +1,6 @@
 "use client";
 import Modal from "@/shared/components/modal";
-import Button from "@/shared/components/button";
-import { FaUserPlus } from "react-icons/fa6";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect, useMemo } from "react";
 import SearchBar from "@/shared/components/searchBar";
 import InviteFriendCard from "@/features/invite-friends/inviteFriendCard";
 import { debounce } from "lodash";
@@ -13,31 +10,40 @@ import {
   uninviteFriendFetch,
 } from "@/shared/lib/api";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 type InviteModalProps = {
   onClose: () => void;
   isOpen: boolean;
   invitees: PublicUser[];
   eventId: number;
+  onChange: () => void;
 };
 
-function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
-  const router = useRouter();
+export default function InviteModal({
+  onClose,
+  isOpen,
+  invitees,
+  eventId,
+  onChange,
+}: InviteModalProps) {
   const searchRequestRef = useRef(0);
-  const debouncedSearch = useRef(
-    debounce(async (query: string, requestId: number) => {
-      try {
-        const results = await searchUsersFetch(query);
-        if (requestId === searchRequestRef.current) setSearchResults(results);
-      } catch (error) {
-        if (requestId === searchRequestRef.current) {
-          console.error("User search failed:", error);
-        }
-      }
-    }),
-  ).current;
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
+  );
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string, requestId: number) => {
+        try {
+          const results = await searchUsersFetch(query);
+          if (requestId === searchRequestRef.current) setSearchResults(results);
+        } catch (error) {
+          if (requestId === searchRequestRef.current) {
+            console.error("User search failed:", error);
+          }
+        }
+      }, 300),
+    [],
   );
   const [invitedUserIds, setInvitedUserIds] = useState(
     () => new Set(invitees.map((invitee) => invitee.id)),
@@ -67,7 +73,10 @@ function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
     debouncedSearch(query, requestId);
   }
 
-  async function handleInvite(user: UserSearchResult, action: "add" | "remove") {
+  async function handleInvite(
+    user: UserSearchResult,
+    action: "add" | "remove",
+  ) {
     setPendingUserIds((pending) => new Set(pending).add(user.id));
     setInviteError(null);
 
@@ -83,11 +92,9 @@ function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
           return updated;
         });
       }
-      router.refresh();
+      onChange();
     } catch (error) {
-      setInviteError(
-        error instanceof Error ? error.message : "Failed to update invitation",
-      );
+      setInviteError(getErrorMessage(error, "Failed to update invitation"));
     } finally {
       setPendingUserIds((pending) => {
         const updated = new Set(pending);
@@ -123,33 +130,5 @@ function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
         )}
       </div>
     </Modal>
-  );
-}
-
-export default function InviteButton({
-  invitees,
-  eventId,
-}: {
-  invitees: PublicUser[];
-  eventId: number;
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  return (
-    <>
-      <InviteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        invitees={invitees}
-        eventId={eventId}
-      />
-      <Button
-        icon={<FaUserPlus aria-hidden />}
-        iconPlacement="right"
-        variant="secondary"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Invite
-      </Button>
-    </>
   );
 }
