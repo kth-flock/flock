@@ -11,12 +11,12 @@ export const createEventSchema = z
     latitude: z.number().min(-90).max(90).optional(),
     longitude: z.number().min(-180).max(180).optional(),
     startsAt: z.coerce
-      .date({ error: "Start date is required." })
+      .date({ error: "Start date and time are required." })
       .refine((date) => date.getTime() > Date.now(), {
         error: "Start date must be in the future.",
       }),
     endsAt: z.coerce
-      .date({ error: "End date must be valid." })
+      .date({ error: "End date and time must be set together." })
       .refine((date) => date.getTime() > Date.now(), {
         error: "End date must be in the future.",
       })
@@ -28,7 +28,7 @@ export const createEventSchema = z
       !event.endsAt || event.endsAt.getTime() > event.startsAt.getTime(),
     {
       path: ["endsAt"],
-      error: "End date must be after the start date.",
+      error: "End date and time must be after the start date.",
     },
   )
   .refine(
@@ -50,13 +50,13 @@ export const updateEventSchema = z
     latitude: z.number().min(-90).max(90).nullable().optional(),
     longitude: z.number().min(-180).max(180).nullable().optional(),
     startsAt: z.coerce
-      .date()
+      .date({ error: "Start date and time are required." })
       .refine((date) => date.getTime() > Date.now(), {
         error: "Start date must be in the future.",
       })
       .optional(),
     endsAt: z.coerce
-      .date()
+      .date({ error: "End date and time must be set together." })
       .nullable()
       .optional()
       .refine((date) => date == null || date.getTime() > Date.now(), {

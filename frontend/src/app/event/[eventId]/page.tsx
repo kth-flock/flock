@@ -5,17 +5,9 @@ import { getEvent, getCurrentUser } from "@/shared/lib/api";
 import { idSchema } from "@flock/shared/schemas/common";
 import { cookies } from "next/headers";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/event/[eventId]">) {
-  const { eventId } = await params;
-  const parsedEventId = idSchema.safeParse(eventId);
-  if (!parsedEventId.success) return { title: "Event not found • Flock" };
-
-  const cookie = (await cookies()).toString();
-  const event = await getEvent(parsedEventId.data, cookie).catch(() => null);
-  return { title: event ? `${event.title} • Flock` : "Event • Flock" };
-}
+export const metadata: Metadata = {
+  title: "Event • Flock",
+};
 
 export default async function EventPage({
   params,

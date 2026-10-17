@@ -63,25 +63,30 @@ export default function EventFormFields({
         onSelect={onLocationChange}
       />
 
-      <Input
-        icon={<FaCalendarDay aria-hidden />}
-        type="date"
-        label="Start date"
-        required
-        value={values.startDate}
-        onChange={(e) => onChange("startDate", e.target.value)}
-        error={errors["startDate"] ?? ""}
-      />
+      <>
+        <Input
+          icon={<FaCalendarDay aria-hidden />}
+          type="date"
+          label="Start date"
+          required
+          value={values.startDate}
+          onChange={(e) => onChange("startDate", e.target.value)}
+        />
 
-      <Input
-        icon={<FaClock aria-hidden />}
-        type="time"
-        label="Start time"
-        required
-        value={values.startTime}
-        onChange={(e) => onChange("startTime", e.target.value)}
-        error={errors["startDate"] ?? ""}
-      />
+        <Input
+          icon={<FaClock aria-hidden />}
+          type="time"
+          label="Start time"
+          required
+          value={values.startTime}
+          onChange={(e) => onChange("startTime", e.target.value)}
+        />
+        {errors["startDate"] && (
+          <p className="flock-ui-label text-error md:col-span-2" role="alert">
+            {errors["startDate"]}
+          </p>
+        )}
+      </>
 
       {showEndFields && (
         <>
@@ -91,7 +96,6 @@ export default function EventFormFields({
             label="End date"
             value={values.endDate}
             onChange={(e) => onChange("endDate", e.target.value)}
-            error={errors["endDate"] ?? ""}
           />
 
           <Input
@@ -100,8 +104,13 @@ export default function EventFormFields({
             label="End time"
             value={values.endTime}
             onChange={(e) => onChange("endTime", e.target.value)}
-            error={errors["endDate"] ?? ""}
           />
+
+          {errors["endDate"] && (
+            <p className="flock-ui-label text-error md:col-span-2" role="alert">
+              {errors["endDate"]}
+            </p>
+          )}
         </>
       )}
 
