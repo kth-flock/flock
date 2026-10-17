@@ -4,7 +4,11 @@ import {
   FaLocationDot,
   FaCircleCheck,
   FaCirclePlus,
+  FaCircleQuestion,
+  FaCircleXmark,
+  FaCrown,
 } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
 import {
   formatDate,
   formatRelativeDate,
@@ -13,7 +17,17 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
-import type { ExtendedEvent } from "@/shared/types/event";
+import type { EventSummary, Rsvp } from "@/features/event/lib/types";
+
+export type EventStatus = Rsvp | "HOST";
+
+const statusIcon: Record<EventStatus, { icon: React.ReactElement; label: string }> = {
+  HOST: { icon: <FaCrown className="fill-primary" />, label: "Hosting" },
+  ACCEPTED: { icon: <FaCircleCheck className="fill-secondary" />, label: "Going" },
+  MAYBE: { icon: <FaCircleQuestion className="fill-warn" />, label: "Maybe" },
+  DECLINED: { icon: <FaCircleXmark className="fill-error" />, label: "Not going" },
+  PENDING: { icon: <FaClock className="fill-(--color-text-muted)" />, label: "Not answered" },
+};
 
 function ImagePlaceholder({
   title,
@@ -23,16 +37,16 @@ function ImagePlaceholder({
   className: string;
 }) {
   return (
-    <span
-      aria-hidden
-      className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}
-    >
+    <span aria-hidden className={twMerge("absolute inset-0 flex items-center justify-center px-4 font-serif", className)}>
       <span className="truncate">{title}</span>
     </span>
   );
 }
 
-export default function EventPreview({ event }: { event: ExtendedEvent }) {
+export default function EventPreview({ event, status }: {
+  event: EventSummary;
+  status: EventStatus;
+}) {
   return (
     <Link
       href={`/event/${event.id}`}
@@ -57,15 +71,14 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
           <span
-            className="flock-h4 min-w-0 line-clamp-2 wrap-break-words"
+            className="flock-h4 min-w-0 line-clamp-2 wrap-break-word"
             title={event.title}
           >
             {event.title}
           </span>
-          {/* TODO: Use real RSVP status here */}
-          <span className="inline-flex shrink-0 gap-2 items-center flock-body text-secondary">
-            <FaCircleCheck />
-            Going
+          <span className="inline-flex shrink-0 gap-2 items-center flock-body">
+            {statusIcon[status].icon}
+            {statusIcon[status].label}
           </span>
         </div>
 
@@ -93,7 +106,7 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
             title={event.locationName}
           >
             <FaLocationDot className="mt-1 shrink-0" />
-            <span className="min-w-0 line-clamp-2 wrap-break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-word">
               {event.locationName}
             </span>
           </span>
@@ -103,7 +116,13 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
   );
 }
 
-export function SmallEventPreview({ event }: { event: ExtendedEvent }) {
+export function SmallEventPreview({
+  event,
+  status,
+}: {
+  event: EventSummary;
+  status: EventStatus;
+}) {
   return (
     <Link
       href={`/event/${event.id}`}
@@ -134,28 +153,24 @@ export function SmallEventPreview({ event }: { event: ExtendedEvent }) {
           >
             {event.title}
           </p>
-          {/* TODO: Use the user's real RSVP status */}
-          <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
+          <span
+            className="mt-0.5 shrink-0"
+            title={statusIcon[status].label}
+            aria-label={statusIcon[status].label}
+          >
+            {statusIcon[status].icon}
+          </span>
         </span>
 
-        <span
-          className="inline-flex items-center gap-1 flock-caption"
-          title="Date"
-        >
+        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
           <FaCalendar />
-          <time
-            dateTime={event.startsAt.toISOString()}
-            title={formatDate(event.startsAt)}
-          >
+          <time dateTime={event.startsAt.toISOString()} title={formatDate(event.startsAt)}>
             {formatRelativeDate(event.startsAt)}
           </time>
         </span>
 
         {event.locationName && (
-          <span
-            className="flex items-start gap-1 flock-caption"
-            title={event.locationName}
-          >
+          <span className="flex items-start gap-1 flock-caption" title={event.locationName}>
             <FaLocationDot className="mt-0.5 shrink-0" />
             <span className="min-w-0 line-clamp-2 wrap-break-words">
               {event.locationName}

@@ -4,6 +4,7 @@ import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import Button, { IconButton } from "@/shared/components/button";
 import ImageUpload from "@/shared/components/imageUpload";
 import { updateEventFetch } from "@/shared/lib/api";
+import type { ExtendedEvent } from "@/shared/types/event";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { withUploadedImage } from "@/shared/lib/image";
 import { updateEventSchema } from "@flock/shared/schemas/event";
@@ -17,7 +18,7 @@ import { FaCamera, FaPen, FaPenToSquare } from "react-icons/fa6";
 
 // TODO: Wire up image-upload
 
-export default function EditEventForm({ event }: { event: Event }) {
+export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const router = useRouter();
   const [validationError, setValidationError] = useState<
     Record<string, string>

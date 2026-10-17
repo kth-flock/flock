@@ -1,5 +1,5 @@
 import { prisma } from "../prisma";
-import { publicUserInformationSelect } from "../utils/selectors";
+import { publicUserInformationSelect, profileUserInformationSelect } from "../utils/selectors";
 import { FriendshipStatus, UserId } from "@flock/shared/schemas/user";
 import { withSignedImageUrl } from "./imageService";
 import { NotFoundError } from "../utils/errors";
@@ -23,6 +23,14 @@ export async function getUserById(id: UserId) {
   }
 
   return await withSignedImageUrl(user);
+}
+
+export async function getUserProfile(id: UserId) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: profileUserInformationSelect,
+  });
+  return user;
 }
 
 export async function searchUsers(myId: UserId, query = "") {
