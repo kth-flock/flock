@@ -52,7 +52,7 @@ export default function FriendSearchResult({
     },
     FRIENDS: {
       ariaLabel: "Already Friends",
-      label: "",
+      label: "friends",
       disabled: true,
       icon: <></>,
       variant: "tertiary",
@@ -92,7 +92,7 @@ export default function FriendSearchResult({
           aria-label="decline friend request"
           onClick={onDeclineFriend}
           disabled={action.disabled || isPending}
-          className="bg-error hover:bg-error-dark"
+          className="p-1.5 text-xs md:text-sm [&_svg]:size-3 bg-error hover:bg-error-dark"
         >
           <FaXmark aria-hidden />
         </IconButton>

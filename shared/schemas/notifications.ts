@@ -1,9 +1,12 @@
+import type { RsvpStatus } from "./event";
+
 export type NotificationType =
   | "INVITATION"
   | "ANNOUNCEMENT"
   | "ANNOUNCEMENT_COMMENT"
   | "FRIEND_REQUEST"
-  | "FRIEND_REQUEST_ACCEPTED";
+  | "FRIEND_REQUEST_ACCEPTED"
+  | "RSVP";
 
 export type Notification = {
   id: string;
@@ -17,4 +20,5 @@ export type Notification = {
   };
   event?: { id: number; title: string };
   announcement?: { id: number; content: string };
+  rsvp?: { status: RsvpStatus; comment?: string | null };
 };

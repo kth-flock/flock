@@ -4,6 +4,8 @@ import React from "react";
 import DeveloperButton from "@/components/devButton";
 import { createUserSchema } from "@flock/shared/schemas/user";
 import { z } from "zod";
+import Button from "@/shared/components/button";
+import { useToast } from "@/shared/components/toast";
 
 export default function DeveloperTools() {
   const getUsers = () => {
@@ -55,6 +57,8 @@ export default function DeveloperTools() {
     addUser(result.data);
   }
 
+  const toast = useToast();
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center dark:bg-black gap-4">
       <h1>DEVELOPER TOOLS PAGE</h1>
@@ -84,6 +88,7 @@ export default function DeveloperTools() {
           </button>
         </form>
       </div> */}
+      <Button onClick={() => toast("Welcome to Flock!", "info")}>hej</Button>
     </div>
   );
 }

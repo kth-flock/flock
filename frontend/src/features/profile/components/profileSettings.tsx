@@ -184,7 +184,7 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
         type="submit"
         variant="secondary"
         size="sm"
-        className="self-end"
+        className="self-start md:self-end"
         disabled={isSaving || (!image && !removeImage && !nameChanged)}
       >
         {isSaving ? "Saving..." : "Save changes"}

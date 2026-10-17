@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import {
   FaCalendarCheck,
-  FaHouseChimney,
+  FaCrown,
   FaClock,
   FaUsers,
 } from "react-icons/fa6";
@@ -48,7 +48,7 @@ export default function ProfileContent({
     ...(hostedEvents !== undefined
       ? [
           {
-            icon: <FaHouseChimney />,
+            icon: <FaCrown />,
             value: countOf(hostedEvents),
             label: "Events hosted",
           },
@@ -68,18 +68,17 @@ export default function ProfileContent({
   return (
     <section className={twMerge("grid gap-6", className)} aria-label="Profile content">
       {content.map(({ icon, value, label, extra }) => (
-        <div
-          key={label}
-          className="flex flex-wrap items-center gap-4 rounded-2xl bg-accent/10 p-4 md:p-6"
-        >
-          <span className="text-secondary shrink-0 [&>svg]:size-8" aria-hidden>
-            {icon}
-          </span>
-          <div className="flex flex-col">
-            <p className="flock-h3 text-primary">{value}</p>
-            <p className="flock-body-sm text-foreground/80">{label}</p>
+        <div key={label} className="@container rounded-2xl bg-accent/10 p-4 md:p-6">
+          <div className="flex flex-col items-start gap-2 @[15rem]:flex-row @[15rem]:flex-wrap @[15rem]:items-center @[15rem]:gap-4">
+            <span className="text-secondary shrink-0 [&>svg]:size-8" aria-hidden>
+              {icon}
+            </span>
+            <div className="flex flex-col">
+              <p className="flock-h3 text-primary">{value}</p>
+              <p className="flock-body-sm text-foreground/80">{label}</p>
+            </div>
+            {extra}
           </div>
-          {extra}
         </div>
       ))}
     </section>

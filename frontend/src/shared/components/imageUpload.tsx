@@ -88,7 +88,7 @@ export default function ImageUpload({
         {previewUrl && (
           <>
             <div className="absolute inset-0 z-10 h-full w-full object-cover bg-black/20 flex justify-center items-center">
-              <span className="flex items-center rounded-full p-4 cursor-pointer bg-white/50 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
+              <span className="flex items-center rounded-full p-4 cursor-pointer bg-background/50 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
                 <FaPenToSquare size={40} aria-hidden="true" />
               </span>
             </div>
@@ -109,7 +109,7 @@ export default function ImageUpload({
           variant="tertiary"
           size="sm"
           aria-label="Remove selected image"
-          className="absolute -right-2 -top-2 z-20 text-white bg-black/20"
+          className="absolute -right-2 -top-2 z-20 text-white bg-foreground/20"
         >
           <FaX aria-hidden="true" />
         </IconButton>

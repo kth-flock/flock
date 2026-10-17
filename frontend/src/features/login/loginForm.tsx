@@ -6,6 +6,7 @@ import { loginUserSchema, LoginUser } from "@flock/shared/schemas/auth";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
 import Link from "next/link";
+import { useToast } from "@/shared/components/toast";
 
 export default function LoginForm() {
   const [validationError, setValidationError] = useState<
@@ -16,6 +17,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const toast = useToast();
   const { login } = useAuth();
 
   function validateFields(payload: LoginUser) {
@@ -59,6 +61,7 @@ export default function LoginForm() {
     try {
       await login(payload);
       router.push("/");
+      toast("Welcome back!", "info");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -74,7 +77,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <h1 className="flock-h1 text-center">Log in</h1>
+      <h1 className="flock-h1 text-center text-foreground">Log in</h1>
       <form className="flex flex-col gap-4" onSubmit={handelLogin}>
         <div className="flex flex-col gap-4 md:min-w-lg">
           <Input
@@ -114,7 +117,7 @@ export default function LoginForm() {
           variant="primary"
           size="lg"
           className="w-full justify-center"
-          disabled={isSubmitting}
+          isLoading={isSubmitting}
         >
           {isSubmitting ? "Logging in..." : "Log in"}
         </Button>

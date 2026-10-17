@@ -11,6 +11,7 @@ import {
 } from "@/shared/lib/api";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/shared/components/toast";
 
 export default function InviteFriends({ eventId }: { eventId: number }) {
   const searchRequestRef = useRef(0);
@@ -31,7 +32,9 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
   );
   const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<UserSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     const invitedIds = new Set(invitees.map((invitee) => invitee.id));
@@ -80,15 +83,23 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
       return prev.filter((invitee) => invitee.id !== user.id);
     });
   }
-
   async function handleSendInvites() {
-    if (invitees.length > 0) {
-      await batchInviteFetch(
-        eventId,
-        invitees.map((invitee) => invitee.id),
-      );
+    setIsLoading(true);
+    try {
+      if (invitees.length > 0) {
+        await batchInviteFetch(
+          eventId,
+          invitees.map((invitee) => invitee.id),
+        );
+        toast("Invites sent successfully!", "success");
+      }
+      router.push(`/event/${eventId}`);
+    } catch (error) {
+      toast("Failed to send invites", "error");
+      router.push(`/event/${eventId}`);
+    } finally {
+      setIsLoading(false);
     }
-    router.push(`/event/${eventId}`);
   }
 
   return (
@@ -144,8 +155,14 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
         <Button type="button" variant="secondary" href={`event/${eventId}`}>
           Skip
         </Button>
-        <Button type="button" onClick={handleSendInvites}>
-          Send invites
+
+        <Button
+          type="button"
+          disabled={invitees.length == 0}
+          isLoading={isLoading}
+          onClick={handleSendInvites}
+        >
+          {isLoading ? "Sending invites" : "Send invites"}
         </Button>
       </div>
     </div>

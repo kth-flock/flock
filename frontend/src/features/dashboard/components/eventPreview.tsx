@@ -8,6 +8,7 @@ import {
   FaCircleXmark,
   FaCrown,
 } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
 import {
   formatDate,
   formatRelativeDate,
@@ -16,7 +17,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
-import type { ExtendedEvent } from "@/shared/types/event";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
 
 export type EventStatus = Rsvp | "HOST";
@@ -37,20 +37,20 @@ function ImagePlaceholder({
   className: string;
 }) {
   return (
-    <span
-      aria-hidden
-      className={`absolute inset-0 flex items-center justify-center px-4 font-serif ${className}`}
-    >
+    <span aria-hidden className={twMerge("absolute inset-0 flex items-center justify-center px-4 font-serif", className)}>
       <span className="truncate">{title}</span>
     </span>
   );
 }
 
-export default function EventPreview({ event }: { event: ExtendedEvent }) {
+export default function EventPreview({ event, status }: {
+  event: EventSummary;
+  status: EventStatus;
+}) {
   return (
     <Link
       href={`/event/${event.id}`}
-      className="block rounded-2xl shadow-md bg-white dark:bg-white/10 w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
+      className="block rounded-2xl shadow-md bg-neutral/20  w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
       <div className="relative bg-neutral w-full h-36">
         {event.imageUrl ? (
@@ -71,15 +71,14 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
           <span
-            className="flock-h4 min-w-0 line-clamp-2 wrap-break-words"
+            className="flock-h4 min-w-0 line-clamp-2 wrap-break-word"
             title={event.title}
           >
             {event.title}
           </span>
-          {/* TODO: Use real RSVP status here */}
-          <span className="inline-flex shrink-0 gap-2 items-center flock-body text-secondary">
-            <FaCircleCheck />
-            Going
+          <span className="inline-flex shrink-0 gap-2 items-center flock-body">
+            {statusIcon[status].icon}
+            {statusIcon[status].label}
           </span>
         </div>
 
@@ -107,7 +106,7 @@ export default function EventPreview({ event }: { event: ExtendedEvent }) {
             title={event.locationName}
           >
             <FaLocationDot className="mt-1 shrink-0" />
-            <span className="min-w-0 line-clamp-2 wrap-break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-word">
               {event.locationName}
             </span>
           </span>
@@ -122,7 +121,7 @@ export function SmallEventPreview({
   status,
 }: {
   event: EventSummary;
-  status?: EventStatus;
+  status: EventStatus;
 }) {
   return (
     <Link
@@ -141,7 +140,7 @@ export function SmallEventPreview({
         ) : (
           <ImagePlaceholder
             title={event.title}
-            className="text-lg text-white/70"
+            className="text-lg text-background/70"
           />
         )}
       </div>
@@ -149,44 +148,31 @@ export function SmallEventPreview({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
         <span className="flex justify-between items-start gap-2">
           <p
-            className="flock-ui-label min-w-0 line-clamp-2 break-words"
+            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-words"
             title={event.title}
           >
             {event.title}
           </p>
-          {status ? (
-            <span
-              className="mt-0.5 shrink-0"
-              title={statusIcon[status].label}
-              aria-label={statusIcon[status].label}
-            >
-              {statusIcon[status].icon}
-            </span>
-          ) : (
-            <FaCircleCheck className="mt-0.5 shrink-0 fill-secondary" />
-          )}
+          <span
+            className="mt-0.5 shrink-0"
+            title={statusIcon[status].label}
+            aria-label={statusIcon[status].label}
+          >
+            {statusIcon[status].icon}
+          </span>
         </span>
 
-        <span
-          className="inline-flex items-center gap-1 flock-caption"
-          title="Date"
-        >
+        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
           <FaCalendar />
-          <time
-            dateTime={event.startsAt.toISOString()}
-            title={formatDate(event.startsAt)}
-          >
+          <time dateTime={event.startsAt.toISOString()} title={formatDate(event.startsAt)}>
             {formatRelativeDate(event.startsAt)}
           </time>
         </span>
 
         {event.locationName && (
-          <span
-            className="flex items-start gap-1 flock-caption"
-            title={event.locationName}
-          >
+          <span className="flex items-start gap-1 flock-caption" title={event.locationName}>
             <FaLocationDot className="mt-0.5 shrink-0" />
-            <span className="min-w-0 line-clamp-2 break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-words">
               {event.locationName}
             </span>
           </span>
@@ -201,7 +187,7 @@ export function NoNextEvent() {
     <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-accent p-8 text-center">
       <div className="flex flex-col gap-1">
         <p className="flock-h4">No events coming up</p>
-        <p className="flock-body-sm text-(--color-text-muted)">
+        <p className="flock-body-sm text-text-muted">
           Create one and invite your friends!
         </p>
       </div>
@@ -214,7 +200,7 @@ export function NoNextEvent() {
 
 export function NoUpcomingEvents() {
   return (
-    <p className="w-full rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-(--color-text-muted)">
+    <p className="w-full rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
       Nothing else planned yet.
     </p>
   );

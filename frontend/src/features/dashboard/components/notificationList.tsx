@@ -1,71 +1,112 @@
 "use client";
+import { twMerge } from "tailwind-merge";
 import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
-import Notification, { NotificationAction } from "./notification";
-import type { DashboardNotification } from "../lib/types";
+import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
+import Notification from "./notification";
+import {
+  acceptFriendRequestFetch,
+  declineFriendRequestFetch,
+} from "@/shared/lib/api";
 
-const headerStyle = "bg-primary text-white flock-h3 p-4 w-full";
+const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
 
 export default function NotificationList({
   notifications,
+  onFriendRequestHandled,
 }: {
-  notifications: DashboardNotification[];
+  notifications: NotificationData[] | null | undefined;
+  onFriendRequestHandled: (
+    notification: NotificationData,
+    accepted: boolean,
+  ) => void;
 }) {
-  // Only affects mobile - list is always shown from md and up
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleAction(
-    notif: DashboardNotification,
-    action: NotificationAction,
+  async function handleFriendRequest(
+    notification: NotificationData,
+    accept: boolean,
   ) {
-    switch (action) {
-      case "ACCEPT":
-        return;
-      // return acceptFriendRequest(notif.id);
-      case "DECLINE":
-        return;
-      // return declineFriendRequest(notif.id);
-      case "VIEW":
-        return;
-      //return router.push(`/events/${notif.eventId}`);
+    setPendingId(notification.id);
+    setError(null);
+    try {
+      await (accept ? acceptFriendRequestFetch : declineFriendRequestFetch)(
+        notification.from.id,
+      );
+      onFriendRequestHandled(notification, accept);
+    } catch (err) {
+      setError(
+        err instanceof TypeError
+          ? "Couldn't reach the server. Try again."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong",
+      );
+    } finally {
+      setPendingId(null);
     }
   }
 
   return (
     <div className="flex flex-col rounded-2xl border border-primary overflow-hidden">
-      <div className={`hidden md:block text-center ${headerStyle}`}>
+      <div className={twMerge("hidden md:block text-center", headerStyle)}>
         Notifications
       </div>
       <button
         type="button"
-        className={`md:hidden flex items-center justify-between cursor-pointer ${headerStyle}`}
+        className={twMerge(
+          "md:hidden flex items-center justify-between cursor-pointer",
+          headerStyle,
+        )}
         aria-expanded={isOpen}
         aria-controls="notification-list"
         onClick={() => setIsOpen((open) => !open)}
       >
         Notifications
         <FaChevronDown
-          className={`size-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={twMerge("size-5 transition-transform", isOpen && "rotate-180")}
         />
       </button>
       <div
         id="notification-list"
-        className={`${isOpen ? "flex" : "hidden"} md:flex flex-col w-full`}
+        className={twMerge(
+          "md:flex flex-col w-full",
+          isOpen ? "flex" : "hidden",
+        )}
       >
-        {notifications.length === 0 && (
-          <p className="p-4 text-center flock-body-sm text-(--color-text-muted)">
+        {notifications === undefined && (
+          <p className="p-4 text-center flock-body-sm text-text-muted">
+            Loading…
+          </p>
+        )}
+        {notifications === null && (
+          <p className="p-4 text-center flock-body-sm text-error" role="alert">
+            {"Couldn't load your notifications"}
+          </p>
+        )}
+        {notifications?.length === 0 && (
+          <p className="p-4 text-center flock-body-sm text-text-muted">
             No new notifications
           </p>
         )}
-        {notifications.map((notif, index) => (
+        {notifications?.map((notif, index) => (
           <Fragment key={notif.id}>
             {index > 0 && <div className="w-full border-b border-primary/20" />}
             <Notification
               notification={notif}
-              onAction={(action) => handleAction(notif, action)}
+              isPending={pendingId === notif.id}
+              onAccept={() => handleFriendRequest(notif, true)}
+              onDecline={() => handleFriendRequest(notif, false)}
             />
           </Fragment>
         ))}
+        {error && (
+          <p className="p-4 text-center flock-caption text-error!" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );

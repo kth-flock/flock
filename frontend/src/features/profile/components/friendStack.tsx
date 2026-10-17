@@ -84,22 +84,22 @@ function FriendRowActions({
   }
 }
 
-function FriendsModal({
+export function FriendsModal({
   friends,
   myId,
   isOpen,
   onClose,
-  pendingId,
-  error,
+  pendingId = null,
+  error = null,
   onAction,
 }: {
   friends: UserSearchResult[];
   myId?: number;
   isOpen: boolean;
   onClose: () => void;
-  pendingId: number | null;
-  error: string | null;
-  onAction: (
+  pendingId?: number | null;
+  error?: string | null;
+  onAction?: (
     friendId: number,
     action: (userId: number) => Promise<void>,
     nextStatus: FriendshipStatus,
@@ -130,7 +130,7 @@ function FriendsModal({
                 )}
                 <span className="flock-body truncate">{fullName(friend)}</span>
               </Link>
-              {myId !== undefined && (
+              {myId !== undefined && onAction && (
                 <FriendRowActions
                   friend={friend}
                   myId={myId}

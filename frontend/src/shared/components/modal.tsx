@@ -55,7 +55,7 @@ export default function Modal({
           "min-w-75 max-w-[90vw] max-h-[90vh] shadow-lg flex flex-col",
           transparent
             ? "fixed rounded-2xl"
-            : (bg ?? "bg-white") + " rounded-lg relative",
+            : (bg ?? "bg-background") + " rounded-lg relative",
           className,
         )}
         onClick={(e) => e.stopPropagation()}

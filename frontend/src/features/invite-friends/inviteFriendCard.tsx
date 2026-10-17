@@ -18,7 +18,7 @@ export default function InviteFriendCard({
   onRemove,
 }: InviteFriendCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-3 flex flex-row gap-4 justify-between items-center">
+    <div className="bg-background rounded-2xl p-3 flex flex-row gap-4 justify-between items-center">
       <div className="flex flex-row gap-4 items-center">
         {user.imageUrl ? (
           ""

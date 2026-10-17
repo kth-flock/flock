@@ -1,24 +1,24 @@
 "use client";
 import EventFormFields from "@/features/event/components/eventFormFields";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
-import Button, { IconButton } from "@/shared/components/button";
+import Button from "@/shared/components/button";
 import ImageUpload from "@/shared/components/imageUpload";
 import { updateEventFetch } from "@/shared/lib/api";
 import type { ExtendedEvent } from "@/shared/types/event";
 import { formatDateInput, formatTimeInput } from "@/shared/lib/dateFormat";
 import { withUploadedImage } from "@/shared/lib/image";
 import { updateEventSchema } from "@flock/shared/schemas/event";
-import type { Event } from "@prisma/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaCamera, FaPen, FaPenToSquare, FaTrash } from "react-icons/fa6";
+import { FaCamera, FaPenToSquare, FaTrash } from "react-icons/fa6";
 import EventImage from "@/shared/components/eventImage";
 import EditableImage from "@/shared/components/editableImage";
-
-// TODO: make enddate optional
-
-// TODO: Wire up image-upload
+import {
+  combineDateTime,
+  getFieldErrors,
+} from "@/features/event/lib/eventFormFieldsUtils";
+import { useToast } from "@/shared/components/toast";
 
 export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   const router = useRouter();
@@ -41,6 +41,8 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
   const [removeImage, setRemoveImage] = useState(false);
 
   function handleInputChange<Key extends keyof EventFormValues>(
@@ -54,25 +56,12 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
     const result = updateEventSchema.safeParse(payload);
 
     if (!result.success) {
-      const fieldErrors = result.error.issues.reduce<Record<string, string>>(
-        (errors, issue) => {
-          const field = issue.path.join(".") || "form";
-          errors[field] ??= issue.message;
-          return errors;
-        },
-        {},
-      );
-      setValidationError(fieldErrors);
+      setValidationError(getFieldErrors(result.error.issues));
       return null;
     }
 
     setValidationError({});
     return result.data;
-  }
-
-  function combineDateTime(date: string, time: string): Date | null {
-    if (!date || !time) return null;
-    return new Date(`${date}T${time}`);
   }
 
   async function handleSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
@@ -97,6 +86,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
     if (!payload) return;
 
     setSubmitError(null);
+    setIsSubmitting(true);
     try {
       await withUploadedImage(imageFile, (imageUrl) =>
         updateEventFetch(event.id, {
@@ -104,6 +94,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           ...(imageUrl ? { imageUrl } : removeImage && { imageUrl: null }),
         }),
       );
+      toast("Event updated succesfully", "success");
       router.push(`/event/${event.id}`);
     } catch (error) {
       setSubmitError(
@@ -111,8 +102,11 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
           ? "Couldn't connect to the server. Check your connection and try again."
           : error instanceof Error
             ? error.message
-            : "Couldn't create the event. Please try again.",
+            : "Couldn't update the event. Please try again.",
       );
+      toast("Couldn't update event, try again", "success");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -122,7 +116,7 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
 
       <EditableImage
         className="h-40 w-full rounded-2xl md:h-56"
-        imageUploadClass="border border-primary/20 bg-white text-primary hover:border-primary"
+        imageUploadClass="border border-primary/20 bg-background text-primary hover:border-primary"
         noImage={event.imageUrl == null}
         current={
           <EventImage
@@ -158,7 +152,9 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
         <Button type="button" variant="secondary" href={`/event/${event.id}`}>
           Cancel
         </Button>
-        <Button type="submit">Update</Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          {isSubmitting ? "Updating..." : "Update"}
+        </Button>
       </div>
     </form>
   );

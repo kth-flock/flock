@@ -78,8 +78,8 @@ export async function getEventById(eventId: EventId, userId: UserId) {
 
   return {
     ...eventWithImage,
-    invitees: eventWithImage.invitees.map(
-      ({ rsvpComment, ...invitee }) => invitee,
+    invitees: eventWithImage.invitees.map(({ rsvpComment, ...invitee }) =>
+      invitee.userId === userId ? { ...invitee, rsvpComment } : invitee,
     ),
   };
 }
@@ -111,8 +111,9 @@ export async function getInvitedEvents(userId: UserId) {
       },
     },
   });
-  return events;
+  return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
+
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
   const isParticipant = (userId: UserId) => ({
     OR: [
@@ -174,7 +175,6 @@ export async function updateEventInfo(
     data: eventData,
   });
 
-  // Replaced image is no longer referenced, so remove it and a failed delete shouldn't fail the update.
   if (
     event.imageUrl &&
     eventData.imageUrl !== undefined &&
@@ -195,6 +195,7 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
     },
     select: {
       createdById: true,
+      imageUrl: true,
     },
   });
 
@@ -211,6 +212,12 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
       id: eventId,
     },
   });
+
+  if (event.imageUrl) {
+    await deleteImageFromS3(event.imageUrl).catch((error) =>
+      console.error("Failed to delete event image from S3:", error),
+    );
+  }
 }
 
 export async function rsvpToEvent(
