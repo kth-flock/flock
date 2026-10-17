@@ -16,6 +16,8 @@ export default function EventImage({ src, alt, ...props }: Props) {
       src={failed ? "/placeholderImgError.png" : (src ?? "/placeholder.png")}
       alt={failed || src ? alt : ""}
       onError={() => setFailed(true)}
+      unoptimized
+      loading="eager"
     />
   );
 }

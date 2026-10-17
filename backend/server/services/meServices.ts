@@ -9,7 +9,6 @@ import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
 import { deleteImageFromS3 } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
-import { User } from "../../prisma/generated/client";
 
 export async function getMyAccount(userId: UserId) {
   const account = await prisma.user.findUnique({
@@ -22,28 +21,38 @@ export async function getMyAccount(userId: UserId) {
   return account;
 }
 
-export async function deleteMyAccount(userId: UserId) {
+export async function deleteMyAccount(userId: UserId, imageUrl: string | null) {
   await prisma.user.delete({
     where: { id: userId },
   });
+
+  if (imageUrl) {
+    await deleteImageFromS3(imageUrl).catch((error) =>
+      console.error("Failed to delete event image from S3:", error),
+    );
+  }
 }
 
-export async function editUserInfo(userId: UserId, data: UserInfo) {
+export async function editUserInfo(
+  userId: UserId,
+  data: UserInfo,
+  prevImageUrl: string | null,
+) {
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     select: privateUserInformationSelect,
     data,
   });
 
-  // if (
-  //   user.imageUrl &&
-  //   data.imageUrl !== undefined &&
-  //   user.imageUrl !== data.imageUrl
-  // ) {
-  //   deleteImageFromS3(user.imageUrl).catch((error) =>
-  //     console.error(`Failed to delete old image ${user.imageUrl}`, error),
-  //   );
-  // }
+  if (
+    prevImageUrl &&
+    data.imageUrl !== undefined &&
+    prevImageUrl !== data.imageUrl
+  ) {
+    deleteImageFromS3(prevImageUrl).catch((error) =>
+      console.error(`Failed to delete old image ${prevImageUrl}`, error),
+    );
+  }
 
   return updatedUser;
 }

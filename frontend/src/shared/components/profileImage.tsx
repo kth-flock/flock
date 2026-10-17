@@ -44,6 +44,8 @@ export default function ProfileImage({
           alt={`${firstName} ${lastName}`}
           onError={() => setFailed(true)}
           className="object-cover"
+          unoptimized
+          loading="eager"
         />
       ) : (
         <div
