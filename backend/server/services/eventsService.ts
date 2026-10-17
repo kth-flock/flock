@@ -113,6 +113,7 @@ export async function getInvitedEvents(userId: UserId) {
   });
   return Promise.all(events.map((event) => withSignedImageUrl(event)));
 }
+
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
   const isParticipant = (userId: UserId) => ({
     OR: [

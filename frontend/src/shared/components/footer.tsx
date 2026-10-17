@@ -18,8 +18,8 @@ export default function Footer() {
 
           <nav aria-label="Footer">
             <ul className="flex flex-wrap gap-x-6 gap-y-2">
-              {footerLinks.map(({ href, label }) => (
-                <li key={href}>
+              {footerLinks.map(({ href, label }, i) => (
+                <li key={i}>
                   <Link
                     href={href}
                     className="flock-body-sm text-primary underline-offset-4 hover:underline"

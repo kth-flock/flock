@@ -1,2 +1,5 @@
-export const fullName = (user: { firstName: string; lastName: string }) =>
-  `${user.firstName} ${user.lastName}`;
+import type { PublicUser, PrivateUser } from "../types/user";
+
+export function fullName(user: PublicUser | PrivateUser | undefined) {
+  return `${user?.firstName} ${user?.lastName}`;
+}
