@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               {children}
             </main>
           </div>
-          <Footer /> {/* sibling after the min-h-dvh div */}
+          <Footer />
         </AuthProvider>
       </body>
     </html>

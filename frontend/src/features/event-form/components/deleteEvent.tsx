@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import { deleteEventFetch } from "@/shared/lib/api";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export function DeleteEventButton({ eventId }: { eventId: number }) {
   const router = useRouter();
@@ -18,17 +19,17 @@ export function DeleteEventButton({ eventId }: { eventId: number }) {
     try {
       await deleteEventFetch(eventId);
       router.push("/");
-      router.refresh();
     } catch (err) {
       setError(
-        err instanceof TypeError
-          ? "Couldn't reach the server. Try again."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
+        getErrorMessage(err, "Couldn't delete the event. Please try again."),
       );
       setIsDeleting(false);
     }
+  }
+
+  function handleCancel() {
+    setError(null);
+    setIsConfirming(false);
   }
 
   return (
@@ -40,7 +41,7 @@ export function DeleteEventButton({ eventId }: { eventId: number }) {
             variant="tertiary"
             size="sm"
             disabled={isDeleting}
-            onClick={() => setIsConfirming(false)}
+            onClick={handleCancel}
           >
             Cancel
           </Button>

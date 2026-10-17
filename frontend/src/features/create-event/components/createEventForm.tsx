@@ -5,7 +5,7 @@ import { useState } from "react";
 import { createEventSchema } from "@flock/shared/schemas/event";
 import { createEventFetch, deleteImageFromS3Fetch } from "@/shared/lib/api";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
-import EventFormFields from "@/features/event/components/eventFormFields";
+import EventFormFields from "@/features/event-form/components/eventFormFields";
 
 import { FaCamera } from "react-icons/fa6";
 import { uploadSelectedImage, withUploadedImage } from "@/shared/lib/image";
