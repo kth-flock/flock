@@ -1,25 +1,4 @@
-import type { RsvpStatus } from "@flock/shared/schemas/event";
-
-export type CalendarEvent = {
-  id: number;
-  title: string;
-  startsAt: Date;
-  createdBy?: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    imageUrl: string | null;
-  };
-  invitees: { rsvp: RsvpStatus }[];
-};
-
-export type CalendarViewProps = {
-  year: number;
-  month: number;
-  today: Date;
-  weeks: (Date | null)[][];
-  eventsByDay: Map<string, CalendarEvent[]>;
-};
+import type { CalendarEvent } from "./types";
 
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const MONTHS = [
@@ -74,4 +53,24 @@ export function getMonthWeeks(year: number, month: number): (Date | null)[][] {
   const weeks: (Date | null)[][] = [];
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
   return weeks;
+}
+
+export function getDaysWithEvents(
+  weeks: (Date | null)[][],
+  eventsByDay: Map<string, CalendarEvent[]>,
+) {
+  return weeks
+    .flat()
+    .filter((day): day is Date => day !== null)
+    .map((day) => ({ day, events: eventsByDay.get(dayKey(day)) ?? [] }))
+    .filter(({ events }) => events.length > 0);
+}
+
+// Today if it has events, otherwise the next day with events, otherwise the first
+export function getScrollTargetKey(days: { day: Date }[], today: Date) {
+  const target =
+    days.find(({ day }) => isSameDay(day, today)) ??
+    days.find(({ day }) => day > today) ??
+    days[0];
+  return target ? dayKey(target.day) : null;
 }

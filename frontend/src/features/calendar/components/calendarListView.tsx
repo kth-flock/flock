@@ -1,92 +1,71 @@
-import { twMerge } from "tailwind-merge";
+"use client";
+
+import { useEffect, useMemo, useRef } from "react";
 import { EventPillDetails } from "./eventPill";
+import DayNumber from "./dayNumber";
 import {
-  type CalendarEvent,
-  type CalendarViewProps,
   WEEKDAYS,
   dayKey,
+  getDaysWithEvents,
+  getScrollTargetKey,
   isSameDay,
 } from "../lib/utils";
-import { useEffect, useRef } from "react";
+import type { CalendarViewProps } from "../lib/types";
 
-function byStartTime(a: CalendarEvent, b: CalendarEvent) {
-  return a.startsAt.getTime() - b.startsAt.getTime();
-}
-
-export default function CalendarMobileView({
+export default function CalendarListView({
   today,
   weeks,
   eventsByDay,
-}: CalendarViewProps) {
+  isLoading,
+}: CalendarViewProps & { isLoading: boolean }) {
   const targetRef = useRef<HTMLLIElement | null>(null);
 
-  const days = weeks
-    .flat()
-    .filter((day): day is Date => day !== null)
-    .map((day) => ({
-      day,
-      events: [...(eventsByDay.get(dayKey(day)) ?? [])].sort(byStartTime),
-    }))
-    .filter(({ events }) => events.length > 0);
+  const days = useMemo(
+    () => getDaysWithEvents(weeks, eventsByDay),
+    [weeks, eventsByDay],
+  );
+  const targetKey = getScrollTargetKey(days, today);
 
-  const targetKey = (
-    days.find(({ day }) => isSameDay(day, today)) ??
-    days.find(({ day }) => day > today) ??
-    days[days.length - 1]
-  )?.day;
-  const targetDayKey = targetKey ? dayKey(targetKey) : null;
-
+  const hasEvents = days.length > 0;
+  const monthKey = dayKey(weeks.flat().find((d) => d !== null)!);
   useEffect(() => {
     targetRef.current?.scrollIntoView({ block: "start" });
-  }, [targetDayKey]);
+  }, [monthKey, hasEvents]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (days.length === 0) {
-    return (
+  if (!hasEvents) {
+    return isLoading ? null : (
       <p className="py-8 text-center flock-body-serif">No events this month</p>
     );
   }
 
   return (
     <ol className="mt-4 flex flex-col gap-6">
-      {days.map(({ day, events }) => {
-        const isToday = isSameDay(day, today);
-        const weekday = WEEKDAYS[(day.getDay() + 6) % 7];
-        const isTarget = dayKey(day) === targetDayKey;
+      {days.map(({ day, events }) => (
+        <li
+          key={dayKey(day)}
+          ref={dayKey(day) === targetKey ? targetRef : null}
+          className="flex scroll-mt-24 items-center gap-4 not-last:border-b border-neutral pb-6"
+        >
+          <div className="flex w-12 shrink-0 flex-col items-center">
+            <DayNumber
+              day={day}
+              isToday={isSameDay(day, today)}
+              className="size-10 flock-h2"
+            />
+            <span className="flock-caption text-(--color-text-muted)">
+              {WEEKDAYS[(day.getDay() + 6) % 7]}
+            </span>
+          </div>
 
-        return (
-          <li
-            key={dayKey(day)}
-            ref={isTarget ? targetRef : null}
-            className="flex scroll-mt-4 items-center gap-4 not-last:border-b border-neutral pb-6"
-          >
-            {/* Date column, same "today" circle as CalendarDay */}
-            <div className="flex w-12 shrink-0 flex-col items-center">
-              <span
-                className={twMerge(
-                  "relative flex size-10 items-center justify-center flock-h2 leading-none",
-                  isToday ? "font-bold" : "",
-                )}
-              >
-                {isToday && (
-                  <span className="absolute inset-0 rounded-full bg-secondary/50" />
-                )}
-                <span className="relative">{day.getDate()}</span>
-              </span>
-              <span className="flock-caption text-(--color-text-muted)">
-                {weekday}
-              </span>
-            </div>
-
-            <ul className="flex flex-1 flex-col gap-3 border-l pl-4">
-              {events.map((event) => (
-                <li key={event.id}>
-                  <EventPillDetails event={event} />
-                </li>
-              ))}
-            </ul>
-          </li>
-        );
-      })}
+          <ul className="flex flex-1 flex-col gap-3 border-l pl-4">
+            {events.map((event) => (
+              <li key={event.id}>
+                <EventPillDetails event={event} />
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
     </ol>
   );
 }
