@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import type { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
@@ -45,7 +44,10 @@ export default function EventHeader({
         <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">
           <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
-            <Link href={`/profile/${event.createdBy.id}`} className="group/host flock-body-sm flex w-fit items-center gap-2">
+            <Link
+              href={`/profile/${event.createdBy.id}`}
+              className="group/host flock-body-sm flex w-fit items-center gap-2"
+            >
               <ProfileImage
                 profileImgSrc={event.createdBy.imageUrl ?? ""}
                 firstName={event.createdBy.firstName}

@@ -7,7 +7,7 @@ import {
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
-import { deleteImageFromS3, withSignedImageUrl } from "./imageService";
+import { deleteImageFromS3, getObjectWithImage } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
 import { User } from "../../prisma/generated/client";
 
@@ -19,7 +19,7 @@ export async function getMyAccount(userId: UserId) {
 
   if (!account) throw new NotFoundError("User not found");
 
-  return withSignedImageUrl(account);
+  return getObjectWithImage(account);
 }
 
 export async function deleteMyAccount(userId: UserId) {

@@ -4,6 +4,7 @@ import AnnouncementList from "@/features/event/components/announcementList";
 import { getEvent, getCurrentUser } from "@/shared/lib/api";
 import { idSchema } from "@flock/shared/schemas/common";
 import { cookies } from "next/headers";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Event • Flock",

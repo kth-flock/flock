@@ -33,11 +33,11 @@ export async function uploadImage(
   return imageKey;
 }
 
-export async function withSignedImageUrl<
+export async function getObjectWithImage<
   T extends { id: number; imageUrl: string | null },
 >(record: T): Promise<T> {
   if (!record.imageUrl) return record;
-  const expiresIn = 24 * 60 * 60; // Sets time limit to 24 hours
+  const expiresIn = 24 * 60 * 60;
 
   try {
     const signedImageUrl = await getSignedUrl(
@@ -50,11 +50,11 @@ export async function withSignedImageUrl<
     return { ...record, imageUrl: signedImageUrl };
   } catch (error) {
     console.error(`Failed to sign image for record ${record.id}`, error);
-    return { ...record, imageUrl: null, imageFailed: true }; // adds imageFailed true for frontend to know that error occured
+    return { ...record, imageUrl: null };
   }
 }
 
-export async function withSignedEventUserImages<
+export async function getEventAndUserWithImage<
   T extends {
     id: number;
     imageUrl: string | null;
@@ -62,17 +62,17 @@ export async function withSignedEventUserImages<
     invitees?: { user: UserWithImage }[];
   },
 >(event: T) {
-  const signed = await withSignedImageUrl(event);
+  const signed = await getObjectWithImage(event);
 
   const createdBy =
-    event.createdBy && (await withSignedImageUrl(event.createdBy));
+    event.createdBy && (await getObjectWithImage(event.createdBy));
 
   const invitees =
     event.invitees &&
     (await Promise.all(
       event.invitees.map(async (invitee) => ({
         ...invitee,
-        user: await withSignedImageUrl(invitee.user),
+        user: await getObjectWithImage(invitee.user),
       })),
     ));
 
