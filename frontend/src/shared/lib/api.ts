@@ -11,6 +11,7 @@ import type {
 } from "@flock/shared/schemas/event";
 import { UserSearchResult, PrivateUser, PublicUser } from "../types/user";
 import type { ExtendedEvent } from "../types/event";
+import type { CalendarEvent } from "@/features/calendar/lib/utils";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
