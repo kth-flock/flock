@@ -40,6 +40,7 @@ export default function ProfileImage({
         <Image
           src={failed ? "/profileImgFailed.png" : profileImgSrc}
           fill
+          sizes="128px"
           alt={`${firstName} ${lastName}`}
           onError={() => setFailed(true)}
           className="object-cover"
