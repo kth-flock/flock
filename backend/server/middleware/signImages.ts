@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { signImageKey } from "../services/imageService";
 
 async function signUrlHelper(value: unknown): Promise<unknown> {
-  if (Array.isArray(value)) return Promise.all(value.map(signDeep));
+  if (Array.isArray(value)) return Promise.all(value.map(signUrlHelper));
   if (value === null || typeof value !== "object" || value instanceof Date)
     return value;
 
