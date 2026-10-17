@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
 import { useEvent } from "@/shared/hooks/useEvent";
 import EventInfo from "./eventInfo";
-import AnnouncementList from "../../announcements/announcementList";
+import AnnouncementList from "../../announcements/components/announcementList";
 
 export default function EventPageClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
