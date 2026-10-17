@@ -53,7 +53,7 @@ export function FieldWrapper({
       <div
         onClick={onClick}
         className={twMerge(
-          "flex w-full cursor-text border bg-white transition-colors hover:border-primary",
+          "flex w-full cursor-text border bg-background transition-colors hover:border-primary",
           isCompact
             ? "items-center gap-2 rounded-full border-transparent px-3 py-2.5 shadow-none"
             : "gap-3 rounded-2xl px-4 py-3 md:gap-4 md:px-6 md:py-4",

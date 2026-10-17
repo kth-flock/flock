@@ -17,12 +17,21 @@ const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
+const monthYearFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
+  month: "short",
+  year: "numeric",
+});
+
 const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
 });
+
+export const formatMonthYear = (iso: string) =>
+  monthYearFormatter.format(new Date(iso));
 
 const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,

@@ -1,7 +1,6 @@
 import type { PublicUser } from "@/shared/types/user";
 import type { Event } from "@prisma/types";
-
-// Shapes returned by GET /events/:eventId (dates arrive as ISO strings)
+import type { RSVP as Rsvp } from "../../../../../backend/prisma/generated/enums";
 
 export type EventComment = {
   id: number;
@@ -27,6 +26,13 @@ export type EventDetails = Omit<Event, "startsAt" | "endsAt"> & {
   endsAt: string | null;
   createdBy: PublicUser;
   announcements: EventAnnouncement[];
+};
+
+export type EventSummary = Event;
+
+export type InvitedEvent = Event & {
+  createdBy: PublicUser;
+  invitees: { rsvp: Rsvp }[];
 };
 
 export type { RSVP as Rsvp } from "../../../../../backend/prisma/generated/enums";

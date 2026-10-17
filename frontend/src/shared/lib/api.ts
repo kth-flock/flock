@@ -1,6 +1,8 @@
 import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
+import type { ChangeEmail, ChangePassword, UserInfo } from "@flock/shared/schemas/user";
 import type {
   CreateEventData,
+  RsvpToEventData,
   UpdateEventData,
 } from "@flock/shared/schemas/event";
 import { UserSearchResult, PrivateUser, PublicUser } from "../types/user";
@@ -92,6 +94,32 @@ export async function inviteFriendFetch(eventId: number, userId: number) {
   }
 }
 
+export async function deleteEventFetch(eventId: number) {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to delete event");
+  }
+}
+
+export async function rsvpFetch(eventId: number, data: RsvpToEventData) {
+  const res = await fetch(`${API_BASE_URL}/events/${eventId}/rsvp`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to save your answer");
+  }
+}
+
 export async function batchInviteFetch(eventId: number, userIds: number[]) {
   const res = await fetch(`${API_BASE_URL}/events/${eventId}/invitees`, {
     method: "POST",
@@ -119,6 +147,58 @@ export async function uninviteFriendFetch(eventId: number, userId: number) {
   if (!res.ok) {
     const response: { error?: string } = await res.json().catch(() => ({}));
     throw new Error(response.error ?? "Failed to uninvite user");
+  }
+}
+
+export async function removeFriendshipFetch(userId: number) {
+  const res = await fetch(`${API_BASE_URL}/me/friendships`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ friendId: userId }),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to remove friendship");
+  }
+}
+
+async function patchMe(path: string, body: unknown, fallbackError: string) {
+  const res = await fetch(`${API_BASE_URL}/me${path}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? fallbackError);
+  }
+}
+
+export async function updateMyInfoFetch(data: UserInfo) {
+  await patchMe("", data, "Failed to update your profile");
+}
+
+export async function changeEmailFetch(data: ChangeEmail) {
+  await patchMe("/email", data, "Failed to change your email");
+}
+
+export async function changePasswordFetch(data: ChangePassword) {
+  await patchMe("/password", data, "Failed to change your password");
+}
+
+export async function deleteMyAccountFetch() {
+  const res = await fetch(`${API_BASE_URL}/me`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to delete your account");
   }
 }
 

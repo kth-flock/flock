@@ -74,7 +74,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <h1 className="flock-h1 text-center">Log in</h1>
+      <h1 className="flock-h1 text-center text-foreground">Log in</h1>
       <form className="flex flex-col gap-4" onSubmit={handelLogin}>
         <div className="flex flex-col gap-4 md:min-w-lg">
           <Input

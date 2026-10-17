@@ -7,7 +7,7 @@ export function PublicHomePage() {
   return (
     <>
       <div
-        className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#8bc596_0%,#ffffff_80%)]"
+        className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,var(--color-success-light)_0%,var(--background)_80%)]"
         aria-hidden
       />
       <div className="flex flex-col items-center justify-center gap-5 text-center">
