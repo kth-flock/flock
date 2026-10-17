@@ -1,22 +1,21 @@
 "use client";
 import { twMerge } from "tailwind-merge";
-import type { CalendarEvent } from "../lib/utils";
+import type { CalendarEvent } from "../lib/types";
 import EventPill from "./eventPill";
-import { useState } from "react";
-import CalendarDayModal from "./calendarDayModal";
+import { formatDate } from "@/shared/lib/dateFormat";
 
 const MAX_PILLS_PER_DAY = 2;
 
 type CalendarDayProps = {
   day: Date | null;
-  isSameDay?: boolean;
+  isToday?: boolean;
   events?: CalendarEvent[];
-  onClick: (day: Date, events: CalendarEvent[]) => void;
+  onClick: (day: Date) => void;
 };
 
 export default function CalendarDay({
   day,
-  isSameDay = false,
+  isToday = false,
   events = [],
   onClick,
 }: CalendarDayProps) {
@@ -31,20 +30,21 @@ export default function CalendarDay({
     >
       {day && (
         <button
+          aria-label={`${formatDate(day)}, ${events.length} ${events.length === 1 ? "event" : "events"}`}
           className={twMerge(
             "flex flex-col items-start gap-1 w-full h-full",
             events.length > 0 ? "cursor-pointer" : "",
           )}
-          onClick={() => onClick(day, events)}
+          onClick={() => onClick(day)}
           disabled={events.length <= 0}
         >
           <span
             className={twMerge(
               "relative flex size-7 shrink-0 items-center justify-center self-start leading-none",
-              isSameDay ? "font-bold" : "",
+              isToday ? "font-bold" : "",
             )}
           >
-            {isSameDay && (
+            {isToday && (
               <span className="absolute inset-0 rounded-full bg-secondary/50" />
             )}
             <span className="relative">{day.getDate()}</span>

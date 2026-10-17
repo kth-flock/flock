@@ -3,23 +3,15 @@
 import { useState } from "react";
 import CalendarDay from "./calendarDay";
 import CalendarDayModal from "./calendarDayModal";
-import {
-  type CalendarEvent,
-  type CalendarViewProps,
-  WEEKDAYS,
-  dayKey,
-  isSameDay,
-} from "../lib/utils";
+import { WEEKDAYS, dayKey, isSameDay } from "../lib/utils";
+import type { CalendarViewProps } from "../lib/types";
 
-export default function CalendarDesktopView({
+export default function CalendarGridView({
   today,
   weeks,
   eventsByDay,
 }: CalendarViewProps) {
-  const [openDay, setOpenDay] = useState<{
-    day: Date;
-    events: CalendarEvent[];
-  } | null>(null);
+  const [openDay, setOpenDay] = useState<Date | null>(null);
 
   return (
     <>
@@ -27,8 +19,8 @@ export default function CalendarDesktopView({
         <CalendarDayModal
           isOpen
           onClose={() => setOpenDay(null)}
-          day={openDay.day}
-          events={openDay.events}
+          day={openDay}
+          events={eventsByDay.get(dayKey(openDay)) ?? []}
         />
       )}
 
@@ -36,7 +28,11 @@ export default function CalendarDesktopView({
         <thead>
           <tr>
             {WEEKDAYS.map((weekday) => (
-              <th key={weekday} className="p-2 text-center flock-body-serif">
+              <th
+                scope="col"
+                key={weekday}
+                className="p-2 text-center flock-body-serif"
+              >
                 {weekday}
               </th>
             ))}
@@ -45,20 +41,15 @@ export default function CalendarDesktopView({
         <tbody>
           {weeks.map((week, weekIndex) => (
             <tr key={weekIndex}>
-              {week.map((day, dayIndex) => {
-                const dayEvents = day
-                  ? (eventsByDay.get(dayKey(day)) ?? [])
-                  : [];
-                return (
-                  <CalendarDay
-                    key={dayIndex}
-                    day={day}
-                    isSameDay={day ? isSameDay(day, today) : false}
-                    events={dayEvents}
-                    onClick={(day, events) => setOpenDay({ day, events })}
-                  />
-                );
-              })}
+              {week.map((day, dayIndex) => (
+                <CalendarDay
+                  key={day ? dayKey(day) : `empty-${dayIndex}`}
+                  day={day}
+                  isToday={day !== null && isSameDay(day, today)}
+                  events={day ? (eventsByDay.get(dayKey(day)) ?? []) : []}
+                  onClick={setOpenDay}
+                />
+              ))}
             </tr>
           ))}
         </tbody>
