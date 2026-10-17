@@ -6,21 +6,22 @@ import { ExtendedAnnouncment } from "@/shared/types/event";
 import Button from "@/shared/components/button";
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react";
+import { byNewest } from "@/shared/lib/sort";
 
 export default function AnnouncementList({
   announcements,
   eventId,
   isHost = false,
+  onChange,
 }: {
   announcements: ExtendedAnnouncment[];
   eventId: number;
   isHost?: boolean;
+  onChange: () => void;
 }) {
   const [isAdding, setIsAdding] = useState(false);
 
-  const sorted = [...announcements].sort(
-    (a, b) => Date.parse(String(b.createdAt)) - Date.parse(String(a.createdAt)),
-  );
+  const sorted = [...announcements].sort(byNewest);
 
   return (
     <section className="flex flex-col gap-4">
@@ -43,6 +44,7 @@ export default function AnnouncementList({
         <NewAnnouncementForm
           eventId={eventId}
           onClose={() => setIsAdding(false)}
+          onChange={onChange}
         />
       )}
 
@@ -51,7 +53,11 @@ export default function AnnouncementList({
       ) : (
         <ul className="flex flex-col gap-4">
           {sorted.map((announcement) => (
-            <Announcement key={announcement.id} announcement={announcement} />
+            <Announcement
+              key={announcement.id}
+              announcement={announcement}
+              onChange={onChange}
+            />
           ))}
         </ul>
       )}

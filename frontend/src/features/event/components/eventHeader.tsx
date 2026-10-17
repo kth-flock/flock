@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import type { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
+import AvatarStack from "@/shared/components/avatarStack";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
-import { useState } from "react";
 
 export default function EventHeader({
   event,
@@ -15,6 +16,7 @@ export default function EventHeader({
   isHost: boolean;
 }) {
   const [isInviteListOpen, setIsInviteListOpen] = useState(false);
+  const { createdBy, invitees } = event;
 
   return (
     <>
@@ -22,7 +24,7 @@ export default function EventHeader({
         <InviteesList
           event={event}
           isHost={isHost}
-          isOpen={isInviteListOpen}
+          isOpen
           onClose={() => setIsInviteListOpen(false)}
         />
       )}
@@ -39,52 +41,34 @@ export default function EventHeader({
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
-        <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">
+        <div className="z-20 flex w-full items-end justify-between p-6 md:p-8">
           <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
-            <Link href={`/profile/${event.createdBy.id}`} className="group/host flock-body-sm flex w-fit items-center gap-2">
+            <Link
+              href={`/profile/${createdBy.id}`}
+              className="group/host flock-body-sm flex w-fit items-center gap-2"
+            >
               <ProfileImage
-                profileImgSrc={event.createdBy.imageUrl ?? ""}
-                firstName={event.createdBy.firstName}
-                lastName={event.createdBy.lastName}
+                profileImgSrc={createdBy.imageUrl ?? ""}
+                firstName={createdBy.firstName}
+                lastName={createdBy.lastName}
               />
-
               <span className="group-hover/host:underline">
                 Hosted by{" "}
                 <span className="flock-ui-label">
-                  {isHost ? "you" : fullName(event.createdBy)}
+                  {isHost ? "you" : fullName(createdBy)}
                 </span>
               </span>
             </Link>
           </div>
-          {event.invitees?.length > 0 && (
+
+          {invitees.length > 0 && (
             <button
               onClick={() => setIsInviteListOpen(true)}
-              aria-label="See invitees"
-              className="-mr-2 -mb-2 flex flex-row group bg-neutral/30 hover:bg-neutral p-2 rounded-full cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
+              aria-label={`See invitees (${invitees.length})`}
+              className="-mr-2 -mb-2 flex flex-row cursor-pointer rounded-full bg-neutral/30 p-2 transition-all hover:-translate-y-1 hover:bg-neutral hover:shadow-md"
             >
-              {[...event.invitees].slice(0, 3)?.map(({ user }) => (
-                <div
-                  key={user.id}
-                  className="not-last:-mr-3 relative rounded-full shadow-sm"
-                >
-                  <ProfileImage
-                    profileImgSrc={user.imageUrl ?? ""}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    className="bg-accent!"
-                  />
-                </div>
-              ))}
-              {event.invitees?.length > 3 && (
-                <div className=" rounded-full overflow-hidden h-8 w-8 shrink-0 group relative shadow-sm">
-                  <div className="@container group relative flex h-full w-full items-center justify-center bg-background">
-                    <span className="text-[40cqw]! flock-ui-label leading-none">
-                      +{event.invitees.length - 3}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <AvatarStack users={invitees.map((i) => i.user)} />
             </button>
           )}
         </div>
