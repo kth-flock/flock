@@ -5,18 +5,16 @@ import { useState } from "react";
 
 type Props = Omit<ImageProps, "src"> & {
   src: string | null;
-  imageFailed?: boolean;
 };
 
-export default function EventImage({ src, imageFailed, alt, ...props }: Props) {
+export default function EventImage({ src, alt, ...props }: Props) {
   const [failed, setFailed] = useState(false);
-  const showFail = failed || imageFailed;
 
   return (
     <Image
       {...props}
-      src={showFail ? "/placeholderImgError.png" : (src ?? "/placeholder.png")}
-      alt={showFail || src ? alt : ""}
+      src={failed ? "/placeholderImgError.png" : (src ?? "/placeholder.png")}
+      alt={failed || src ? alt : ""}
       onError={() => setFailed(true)}
     />
   );

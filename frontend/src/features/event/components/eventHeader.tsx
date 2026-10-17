@@ -30,7 +30,6 @@ export default function EventHeader({
       <div className="relative flex flex-col justify-end h-64 w-full overflow-hidden rounded-2xl shadow-lg md:h-96">
         <EventImage
           src={event.imageUrl}
-          imageFailed={event.imageFailed}
           alt={`Cover image for ${event.title}`}
           fill
           sizes="(min-width: 48rem) 48rem, 100vw"

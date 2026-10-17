@@ -23,7 +23,6 @@ export default function ProfileHeader({
   friendshipStatus,
   email = "",
 }: ProfileHeaderProps) {
-  console.log(profile);
   return (
     <header className="flex flex-col gap-6">
       <div

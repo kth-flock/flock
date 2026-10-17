@@ -121,7 +121,6 @@ export default function EditEventForm({ event }: { event: ExtendedEvent }) {
         current={
           <EventImage
             src={event.imageUrl}
-            imageFailed={event.imageFailed}
             alt={`Cover image for ${event.title}`}
             fill
             sizes="(min-width: 48rem) 48rem, 100vw"

@@ -47,7 +47,7 @@ export type ExtendedEvent = Prisma.EventGetPayload<{
       };
     };
   };
-}> & { imageFailed?: boolean };
+}>;
 
 export type ExtendedAnnouncment = Prisma.AnnouncementGetPayload<{
   include: {
