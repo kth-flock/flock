@@ -5,7 +5,7 @@ import { useState } from "react";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
 import { TextArea } from "@/shared/components/formInputs";
-import type { EventFormValues } from "../lib/eventFormTypes";
+import type { EventFormValues } from "../../event/lib/eventFormTypes";
 import {
   FaCalendarDay,
   FaClock,
@@ -13,19 +13,12 @@ import {
   FaHeading,
 } from "react-icons/fa6";
 import { BiMinus, BiPlus } from "react-icons/bi";
-
-const LocationPicker = dynamic(
-  () => import("@/features/location/components/mapInput"),
-  {
-    ssr: false,
-  },
-);
+import LocationPicker from "@/features/location/components/mapInput";
 
 export default function EventFormFields({
   values,
   errors,
   onChange,
-  onLocationChange,
 }: {
   values: EventFormValues;
   errors: Record<string, string>;
@@ -33,7 +26,6 @@ export default function EventFormFields({
     field: Key,
     value: EventFormValues[Key],
   ) => void;
-  onLocationChange: (location: EventFormValues["location"]) => void;
 }) {
   const [showEndFields, setShowEndFields] = useState(Boolean(values.endDate));
 
@@ -60,7 +52,7 @@ export default function EventFormFields({
 
       <LocationPicker
         initialValue={values.location}
-        onSelect={onLocationChange}
+        onSelect={(location) => onChange("location", location)}
       />
 
       <>
@@ -123,12 +115,10 @@ export default function EventFormFields({
         >
           {showEndFields ? (
             <>
-              {" "}
               <BiMinus /> <p>Remove end date</p>
             </>
           ) : (
             <>
-              {" "}
               <BiPlus /> <p>Add end date</p>
             </>
           )}

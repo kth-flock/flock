@@ -1,30 +1,36 @@
+// features/location/components/mapInput.tsx
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
+import debounce from "lodash/debounce";
+import type { Location } from "@flock/shared/schemas/geocode";
 import { FieldWrapper } from "../../../shared/components/formInputs";
 import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
-import type { Location } from "@flock/shared/schemas/geocode";
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from "../lib/geocoding";
 import { geocodeFetch } from "../lib/api";
-import { MarkerIcon } from "./mapMarker";
-import { ClickHandler } from "../lib/utils";
-import { RecenterOnSelect } from "../lib/utils";
-import debounce from "lodash/debounce";
+
+const loadMap = () => import("./map");
+
+const LocationMap = dynamic(loadMap, {
+  ssr: false,
+  loading: () => (
+    <div className="h-[350px] w-full animate-pulse bg-accent/20" />
+  ),
+});
 
 export type LocationPickerProps = {
+  initialValue?: Location | null;
   onSelect?: (location: Location | null) => void;
-  initalValue?: Location;
 };
+
+const formatCoords = (lat: number, lon: number) =>
+  `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
 
 export default function LocationPicker({
   initialValue,
   onSelect,
-}: {
-  initialValue?: Location | null;
-  onSelect?: (location: Location | null) => void;
-}) {
+}: LocationPickerProps) {
   const [query, setQuery] = useState(initialValue?.label ?? "");
   const [results, setResults] = useState<Location[]>([]);
   const [selected, setSelected] = useState<Location | null>(
@@ -58,6 +64,10 @@ export default function LocationPicker({
     [],
   );
 
+  // Cancel any pending search on unmount
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
+
+  // Close map and dropdown when clicking outside
   useEffect(() => {
     function handleOutsidePointer(event: PointerEvent) {
       if (!pickerRef.current?.contains(event.target as Node)) {
@@ -72,8 +82,9 @@ export default function LocationPicker({
     document.addEventListener("pointerdown", handleOutsidePointer);
     return () =>
       document.removeEventListener("pointerdown", handleOutsidePointer);
-  }, []);
+  }, [debouncedSearch]);
 
+  // Run a debounced search when the query changes
   useEffect(() => {
     const requestId = ++searchRequestRef.current;
     debouncedSearch.cancel();
@@ -112,23 +123,21 @@ export default function LocationPicker({
   }
 
   async function handleMapClick(lat: number, lon: number) {
-    setSelected({ lat, lon, label: `${lat.toFixed(5)}, ${lon.toFixed(5)}` });
+    setSelected({ lat, lon, label: formatCoords(lat, lon) });
     setIsMapOpen(false);
     setLoading(true);
 
-    let label = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    let label = formatCoords(lat, lon);
     try {
       const result = await geocodeFetch<Location>("reverse", {
         lat: String(lat),
         lon: String(lon),
       });
-
       label = result.label;
     } catch (err) {
       console.error("Geocoding reverse lookup failed:", err);
     } finally {
-      const location = { lat, lon, label };
-      commitLocation(location);
+      commitLocation({ lat, lon, label });
       setLoading(false);
     }
   }
@@ -163,6 +172,8 @@ export default function LocationPicker({
           <button
             type="button"
             aria-label={isMapOpen ? "Close map" : "Open map"}
+            onMouseEnter={() => void loadMap()}
+            onFocus={() => void loadMap()}
             onClick={(event) => {
               event.stopPropagation();
               setIsMapOpen((open) => !open);
@@ -178,10 +189,10 @@ export default function LocationPicker({
           )}
 
           {results.length > 0 && (
-            <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-nackground p-0 shadow-md">
-              {results.map((r, i) => (
+            <ul className="absolute left-0 right-0 top-full mt-5 z-50 max-h-52 overflow-y-auto rounded-xl border border-primary/20 bg-background p-0 shadow-md">
+              {results.map((r) => (
                 <li
-                  key={i}
+                  key={`${r.lat},${r.lon},${r.label}`}
                   className="border-b border-primary/10 last:border-b-0"
                 >
                   <button
@@ -200,28 +211,7 @@ export default function LocationPicker({
 
       {isMapOpen && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-primary/20 bg-background shadow-xl">
-          <MapContainer
-            center={
-              selected?.lat !== undefined && selected.lon !== undefined
-                ? [selected.lat, selected.lon]
-                : DEFAULT_CENTER
-            }
-            zoom={DEFAULT_ZOOM}
-            style={{ height: 350, width: "100%" }}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <ClickHandler onClick={handleMapClick} />
-            <RecenterOnSelect selected={selected} />
-            {selected?.lat !== undefined && selected.lon !== undefined && (
-              <Marker
-                position={[selected.lat, selected.lon]}
-                icon={MarkerIcon}
-              />
-            )}
-          </MapContainer>
+          <LocationMap selected={selected} onMapClick={handleMapClick} />
         </div>
       )}
     </div>

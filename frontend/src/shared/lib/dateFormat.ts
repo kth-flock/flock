@@ -150,3 +150,10 @@ export function getRelativeDatetime(datetime: Date) {
   }
   return formatDate(eventDate);
 }
+
+export function combineDateTime(date: string, time: string): Date | null {
+  if (!date || !time) return null;
+
+  const result = new Date(`${date}T${time}`);
+  return Number.isNaN(result.getTime()) ? null : result;
+}
