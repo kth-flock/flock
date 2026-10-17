@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getEvent } from "@/shared/lib/api";
+import { getEvent } from "@/features/event/lib/api";
 
 type Event = NonNullable<Awaited<ReturnType<typeof getEvent>>>;
 

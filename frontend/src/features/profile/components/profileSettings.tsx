@@ -8,13 +8,17 @@ import { FaGear, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import Input from "@/shared/components/formInputs";
+import ImageUpload from "@/features/images/components/imageUpload";
 import {
-  changeEmailFetch,
-  changePasswordFetch,
-  deleteMyAccountFetch,
-  updateMyInfoFetch,
   uploadImageFetch,
-} from "@/shared/lib/api";
+  deleteImageFromS3Fetch,
+} from "@/features/images/lib/api";
+import {
+  changeEmail,
+  changePassword,
+  deleteMyAccount,
+  updateMyInfo,
+} from "../lib/api";
 import { useAuth } from "@/shared/auth/authContext";
 import type { UserInfo } from "@flock/shared/schemas/user";
 import type { ProfileDetails } from "../lib/types";
@@ -125,7 +129,7 @@ function ProfileForm({ profile }: { profile: ProfileDetails }) {
         changes.lastName = lastName.trim();
       }
 
-      await updateMyInfoFetch(changes);
+      await updateMyInfo(changes);
 
       setImage(null);
       setRemoveImage(false);
@@ -204,7 +208,7 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
     e.preventDefault();
 
     save(async () => {
-      await changeEmailFetch({ email, password });
+      await changeEmail({ email, password });
       setPassword("");
       router.refresh();
     }, "Email changed");
@@ -266,7 +270,7 @@ function PasswordForm() {
     }
 
     save(async () => {
-      await changePasswordFetch({ currentPassword, newPassword });
+      await changePassword({ currentPassword, newPassword });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -328,7 +332,7 @@ function DangerZone() {
 
   function handleDeleteAccount() {
     save(async () => {
-      await deleteMyAccountFetch();
+      await deleteMyAccount();
       await logout();
       router.push("/");
       router.refresh();

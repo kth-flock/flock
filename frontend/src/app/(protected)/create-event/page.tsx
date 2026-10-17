@@ -1,4 +1,4 @@
-import CreateEventFlow from "@/features/create-event/components/createEventFlow";
+import CreateEventFlow from "@/features/event-form/components/createEventFlow";
 
 // TODO: Add loading page
 

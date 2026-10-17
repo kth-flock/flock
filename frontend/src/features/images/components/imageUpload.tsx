@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { FaCamera, FaPenToSquare, FaX } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
-import { IconButton } from "./button";
+import { IconButton } from "../../../shared/components/button";
 
 type ImageUploadProps = {
   className?: string;

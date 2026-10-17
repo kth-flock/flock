@@ -7,10 +7,9 @@ import {
   FaCalendarDays,
   FaHouseChimney,
   FaCirclePlus,
-  FaUserPlus,
 } from "react-icons/fa6";
 import { useAuth } from "@/shared/auth/authContext";
-import InviteBar from "./inviteBar";
+import InviteBar from "../../features/search/components/inviteBar";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";

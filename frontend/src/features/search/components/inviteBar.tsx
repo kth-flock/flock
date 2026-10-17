@@ -5,17 +5,17 @@ import { FaUserPlus } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
 import FriendSearchResult from "./friendSearchResult";
-import type { UserSearchResult } from "../types/user";
+import type { UserSearchResult } from "../../../shared/types/user";
 import { debounce } from "lodash";
 import {
-  searchUsersFetch,
-  sendFriendRequestFetch,
-  acceptFriendRequestFetch,
-  declineFriendRequestFetch,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
 } from "@/shared/lib/api";
+import { searchUsers } from "../lib/api";
 
 const navLinkStyle =
-  "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
+  "aspect-square items-center justify-center cursor-pointer group hover:scale-110 hover:-rotate-5 transition-all";
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
 const OPEN_SEARCH_EVENT = "flock:open-friend-search";
@@ -42,7 +42,7 @@ export default function InviteBar() {
         async (query: string, requestId: number) => {
           setLoading(true);
           try {
-            const data = await searchUsersFetch(query);
+            const data = await searchUsers(query);
             if (requestId === searchRequestRef.current) setResults(data);
           } catch (err) {
             if (requestId === searchRequestRef.current) {
@@ -94,7 +94,7 @@ export default function InviteBar() {
   async function handleAddFriend(user: UserSearchResult) {
     setPending({ userId: user.id, action: "add" });
     try {
-      await sendFriendRequestFetch(user.id);
+      await sendFriendRequest(user.id);
       updateFriendshipStatus(user.id, "REQUEST_SENT");
     } catch (error) {
       console.error(error);
@@ -106,7 +106,7 @@ export default function InviteBar() {
   async function handleAcceptFriend(user: UserSearchResult) {
     setPending({ userId: user.id, action: "accept" });
     try {
-      await acceptFriendRequestFetch(user.id);
+      await acceptFriendRequest(user.id);
       updateFriendshipStatus(user.id, "FRIENDS");
     } catch (error) {
       console.error(error);
@@ -118,7 +118,7 @@ export default function InviteBar() {
   async function handleDeclineFriend(user: UserSearchResult) {
     setPending({ userId: user.id, action: "decline" });
     try {
-      await declineFriendRequestFetch(user.id);
+      await declineFriendRequest(user.id);
       updateFriendshipStatus(user.id, "NONE");
     } catch (error) {
       console.error(error);
@@ -148,8 +148,7 @@ export default function InviteBar() {
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
-    return () =>
-      document.removeEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [searchBarToggle, debouncedSearch]);
 
   const showDropdown = loading || results !== null;
@@ -159,9 +158,7 @@ export default function InviteBar() {
       ref={barRef}
       className={twMerge(
         "relative flex h-full items-center rounded-full",
-        searchBarToggle
-          ? "z-50 w-48 px-1 py-1 md:w-64"
-          : "aspect-square justify-center",
+        searchBarToggle ? "z-50 w-48 px-1 py-1 md:w-64" : "justify-center",
       )}
     >
       {searchBarToggle ? (
