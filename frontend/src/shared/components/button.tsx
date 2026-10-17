@@ -41,7 +41,7 @@ const baseStyle =
 
 const buttonStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-secondary text-white shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-primary active:translate-y-0 active:inset-shadow-sm active:shadow-none",
+    "bg-secondary text-background shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 hover:bg-primary active:translate-y-0 active:inset-shadow-sm active:shadow-none",
   secondary:
     "border-2 border-secondary text-secondary shadow-lg transition-all hover:-translate-y-0.5 hover:bg-primary/20 hover:border-primary hover:text-primary active:translate-y-0 active:inset-shadow-sm active:shadow-none active:bg-transparent",
   tertiary: "text-primary transition-all hover:underline disabled:opacity-50",

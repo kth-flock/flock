@@ -7,6 +7,7 @@ import {
   FaCalendarDays,
   FaHouseChimney,
   FaCirclePlus,
+  FaUserPlus,
 } from "react-icons/fa6";
 import { useAuth } from "@/shared/auth/authContext";
 import InviteBar from "./inviteBar";
@@ -53,14 +54,14 @@ export default function Navbar() {
             <FaCirclePlus className={navIconStyle} />
           </Link>
           <Link
-            href="/"
+            href="/calendar"
             className={`flex h-[50%] ${navLinkStyle}`}
             aria-label="Calendar"
           >
             <FaCalendarDays className={navIconStyle} />
           </Link>
           <Link
-            href="/"
+            href="/profile"
             className={`flex h-full ${navLinkStyle}`}
             aria-label="Profile"
           >

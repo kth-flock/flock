@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EventInfo from "@/features/event/components/eventInfo";
 import AnnouncementList from "@/features/event/components/announcementList";
@@ -34,7 +33,7 @@ export default async function EventPage({
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
-      <EventInfo event={event} isHost={isHost} />
+      <EventInfo event={event} isHost={isHost} userId={user.id} />
       <AnnouncementList
         announcements={event.announcements}
         eventId={event.id}

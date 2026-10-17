@@ -1,16 +1,43 @@
-import { exampleEvents } from "./exampleData";
-import type { ExtendedEvent } from "@/shared/types/event";
+import type { EventStatus } from "@/features/dashboard/components/eventPreview";
+import { API_BASE_URL } from "@/shared/lib/api";
+import type { EventSummary, InvitedEvent } from "./types";
 
-// TODO: fetch from the backend (GET /events/:eventId) once we've agreed on how
-// API calls are made, see shared/lib/apiFetch.ts. Until then this only knows
-// the example events. Returns null when the event doesn't exist.
-export async function getEvent(eventId: string): Promise<ExtendedEvent | null> {
-  return exampleEvents.find((event) => event.id === Number(eventId)) ?? null;
+export type UpcomingEvent = { event: EventSummary; status: EventStatus };
+
+async function fetchEvents<T extends EventSummary>(path: string): Promise<T[]> {
+  const res = await fetch(`${API_BASE_URL}${path}`, { credentials: "include" });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? "Failed to get events");
+  }
+
+  const events: T[] = await res.json();
+  return events.map((event) => ({
+    ...event,
+    startsAt: new Date(event.startsAt),
+    endsAt: event.endsAt && new Date(event.endsAt),
+    createdAt: new Date(event.createdAt),
+  }));
 }
 
-// TODO: fetch from the backend. Returns the example events, soonest first.
-export async function getUpcomingEvents(): Promise<ExtendedEvent[]> {
-  return exampleEvents.toSorted(
-    (a, b) => a.startsAt.getTime() - b.startsAt.getTime(),
-  );
+export async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
+  const [hosted, invited] = await Promise.all([
+    fetchEvents<EventSummary>("/events/created"),
+    fetchEvents<InvitedEvent>("/events/invited"),
+  ]);
+
+  const now = Date.now();
+  const hasEnded = (event: EventSummary) =>
+    (event.endsAt ?? event.startsAt).getTime() < now;
+
+  return [
+    ...hosted.map((event) => ({ event, status: "HOST" as const })),
+    ...invited.map((event) => ({
+      event,
+      status: event.invitees[0]?.rsvp ?? "PENDING",
+    })),
+  ]
+    .filter(({ event, status }) => !hasEnded(event) && status !== "DECLINED")
+    .toSorted((a, b) => a.event.startsAt.getTime() - b.event.startsAt.getTime());
 }

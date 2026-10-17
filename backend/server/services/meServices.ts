@@ -37,7 +37,6 @@ export async function editUserInfo(userId: UserId, data: UserInfo) {
   return updatedUser;
 }
 
-// Throws unless the given password is the user's current one
 async function checkPassword(userId: UserId, password: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },

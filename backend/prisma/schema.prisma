@@ -56,7 +56,7 @@ model Invitee {
   createdAt       DateTime @default(now())
   updatedAt       DateTime?
 
-  event           Event @relation(fields: [eventId], references: [id])
+  event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user            User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([eventId, userId])
@@ -94,7 +94,7 @@ model Announcement {
   content     String
   createdAt   DateTime @default(now())
 
-  event       Event @relation(fields: [eventId], references: [id])
+  event       Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   comments    Comment[]
@@ -107,7 +107,7 @@ model Comment {
   content         String
   createdAt       DateTime @default(now())
 
-  announcement    Announcement @relation(fields: [announcementId], references: [id])
+  announcement    Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
   user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 }

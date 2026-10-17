@@ -108,7 +108,7 @@ export default function CreateEventForm({
       <ImageUpload
         onFileSelect={setImageFile}
         onFileRemove={() => setImageFile(null)}
-        className="rounded-2xl border border-primary/20 bg-white py-16 px-6 text-primary flock-h4"
+        className="rounded-2xl border border-primary/20 bg-background py-16 px-6 text-primary flock-h4"
       >
         <span className="flex items-center gap-4">
           <FaCamera size={40} aria-hidden="true" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import EventPreview, {
   NoNextEvent,
   NoUpcomingEvents,
@@ -10,66 +10,131 @@ import FriendPreview from "@/features/dashboard/components/friendPreview";
 import NotificationList from "@/features/dashboard/components/notificationList";
 import { getNotifications } from "@/features/dashboard/lib/api";
 import { getUpcomingEvents } from "@/features/event/lib/api";
-import { getMyFriends } from "@/shared/lib/friends";
+import { getMyFriends } from "@/shared/lib/api";
+import LoadError from "@/shared/components/loadError";
+import Button from "@/shared/components/button";
 
-import type { DashboardNotification } from "@/features/dashboard/lib/types";
-import type { ExtendedEvent } from "@/shared/types/event";
-import type { PublicUser } from "@/shared/types/user";
+import type { Notification } from "@flock/shared/schemas/notifications";
 
-type DashboardData = {
-  events: ExtendedEvent[];
-  notifications: DashboardNotification[];
-  friends: PublicUser[];
-};
+const MAX_UPCOMING_EVENTS = 6;
+const NOTIFICATION_REFRESH_MS = 60_000;
 
-export default function PrivateHomePage() {
-  const [data, setData] = useState<DashboardData | null>(null);
+type Loadable<T> = T | null | undefined;
+
+function useLoad<T>(load: () => Promise<T>) {
+  const [value, setValue] = useState<Loadable<T>>(undefined);
 
   useEffect(() => {
     let ignore = false;
-
-    Promise.all([getUpcomingEvents(), getNotifications(), getMyFriends()]).then(
-      ([events, notifications, friends]) => {
-        if (!ignore) setData({ events, notifications, friends });
-      },
-    );
-
+    load()
+      .then((result) => {
+        if (!ignore) setValue(result);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!ignore) setValue(null);
+      });
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [load]);
 
-  // TODO: Replace with proper loading page
-  if (!data) {
-    return (
-      <main className="flex flex-1 items-center justify-center">
-        <p className="flock-body text-(--color-text-muted)">Loading…</p>
-      </main>
+  const reload = useCallback(() => {
+    load()
+      .then(setValue)
+      .catch((err) => console.error(err));
+  }, [load]);
+
+  return [value, setValue, reload] as const;
+}
+
+export default function PrivateHomePage() {
+  const [events] = useLoad(getUpcomingEvents);
+  const [notifications, setNotifications, reloadNotifications] =
+    useLoad(getNotifications);
+  const [friends, setFriends, reloadFriends] = useLoad(getMyFriends);
+  const [showAllEvents, setShowAllEvents] = useState(false);
+
+  useEffect(() => {
+    function refresh() {
+      if (document.visibilityState !== "visible") return;
+      reloadNotifications();
+      reloadFriends();
+    }
+
+    const interval = setInterval(refresh, NOTIFICATION_REFRESH_MS);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [reloadNotifications, reloadFriends]);
+
+  function handleFriendRequest(notification: Notification, accepted: boolean) {
+    setNotifications((prev) =>
+      prev?.filter(({ id }) => id !== notification.id),
     );
+    if (accepted) {
+      setFriends((prev) => prev && [notification.from, ...prev]);
+    }
   }
 
-  const { notifications, friends } = data;
-  const [nextEvent, ...upcomingEvents] = data.events;
+  const [nextEvent, ...upcomingEvents] = events ?? [];
+  const shownEvents = showAllEvents
+    ? upcomingEvents
+    : upcomingEvents.slice(0, MAX_UPCOMING_EVENTS);
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:items-start md:gap-16">
-      <div className="flex w-full flex-col gap-4 md:sticky md:top-24 md:order-last md:gap-12">
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
+      <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
         <FriendPreview friends={friends} />
-        <NotificationList notifications={notifications} />
+        <NotificationList
+          notifications={notifications}
+          onFriendRequestHandled={handleFriendRequest}
+        />
       </div>
       <div className="flex w-full min-w-0 flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
-        {nextEvent ? <EventPreview event={nextEvent} /> : <NoNextEvent />}
-        <h3 className="flock-h3">Upcoming</h3>
-        <div className="flex flex-wrap justify-between gap-2">
-          {upcomingEvents.length > 0 ? (
-            upcomingEvents.map((event) => (
-              <SmallEventPreview key={event.id} event={event} />
-            ))
-          ) : (
-            <NoUpcomingEvents />
-          )}
-        </div>
+        {events === undefined ? (
+          <p className="flock-body text-(--color-text-muted)">Loading…</p>
+        ) : events === null ? (
+          <LoadError>
+            {"Couldn't load your events. Try refreshing the page."}
+          </LoadError>
+        ) : (
+          <>
+            {nextEvent ? (
+              <EventPreview event={nextEvent.event} status={nextEvent.status} />
+            ) : (
+              <NoNextEvent />
+            )}
+            <h3 className="flock-h3">Upcoming</h3>
+            <div className="flex flex-wrap justify-between gap-2">
+              {upcomingEvents.length > 0 ? (
+                shownEvents.map(({ event, status }) => (
+                  <SmallEventPreview
+                    key={event.id}
+                    event={event}
+                    status={status}
+                  />
+                ))
+              ) : (
+                <NoUpcomingEvents />
+              )}
+            </div>
+            {upcomingEvents.length > MAX_UPCOMING_EVENTS && (
+              <Button
+                variant="tertiary"
+                className="self-center"
+                onClick={() => setShowAllEvents((shown) => !shown)}
+              >
+                {showAllEvents
+                  ? "Show less"
+                  : `See all (${upcomingEvents.length})`}
+              </Button>
+            )}
+          </>
+        )}
       </div>
     </main>
   );

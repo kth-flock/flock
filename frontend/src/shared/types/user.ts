@@ -15,3 +15,7 @@ export type PrivateUser = PublicUser & {
 export type UserSearchResult = PublicUser & {
   friendshipStatus: FriendshipStatus;
 };
+
+export type ProfileUser = PublicUser & {
+  createdAt: string;
+};

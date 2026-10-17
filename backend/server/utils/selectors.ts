@@ -5,8 +5,12 @@ export const publicUserInformationSelect = {
   imageUrl: true,
 };
 
-export const privateUserInformationSelect = {
+export const profileUserInformationSelect = {
   ...publicUserInformationSelect,
-  email: true,
   createdAt: true,
+};
+
+export const privateUserInformationSelect = {
+  ...profileUserInformationSelect,
+  email: true,
 };
