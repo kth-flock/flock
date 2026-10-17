@@ -1,6 +1,7 @@
 import { FaUser, FaPaperPlane, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import type { UserSearchResult } from "@/shared/types/user";
+import ProfileImage from "@/shared/components/profileImage";
 
 type InviteFriendCardProps = {
   user: UserSearchResult;
@@ -21,13 +22,14 @@ export default function InviteFriendCard({
     <div className="bg-background rounded-2xl p-3 flex flex-row gap-4 justify-between items-center">
       <div className="flex flex-row gap-4 items-center">
         {user.imageUrl ? (
-          ""
+          <ProfileImage className="h-12 w-12" profileImgSrc={user.imageUrl} />
         ) : (
-          <div className="rounded-full w-12 h-12 border-primary border-3 flex items-end justify-center overflow-clip">
-            <FaUser className="fill-primary" size={36} />
-          </div>
+          <ProfileImage
+            className="h-12 w-12"
+            firstName={user.firstName}
+            lastName={user.lastName}
+          />
         )}
-
         <div className="flex flex-col">
           <p className="flock-body font-bold!">
             {user.firstName} {user.lastName}

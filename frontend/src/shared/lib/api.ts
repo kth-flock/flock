@@ -1,5 +1,9 @@
 import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
-import type { ChangeEmail, ChangePassword, UserInfo } from "@flock/shared/schemas/user";
+import type {
+  ChangeEmail,
+  ChangePassword,
+  UserInfo,
+} from "@flock/shared/schemas/user";
 import type {
   CreateEventData,
   RsvpToEventData,
