@@ -52,7 +52,7 @@ export default function CalendarListView({
               isToday={isSameDay(day, today)}
               className="size-10 flock-h2"
             />
-            <span className="flock-caption text-(--color-text-muted)">
+            <span className="flock-caption text-text-muted">
               {WEEKDAYS[(day.getDay() + 6) % 7]}
             </span>
           </div>

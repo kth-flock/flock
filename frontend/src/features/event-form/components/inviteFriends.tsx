@@ -1,33 +1,29 @@
 "use client";
 import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Button from "@/shared/components/button";
 import type { UserSearchResult } from "@/shared/types/user";
 import { getMyFriends, batchInvite } from "@/shared/lib/api";
 import { searchUsers } from "@/features/search/lib/api";
-import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
+import { useDebouncedSearch } from "@/shared/hooks/useDebouncedSearch";
 
 export default function InviteFriends({ eventId }: { eventId: number }) {
-  const searchRequestRef = useRef(0);
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(async (query: string, requestId: number) => {
-        try {
-          const results = await searchUsers(query);
-          if (requestId === searchRequestRef.current) setSearchResults(results);
-        } catch (error) {
-          if (requestId === searchRequestRef.current) {
-            console.error("User search failed:", error);
-          }
-        }
-      }, 300),
-    [],
-  );
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
+  const { search: debouncedSearch, cancel: cancelSearch } =
+    useDebouncedSearch(async (query: string, isCurrent: () => boolean) => {
+      try {
+        const results = await searchUsers(query);
+        if (isCurrent()) setSearchResults(results);
+      } catch (error) {
+        if (isCurrent()) {
+          console.error("User search failed:", error);
+        }
+      }
+    }, 300);
   const [invitees, setInvitees] = useState<UserSearchResult[]>([]);
   const [suggestions, setSuggestions] = useState<UserSearchResult[]>([]);
   const router = useRouter();
@@ -38,14 +34,6 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
       suggestions.filter((suggestion) => !invitedIds.has(suggestion.id)),
     );
   }, [invitees]);
-
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
-    },
-    [debouncedSearch],
-  );
 
   useEffect(() => {
     async function fetchFriends() {
@@ -59,13 +47,12 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
   }, []);
 
   function onSearch(query: string) {
-    const requestId = ++searchRequestRef.current;
     if (!query.trim()) {
-      debouncedSearch.cancel();
+      cancelSearch();
       setSearchResults(null);
       return;
     }
-    debouncedSearch(query, requestId);
+    debouncedSearch(query);
   }
 
   function handleInvite(user: UserSearchResult, action: "add" | "remove") {

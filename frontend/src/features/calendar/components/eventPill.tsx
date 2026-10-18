@@ -70,9 +70,7 @@ export function EventPillDetails({ event }: { event: CalendarEvent }) {
         </span>
         <span className="inline-flex gap-1 items-center">
           <FaCrown />
-          <span className="flock-ui-label text-(--color-text-muted)">
-            {hostLabel}
-          </span>
+          <span className="flock-ui-label text-text-muted">{hostLabel}</span>
         </span>
       </Link>
     </div>

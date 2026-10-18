@@ -1,14 +1,17 @@
 "use client";
 
+import { useCallback } from "react";
 import { notFound } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
-import { useEvent } from "@/shared/hooks/useEvent";
+import { useFetch } from "@/shared/hooks/useFetch";
+import { getEvent } from "@/features/event/lib/api";
 import EventInfo from "./eventInfo";
 import AnnouncementList from "../../announcements/components/announcementList";
 
 export default function EventPageClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
-  const { event, isLoading, error, refetch } = useEvent(eventId);
+  const fetchEvent = useCallback(() => getEvent(eventId), [eventId]);
+  const { data: event, isLoading, error, refetch } = useFetch(fetchEvent);
 
   // TODO: Add loading and error
   if (user === undefined || isLoading) return;

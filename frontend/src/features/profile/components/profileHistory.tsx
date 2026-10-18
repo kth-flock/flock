@@ -32,13 +32,13 @@ export default function ProfileHistory({
       <h2 className="flock-h2 text-primary">My history</h2>
 
       {isLoading && (
-        <p className="flock-body-sm text-(--color-text-muted)">
+        <p className="flock-body-sm text-text-muted">
           Loading your event history...
         </p>
       )}
 
       {!isLoading && history.length === 0 && hostedEvents && invitedEvents && (
-        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-(--color-text-muted)">
+        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
           Nothing here yet.
         </p>
       )}
