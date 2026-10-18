@@ -2,7 +2,7 @@
 
 import Announcement from "./announcement";
 import NewAnnouncementForm from "./newAnnouncementForm";
-import { ExtendedAnnouncment } from "@/shared/types/event";
+import { ExtendedAnnouncement } from "@/shared/types/event";
 import Button from "@/shared/components/button";
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export default function AnnouncementList({
   isHost = false,
   onChange,
 }: {
-  announcements: ExtendedAnnouncment[];
+  announcements: ExtendedAnnouncement[];
   eventId: number;
   isHost?: boolean;
   onChange: () => void;

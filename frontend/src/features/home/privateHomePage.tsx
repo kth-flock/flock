@@ -34,7 +34,7 @@ export default function PrivateHomePage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
       <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
         <FriendPreview friends={toLoadable(friends)} />
         <NotificationList
@@ -46,6 +46,6 @@ export default function PrivateHomePage() {
         <h2 className="flock-h2">Your next event</h2>
         <UpcomingEvents events={toLoadable(events)} />
       </div>
-    </main>
+    </div>
   );
 }

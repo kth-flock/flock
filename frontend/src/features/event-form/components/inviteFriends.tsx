@@ -1,9 +1,9 @@
 "use client";
 import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "../../invite-friends/inviteFriendCard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Button from "@/shared/components/button";
-import type { UserSearchResult, PublicUser } from "@/shared/types/user";
+import type { UserSearchResult } from "@/shared/types/user";
 import { getMyFriends, batchInvite } from "@/shared/lib/api";
 import { searchUsers } from "@/features/search/lib/api";
 import { debounce } from "lodash";
@@ -11,18 +11,20 @@ import { useRouter } from "next/navigation";
 
 export default function InviteFriends({ eventId }: { eventId: number }) {
   const searchRequestRef = useRef(0);
-  const debouncedSearch = useRef(
-    debounce(async (query: string, requestId: number) => {
-      try {
-        const results = await searchUsers(query);
-        if (requestId === searchRequestRef.current) setSearchResults(results);
-      } catch (error) {
-        if (requestId === searchRequestRef.current) {
-          console.error("User search failed:", error);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string, requestId: number) => {
+        try {
+          const results = await searchUsers(query);
+          if (requestId === searchRequestRef.current) setSearchResults(results);
+        } catch (error) {
+          if (requestId === searchRequestRef.current) {
+            console.error("User search failed:", error);
+          }
         }
-      }
-    }),
-  ).current;
+      }, 300),
+    [],
+  );
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
@@ -138,7 +140,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
         </div>
       </div>
       <div className="w-full flex justify-between">
-        <Button type="button" variant="secondary" href={`event/${eventId}`}>
+        <Button type="button" variant="secondary" href={`/event/${eventId}`}>
           Skip
         </Button>
         <Button type="button" onClick={handleSendInvites}>

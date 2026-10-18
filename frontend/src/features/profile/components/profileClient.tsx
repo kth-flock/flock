@@ -25,7 +25,7 @@ export default function ProfileClient() {
   if (!user) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <ProfileHeader
         profile={user}
         bannerColor={bannerColor}
@@ -53,6 +53,6 @@ export default function ProfileClient() {
           />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

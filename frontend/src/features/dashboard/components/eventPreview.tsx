@@ -21,12 +21,24 @@ import type { EventSummary, Rsvp } from "@/features/event/lib/types";
 
 export type EventStatus = Rsvp | "HOST";
 
-const statusIcon: Record<EventStatus, { icon: React.ReactElement; label: string }> = {
+const statusIcon: Record<
+  EventStatus,
+  { icon: React.ReactElement; label: string }
+> = {
   HOST: { icon: <FaCrown className="fill-primary" />, label: "Hosting" },
-  ACCEPTED: { icon: <FaCircleCheck className="fill-secondary" />, label: "Going" },
+  ACCEPTED: {
+    icon: <FaCircleCheck className="fill-secondary" />,
+    label: "Going",
+  },
   MAYBE: { icon: <FaCircleQuestion className="fill-warn" />, label: "Maybe" },
-  DECLINED: { icon: <FaCircleXmark className="fill-error" />, label: "Not going" },
-  PENDING: { icon: <FaClock className="fill-(--color-text-muted)" />, label: "Not answered" },
+  DECLINED: {
+    icon: <FaCircleXmark className="fill-error" />,
+    label: "Not going",
+  },
+  PENDING: {
+    icon: <FaClock className="fill-(--color-text-muted)" />,
+    label: "Not answered",
+  },
 };
 
 function ImagePlaceholder({
@@ -37,13 +49,22 @@ function ImagePlaceholder({
   className: string;
 }) {
   return (
-    <span aria-hidden className={twMerge("absolute inset-0 flex items-center justify-center px-4 font-serif", className)}>
+    <span
+      aria-hidden
+      className={twMerge(
+        "absolute inset-0 flex items-center justify-center px-4 font-serif",
+        className,
+      )}
+    >
       <span className="truncate">{title}</span>
     </span>
   );
 }
 
-export default function EventPreview({ event, status }: {
+export default function EventPreview({
+  event,
+  status,
+}: {
   event: EventSummary;
   status: EventStatus;
 }) {
@@ -148,7 +169,7 @@ export function SmallEventPreview({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
         <span className="flex justify-between items-start gap-2">
           <p
-            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-words"
+            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
             title={event.title}
           >
             {event.title}
@@ -162,17 +183,26 @@ export function SmallEventPreview({
           </span>
         </span>
 
-        <span className="inline-flex items-center gap-1 flock-caption" title="Date">
+        <span
+          className="inline-flex items-center gap-1 flock-caption"
+          title="Date"
+        >
           <FaCalendar />
-          <time dateTime={event.startsAt.toISOString()} title={formatDate(event.startsAt)}>
+          <time
+            dateTime={event.startsAt.toISOString()}
+            title={formatDate(event.startsAt)}
+          >
             {formatRelativeDate(event.startsAt)}
           </time>
         </span>
 
         {event.locationName && (
-          <span className="flex items-start gap-1 flock-caption" title={event.locationName}>
+          <span
+            className="flex items-start gap-1 flock-caption"
+            title={event.locationName}
+          >
             <FaLocationDot className="mt-0.5 shrink-0" />
-            <span className="min-w-0 line-clamp-2 wrap-break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-word">
               {event.locationName}
             </span>
           </span>

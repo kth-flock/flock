@@ -143,6 +143,7 @@ export function ClickableItem({
   "aria-label": ariaLabel,
   onClick,
   type,
+  ...props
 }: ClickableItemProps) {
   return href ? (
     <Link
@@ -168,6 +169,7 @@ export function ClickableItem({
       className={className}
       onClick={onClick}
       type={type}
+      {...props}
     >
       {children}
     </button>

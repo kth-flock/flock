@@ -11,8 +11,8 @@ export default async function EditEventPage({
   if (!parsedEventId.success) notFound();
 
   return (
-    <main className="bg-accent/10 rounded-3xl p-8 flex flex-col gap-4 justify-center max-w-6xl">
+    <div className="bg-accent/10 rounded-3xl p-8 flex flex-col gap-4 justify-center max-w-6xl">
       <EditEventClient eventId={parsedEventId.data} />
-    </main>
+    </div>
   );
 }

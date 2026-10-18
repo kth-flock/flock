@@ -6,7 +6,7 @@ import Button, { IconButton } from "@/shared/components/button";
 import { TextArea } from "@/shared/components/formInputs";
 import { useAuth } from "@/shared/auth/authContext";
 import { byOldest } from "@/shared/lib/sort";
-import type { ExtendedAnnouncment } from "@/shared/types/event";
+import type { ExtendedAnnouncement } from "@/shared/types/event";
 import Comment from "./comment";
 import PostMeta from "./postMeta";
 import ReplyForm from "./replyForm";
@@ -16,7 +16,7 @@ export default function Announcement({
   announcement,
   onChange,
 }: {
-  announcement: ExtendedAnnouncment;
+  announcement: ExtendedAnnouncement;
   onChange: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
