@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
 import type { ProfileDetails } from "../lib/types";
+import type { PublicUser, PrivateUser } from "@/shared/types/user";
 import ProfileSettings from "./profileSettings";
 import LogoutButton from "./logoutButton";
 import FriendActions from "./friendActions";
@@ -9,7 +10,7 @@ import CopyProfileLink from "./copyProfileLink";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
 type ProfileHeaderProps = {
-  profile: ProfileDetails;
+  profile: PublicUser | PrivateUser;
   bannerColor: string;
   isOwnProfile?: boolean;
   friendshipStatus?: FriendshipStatus;
@@ -52,7 +53,7 @@ export default function ProfileHeader({
             <h1 className="flock-h1">{fullName(profile)}</h1>
           </div>
 
-          {isOwnProfile && (
+          {isOwnProfile && "email" in profile && (
             <div className="flex shrink-0 items-start gap-2">
               <ProfileSettings profile={profile} email={email} />
               <LogoutButton />
