@@ -4,12 +4,12 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
-import { PrivateUser, PublicUser } from "@/shared/types/user";
+import { PublicUser } from "@/shared/types/user";
 
 const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
 
 type ProfileContentProps = {
-  profile: PrivateUser | PublicUser;
+  profile: PublicUser;
   friends: UserSearchResult[] | null;
   myId?: number;
   hostedEvents?: EventSummary[] | null;

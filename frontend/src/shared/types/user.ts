@@ -8,8 +8,19 @@ export type PublicUser = {
   createdAt?: Date;
 };
 
-export type PrivateUser = PublicUser & {
+export type ProfileUser = PublicUser & {
+  createdAt: Date;
+};
+
+export type PrivateUser = ProfileUser & {
   email: string;
+};
+
+export type SerializedUser<T extends { createdAt: Date }> = Omit<
+  T,
+  "createdAt"
+> & {
+  createdAt: string;
 };
 
 export type UserSearchResult = PublicUser & {
