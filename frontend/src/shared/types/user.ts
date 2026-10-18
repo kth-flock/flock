@@ -12,13 +12,6 @@ export type PrivateUser = PublicUser & {
   email: string;
 };
 
-export type SerializedUser<T extends { createdAt: Date }> = Omit<
-  T,
-  "createdAt"
-> & {
-  createdAt: string;
-};
-
 export type UserSearchResult = PublicUser & {
   friendshipStatus: FriendshipStatus;
 };
