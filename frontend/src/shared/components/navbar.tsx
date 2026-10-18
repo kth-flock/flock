@@ -37,7 +37,6 @@ export default function Navbar() {
 
       {user && (
         <span className="flex h-full items-center gap-4 rounded-full bg-accent/10 px-4 md:px-8 py-2 md:py-4">
-          <InviteBar />
           <Link
             href="/"
             className={`flex h-[50%] ${navLinkStyle}`}
@@ -45,6 +44,7 @@ export default function Navbar() {
           >
             <FaHouseChimney className={navIconStyle} />
           </Link>
+          <InviteBar />
           <Link
             href="/create-event"
             className={`flex h-[50%] ${navLinkStyle}`}
