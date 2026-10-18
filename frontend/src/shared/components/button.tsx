@@ -134,7 +134,7 @@ const getIconButtonClasses = ({
 
 // ---------- COMPONENTS ----------
 
-export function ClickableItem({
+function ClickableItem({
   href,
   externalLink,
   disabled,

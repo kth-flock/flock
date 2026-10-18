@@ -1,14 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FaPenToSquare, FaTrash } from "react-icons/fa6";
-import Button, { IconButton } from "@/shared/components/button";
-import { TextArea } from "@/shared/components/formInputs";
-import { useAuth } from "@/shared/auth/authContext";
 import { byOldest } from "@/shared/lib/sort";
 import type { ExtendedAnnouncement } from "@/shared/types/event";
 import Comment from "./comment";
-import PostMeta from "./postMeta";
 import ReplyForm from "./replyForm";
 import EditablePost from "./editablePost";
 

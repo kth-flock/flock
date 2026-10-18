@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";

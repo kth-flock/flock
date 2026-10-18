@@ -20,7 +20,6 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/components/*": ["./src/shared/components/*"],
       "@prisma/types": ["../backend/prisma/generated/client.ts"]
     }
   },
