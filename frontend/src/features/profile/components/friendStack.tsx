@@ -123,14 +123,11 @@ export function FriendsModal({
                 onClick={onClose}
                 className="flex min-w-0 flex-1 items-center gap-3 p-2"
               >
-                {friend.imageUrl ? (
-                  <ProfileImage profileImgSrc={friend.imageUrl} />
-                ) : (
-                  <ProfileImage
-                    firstName={friend.firstName}
-                    lastName={friend.lastName}
-                  />
-                )}
+                <ProfileImage
+                  firstName={friend.firstName}
+                  lastName={friend.lastName}
+                  profileImgSrc={friend.imageUrl ?? ""}
+                />
                 <span className="flock-body truncate">{fullName(friend)}</span>
               </Link>
               {myId !== undefined && onAction && (
@@ -228,14 +225,11 @@ export default function FriendStack({
             title={fullName(friend)}
             className={stackedImageStyle}
           >
-            {friend.imageUrl ? (
-              <ProfileImage profileImgSrc={friend.imageUrl} />
-            ) : (
-              <ProfileImage
-                firstName={friend.firstName}
-                lastName={friend.lastName}
-              />
-            )}
+            <ProfileImage
+              firstName={friend.firstName}
+              lastName={friend.lastName}
+              profileImgSrc={friend.imageUrl ?? ""}
+            />
           </span>
         ))}
         {hiddenCount > 0 && (

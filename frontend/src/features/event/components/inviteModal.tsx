@@ -1,13 +1,13 @@
 "use client";
 import Modal from "@/shared/components/modal";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "@/features/invite-friends/inviteFriendCard";
-import { debounce } from "lodash";
 import { inviteFriend, uninviteFriend } from "@/shared/lib/api";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
 import { getErrorMessage } from "@/shared/lib/errors";
 import { searchUsers } from "@/features/search/lib/api";
+import { useDebouncedSearch } from "@/shared/hooks/useDebouncedSearch";
 
 type InviteModalProps = {
   onClose: () => void;
@@ -24,24 +24,20 @@ export default function InviteModal({
   eventId,
   onChange,
 }: InviteModalProps) {
-  const searchRequestRef = useRef(0);
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(async (query: string, requestId: number) => {
-        try {
-          const results = await searchUsers(query);
-          if (requestId === searchRequestRef.current) setSearchResults(results);
-        } catch (error) {
-          if (requestId === searchRequestRef.current) {
-            console.error("User search failed:", error);
-          }
+  const { search: debouncedSearch, cancel: cancelSearch } =
+    useDebouncedSearch(async (query: string, isCurrent: () => boolean) => {
+      try {
+        const results = await searchUsers(query);
+        if (isCurrent()) setSearchResults(results);
+      } catch (error) {
+        if (isCurrent()) {
+          console.error("User search failed:", error);
         }
-      }, 300),
-    [],
-  );
+      }
+    }, 300);
   const [invitedUserIds, setInvitedUserIds] = useState(
     () => new Set(invitees.map((invitee) => invitee.id)),
   );
@@ -52,22 +48,13 @@ export default function InviteModal({
     setInvitedUserIds(new Set(invitees.map((invitee) => invitee.id)));
   }, [invitees]);
 
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
-    },
-    [debouncedSearch],
-  );
-
   function onSearch(query: string) {
-    const requestId = ++searchRequestRef.current;
     if (!query.trim()) {
-      debouncedSearch.cancel();
+      cancelSearch();
       setSearchResults(null);
       return;
     }
-    debouncedSearch(query, requestId);
+    debouncedSearch(query);
   }
 
   async function handleInvite(

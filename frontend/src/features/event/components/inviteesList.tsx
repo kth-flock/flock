@@ -58,9 +58,7 @@ export default function InviteesList({
         </span>
 
         {event.invitees.length === 0 && (
-          <p className="flock-body-sm text-(--color-text-muted)">
-            No invitees yet
-          </p>
+          <p className="flock-body-sm text-text-muted">No invitees yet</p>
         )}
 
         {rsvpGroups.map(({ rsvp, label }) => {

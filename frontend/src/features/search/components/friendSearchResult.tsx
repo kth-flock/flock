@@ -3,6 +3,7 @@ import type { UserSearchResult } from "@/shared/types/user";
 import Button, { IconButton } from "../../../shared/components/button";
 import { FaUserPlus, FaCheck, FaXmark } from "react-icons/fa6";
 import ProfileImage from "../../../shared/components/profileImage";
+import { fullName } from "@/shared/lib/user";
 
 type PendingAction = "add" | "accept" | "decline";
 
@@ -73,17 +74,13 @@ export default function FriendSearchResult({
 
   return (
     <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-2 gap-1">
-      {user.imageUrl ? (
-        <ProfileImage
-          profileImgSrc={user.imageUrl}
-          firstName={user.firstName}
-          lastName={user.lastName}
-        />
-      ) : (
-        <ProfileImage firstName={user.firstName} lastName={user.lastName} />
-      )}
+      <ProfileImage
+        firstName={user.firstName}
+        lastName={user.lastName}
+        profileImgSrc={user.imageUrl ?? ""}
+      />
       <p className="min-w-0 flex-1 break-words whitespace-normal px-2">
-        {user.firstName} {user.lastName}
+        {fullName(user)}
       </p>
       {user.friendshipStatus === "REQUEST_RECEIVED" && (
         <IconButton

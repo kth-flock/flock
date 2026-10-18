@@ -83,22 +83,22 @@ export default function Notification({
   return (
     <div className="flex flex-col transition-colors has-[a:hover]:bg-accent/10">
       <Link href={href} className="flex items-center gap-4 p-4">
-        {from.imageUrl ? (
-          <ProfileImage profileImgSrc={from.imageUrl} />
-        ) : (
-          <ProfileImage firstName={from.firstName} lastName={from.lastName} />
-        )}
+        <ProfileImage
+          firstName={from.firstName}
+          lastName={from.lastName}
+          profileImgSrc={from.imageUrl ?? ""}
+        />
         <div className="flex min-w-0 flex-col gap-1">
           <p className="flock-body">
             <b>{fullName(from)}</b> {message(notification)}
           </p>
           {type === "ANNOUNCEMENT" && notification.announcement && (
-            <p className="flock-body-sm line-clamp-1 text-(--color-text-muted)">
+            <p className="flock-body-sm line-clamp-1 text-text-muted">
               {notification.announcement.content}
             </p>
           )}
           {type === "RSVP" && notification.rsvp?.comment && (
-            <p className="flock-body-sm line-clamp-1 text-(--color-text-muted)">
+            <p className="flock-body-sm line-clamp-1 text-text-muted">
               {`"${notification.rsvp.comment}"`}
             </p>
           )}

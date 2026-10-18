@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaUserPlus } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
 import FriendSearchResult from "./friendSearchResult";
 import type { UserSearchResult } from "../../../shared/types/user";
-import { debounce } from "lodash";
 import {
   sendFriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
 } from "@/shared/lib/api";
 import { searchUsers } from "../lib/api";
+import { useDebouncedSearch } from "@/shared/hooks/useDebouncedSearch";
 
 const navLinkStyle =
   "aspect-square items-center justify-center cursor-pointer group hover:scale-110 hover:-rotate-5 transition-all";
@@ -32,51 +32,38 @@ export default function InviteBar() {
     userId: number;
     action: "add" | "accept" | "decline";
   } | null>(null);
-  const searchRequestRef = useRef(0);
   const [searchBarToggle, setSearchBarToggle] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
 
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(
-        async (query: string, requestId: number) => {
-          setLoading(true);
-          try {
-            const data = await searchUsers(query);
-            if (requestId === searchRequestRef.current) setResults(data);
-          } catch (err) {
-            if (requestId === searchRequestRef.current) {
-              console.error(err);
-              setResults([]);
-            }
-          } finally {
-            if (requestId === searchRequestRef.current) setLoading(false);
+  const { search: debouncedSearch, cancel: cancelSearch } =
+    useDebouncedSearch(
+      async (query: string, isCurrent: () => boolean) => {
+        setLoading(true);
+        try {
+          const data = await searchUsers(query);
+          if (isCurrent()) setResults(data);
+        } catch (err) {
+          if (isCurrent()) {
+            console.error(err);
+            setResults([]);
           }
-        },
-        300,
-        { leading: true, trailing: true },
-      ),
-    [],
-  );
-
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
-    },
-    [debouncedSearch],
-  );
+        } finally {
+          if (isCurrent()) setLoading(false);
+        }
+      },
+      300,
+      { leading: true, trailing: true },
+    );
 
   function onSearch(query: string) {
-    const requestId = ++searchRequestRef.current;
     if (!query.trim()) {
-      debouncedSearch.cancel();
+      cancelSearch();
       setResults(null);
       setLoading(false);
       return;
     }
     setLoading(true);
-    debouncedSearch(query, requestId);
+    debouncedSearch(query);
   }
 
   function updateFriendshipStatus(
@@ -143,13 +130,12 @@ export default function InviteBar() {
       setSearchBarToggle(false);
       setResults(null);
       setLoading(false);
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
+      cancelSearch();
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [searchBarToggle, debouncedSearch]);
+  }, [searchBarToggle, cancelSearch]);
 
   const showDropdown = loading || results !== null;
 
