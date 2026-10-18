@@ -18,11 +18,11 @@ export default function ProfileHistory({
 }: ProfileHistoryProps) {
   const history = [
     ...(hostedEvents ?? []).map((event) => ({
-      event: { ...event, startsAt: new Date(event.startsAt) },
+      event,
       status: "HOST" as EventStatus,
     })),
     ...(invitedEvents ?? []).map((event) => ({
-      event: { ...event, startsAt: new Date(event.startsAt) },
+      event,
       status: event.invitees[0]?.rsvp ?? "PENDING",
     })),
   ].toSorted((a, b) => b.event.startsAt.getTime() - a.event.startsAt.getTime());

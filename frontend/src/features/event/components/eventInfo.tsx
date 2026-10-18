@@ -20,7 +20,7 @@ export default function EventInfo({
   onChange: () => void;
 }) {
   const myInvite = event.invitees.find((invitee) => invitee.userId === userId);
-  const eventEnd = new Date(event.endsAt ?? event.startsAt).getTime();
+  const eventEnd = (event.endsAt ?? event.startsAt).getTime();
   const hasPassed = Date.now() > eventEnd;
 
   return (

@@ -1,16 +1,12 @@
 import type { RsvpStatus } from "@flock/shared/schemas/event";
+import type { PublicUser } from "@/shared/types/user";
 
 export type CalendarEvent = {
   id: number;
   title: string;
   startsAt: Date;
   createdById: number;
-  createdBy?: {
-    id: number;
-    firstName: string;
-    lastName: string;
-    imageUrl: string | null;
-  };
+  createdBy?: PublicUser;
   invitees: { rsvp: RsvpStatus }[];
 };
 
