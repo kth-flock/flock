@@ -1,33 +1,24 @@
 import type { EventStatus } from "@/features/dashboard/components/eventPreview";
-import { API_BASE_URL } from "@/shared/lib/api";
 import type { EventSummary, InvitedEvent } from "./types";
 import type { CalendarEvent } from "@/features/calendar/lib/types";
 import type { ExtendedEvent } from "@/shared/types/event";
+import { apiFetch } from "@/shared/lib/https";
 
 export type UpcomingEvent = { event: EventSummary; status: EventStatus };
 
-export async function getEvent(eventId: number): Promise<ExtendedEvent> {
-  const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-    credentials: "include",
-  });
+export const withEventDates = <T extends EventSummary>(e: T): T => ({
+  ...e,
+  startsAt: new Date(e.startsAt),
+  endsAt: e.endsAt && new Date(e.endsAt),
+  createdAt: new Date(e.createdAt),
+});
 
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to get event");
-  }
-
-  return res.json();
-}
+export const getEvent = async (eventId: number) =>
+  await apiFetch<ExtendedEvent[]>(`/events/${eventId}`);
 
 async function fetchEvents<T extends EventSummary>(path: string): Promise<T[]> {
-  const res = await fetch(`${API_BASE_URL}${path}`, { credentials: "include" });
+  const events = await apiFetch<T[]>(path);
 
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to get events");
-  }
-
-  const events: T[] = await res.json();
   return events.map((event) => ({
     ...event,
     startsAt: new Date(event.startsAt),
@@ -59,42 +50,21 @@ export async function getUpcomingEvents(): Promise<UpcomingEvent[]> {
     );
 }
 
-export async function getCreatedEvents() {
-  const res = await fetch(`${API_BASE_URL}/events/created`, {
-    credentials: "include",
-  });
+export const getCreatedEvents = async () =>
+  (await apiFetch<EventSummary[]>("/events/created")).map(withEventDates);
 
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to load events");
-  }
+export const getInvitedEvents = async () =>
+  (await apiFetch<InvitedEvent[]>("/events/invited")).map(withEventDates);
 
-  return res.json();
-}
-
-export async function getInvitedEvents() {
-  const res = await fetch(`${API_BASE_URL}/events/invited`, {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to load events");
-  }
-
-  return res.json();
-}
-
-export async function getMyEvents(): Promise<CalendarEvent[]> {
+export const getMyEvents = async (): Promise<CalendarEvent[]> => {
   const [invited, created] = await Promise.all([
     getInvitedEvents(),
     getCreatedEvents(),
   ]);
 
-  const byId = new Map([...invited, ...created].map((e) => [e.id, e]));
+  const byId = new Map<number, CalendarEvent>();
+  for (const event of invited) byId.set(event.id, event);
+  for (const event of created) byId.set(event.id, { ...event, invitees: [] });
 
-  return [...byId.values()].map((e) => ({
-    ...e,
-    startsAt: new Date(e.startsAt),
-  }));
-}
+  return [...byId.values()];
+};

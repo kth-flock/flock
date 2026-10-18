@@ -1,18 +1,12 @@
-import { API_BASE_URL } from "@/shared/lib/api";
+import { apiFetch } from "@/shared/lib/https";
 
 export async function geocodeFetch<T>(
   path: "search" | "reverse",
   params: Record<string, string>,
-): Promise<T> {
-  const res = await fetch(
-    `${API_BASE_URL}/geocode/${path}?${new URLSearchParams(params)}`,
-    { credentials: "include" },
-  );
-  if (!res.ok) throw new Error(`Geocoding ${path} failed`);
-
-  const response: { status: string; data: T } = await res.json();
-  if (response.status !== "Success") {
-    throw new Error(`Geocoding ${path} failed`);
-  }
-  return response.data;
+) {
+  const res = await apiFetch<{ status: string; data: T }>(`/geocode/${path}`, {
+    query: params,
+  });
+  if (res.status !== "Success") throw new Error(`Geocoding ${path} failed`);
+  return res.data;
 }
