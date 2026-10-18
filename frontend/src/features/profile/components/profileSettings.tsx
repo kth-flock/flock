@@ -16,7 +16,7 @@ import {
 import {
   changeEmail,
   changePassword,
-  deleteMyAccountFetch,
+  deleteMyAccount,
   updateMyInfo,
 } from "../lib/api";
 import { useAuth } from "@/shared/auth/authContext";
@@ -99,6 +99,7 @@ function SettingsSection({
 // Image and name both go through PATCH /me, so they're saved together and only
 // the fields that changed are sent
 function ProfileForm({ profile }: { profile: PrivateUser }) {
+  const { refresh } = useAuth();
   const router = useRouter();
   const [image, setImage] = useState<File | null>(null);
   const [firstName, setFirstName] = useState(profile.firstName);
@@ -124,6 +125,7 @@ function ProfileForm({ profile }: { profile: PrivateUser }) {
       }
 
       await updateMyInfo(changes);
+      await refresh();
 
       if (image && profile.imageUrl) {
         deleteImageFromS3Fetch(profile.imageUrl).catch(() => {});
@@ -187,7 +189,7 @@ function ProfileForm({ profile }: { profile: PrivateUser }) {
 }
 
 function EmailForm({ currentEmail }: { currentEmail: string }) {
-  const router = useRouter();
+  const { refresh } = useAuth();
   const [email, setEmail] = useState(currentEmail);
   const [password, setPassword] = useState("");
   const { save, isSaving, result } = useSave();
@@ -198,7 +200,7 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
     save(async () => {
       await changeEmail({ email, password });
       setPassword("");
-      router.refresh();
+      await refresh();
     }, "Email changed");
   }
 
@@ -320,7 +322,7 @@ function DangerZone() {
 
   function handleDeleteAccount() {
     save(async () => {
-      await deleteMyAccountFetch();
+      await deleteMyAccount();
       await logout();
       router.push("/");
       router.refresh();

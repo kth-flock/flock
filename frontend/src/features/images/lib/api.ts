@@ -1,32 +1,20 @@
-import { API_BASE_URL } from "@/shared/lib/api";
+import { apiFetch } from "@/shared/lib/https";
 
-export async function uploadImageFetch(
-  file: File,
-  folder: "events" | "profiles",
-) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("folder", folder);
-
-  const res = await fetch(`${API_BASE_URL}/image/upload`, {
+export function uploadImageFetch(file: File, folder: "events" | "profiles") {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("folder", folder);
+  return apiFetch<{ imageUrl: string }>("/image/upload", {
     method: "POST",
-    credentials: "include",
-    body: formData,
+    body: form,
+    fallbackError: "Failed to upload image",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to upload image");
-  }
-
-  return res.json();
 }
 
 export async function deleteImageFromS3Fetch(imageUrl: string) {
-  await fetch(`${API_BASE_URL}/image`, {
+  await apiFetch("/image", {
     method: "DELETE",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ imageUrl }),
+    body: { imageUrl },
+    fallbackError: "Failed to delete image",
   });
 }

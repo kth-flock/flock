@@ -1,151 +1,74 @@
 import type { RsvpToEventData } from "@flock/shared/schemas/event";
-import type { PrivateUser, PublicUser, SerializedUser } from "../types/user";
-import { withCreatedAt } from "./user";
+import type { PublicUser } from "../types/user";
+import { apiFetch, apiData } from "./https";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-
-export async function getMyFriends(): Promise<PublicUser[]> {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/`, {
-    credentials: "include",
+export const getMyFriends = () =>
+  apiData<PublicUser[]>("/me/friendships", {
+    fallbackError: "Failed to get friends",
   });
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to get friends");
-  }
 
-  const response: { status: string; data: PublicUser[] } = await res.json();
-  return response.data;
-}
-
-export async function updateRsvp(eventId: number, data: RsvpToEventData) {
-  const res = await fetch(`${API_BASE_URL}/events/${eventId}/rsvp`, {
+export const updateRsvp = (eventId: number, data: RsvpToEventData) =>
+  apiFetch(`/events/${eventId}/rsvp`, {
     method: "PATCH",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: data,
+    fallbackError: "Failed to save your answer",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to save your answer");
-  }
-}
 
 export async function inviteFriend(eventId: number, userId: number) {
-  const res = await fetch(
-    `${API_BASE_URL}/events/${eventId}/invitees/${userId}`,
-    { method: "POST", credentials: "include" },
-  );
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to invite user");
-  }
+  await apiFetch(`/events/${eventId}/invitees/${userId}`, {
+    method: "POST",
+    fallbackError: "Failed to invite user",
+  });
 }
 
 export async function batchInvite(eventId: number, userIds: number[]) {
-  const res = await fetch(`${API_BASE_URL}/events/${eventId}/invitees`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ inviteeIds: userIds }),
-  });
+  const response = await apiData<{ skipped: number }>(
+    `/events/${eventId}/invitees/}`,
+    {
+      method: "POST",
+      body: { inviteeIds: userIds },
+      fallbackError: "Failed to invite user",
+    },
+  );
 
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to invite users");
-  }
-
-  const response: { status: string; data: { skipped: number } } =
-    await res.json();
-  return response.data.skipped;
+  return response;
 }
 
 export async function uninviteFriend(eventId: number, userId: number) {
-  const res = await fetch(
-    `${API_BASE_URL}/events/${eventId}/invitees/${userId}`,
-    { method: "DELETE", credentials: "include" },
-  );
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to uninvite user");
-  }
+  await apiFetch(`/events/${eventId}/invitees/${userId}`, {
+    method: "DELETE",
+    fallbackError: "Failed to uninvite user",
+  });
 }
 
 export async function removeFriendship(userId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships`, {
+  await apiFetch("/me/friendships", {
     method: "DELETE",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ friendId: userId }),
+    body: { friendId: userId },
+    fallbackError: "Failed to remove friendship",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to remove friendship");
-  }
 }
 
 export async function sendFriendRequest(requesteeId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
+  await apiFetch(`/me/friendships/request`, {
     method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ requesteeId }),
+    body: { requesteeId },
+    fallbackError: "Failed to send friend request",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to send friend request");
-  }
 }
 
 export async function acceptFriendRequest(requesterId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
+  await apiFetch(`/me/friendships/request`, {
     method: "PATCH",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ requesterId }),
+    body: { requesterId },
+    fallbackError: "Failed to send friend request",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to accept friend request");
-  }
 }
 
 export async function declineFriendRequest(friendId: number) {
-  const res = await fetch(`${API_BASE_URL}/me/friendships/`, {
+  await apiFetch(`/me/friendships/request`, {
     method: "DELETE",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ friendId }),
+    body: { friendId },
+    fallbackError: "Failed to send friend request",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to decline friend request");
-  }
-}
-
-export async function getCurrentUser(): Promise<PrivateUser | null> {
-  const res = await fetch(`${API_BASE_URL}/me`, {
-    credentials: "include",
-  });
-
-  if (res.status === 401) return null;
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to get current user");
-  }
-
-  const response: {
-    status: string;
-    data: SerializedUser<PrivateUser>;
-  } = await res.json();
-
-  return withCreatedAt(response.data);
 }
