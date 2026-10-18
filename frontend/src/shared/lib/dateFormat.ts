@@ -30,8 +30,14 @@ const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
 });
 
-export const formatMonthYear = (iso: string | Date) =>
-  monthYearFormatter.format(new Date(iso));
+export const formatMonthYear = (iso: string | Date) => {
+  const date = typeof iso === "string" ? new Date(iso) : iso;
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError("Invalid date passed to formatMonthYear");
+  }
+
+  return monthYearFormatter.format(date);
+};
 
 const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,

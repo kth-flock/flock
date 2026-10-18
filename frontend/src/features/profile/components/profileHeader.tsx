@@ -1,7 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
-import type { ProfileDetails } from "../lib/types";
 import type { PublicUser, PrivateUser } from "@/shared/types/user";
 import ProfileSettings from "./profileSettings";
 import LogoutButton from "./logoutButton";
