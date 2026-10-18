@@ -49,7 +49,7 @@ export type ExtendedEvent = Prisma.EventGetPayload<{
   };
 }>;
 
-export type ExtendedAnnouncment = Prisma.AnnouncementGetPayload<{
+export type ExtendedAnnouncement = Prisma.AnnouncementGetPayload<{
   include: {
     user: {
       select: {

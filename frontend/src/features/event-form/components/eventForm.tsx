@@ -4,6 +4,7 @@ import EventImageField from "./eventImageField";
 import EventFormFields from "@/features/event-form/components/eventFormFields";
 import Button from "@/shared/components/button";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
+import type { EventPayloadMode } from "../lib/formValueFormat";
 import type { ZodType } from "zod";
 
 type Props<TPayload> = {
@@ -11,6 +12,7 @@ type Props<TPayload> = {
   submitLabel: string;
   cancelHref: string;
   initialValues: EventFormValues;
+  mode: EventPayloadMode;
   currentImageUrl?: string | null;
   schema: ZodType<TPayload>;
   fallbackError: string;
@@ -22,6 +24,7 @@ export default function EventForm<TPayload>({
   submitLabel,
   cancelHref,
   initialValues,
+  mode,
   currentImageUrl,
   schema,
   fallbackError,
@@ -30,6 +33,7 @@ export default function EventForm<TPayload>({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const form = useEventForm({
     initialValues,
+    mode,
     schema,
     fallbackError,
     onSubmit: (payload) => onSubmit(payload, imageFile),

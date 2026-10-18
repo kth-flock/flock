@@ -170,7 +170,7 @@ export function SmallEventPreview({
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
         <span className="flex justify-between items-start gap-2">
           <p
-            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-words"
+            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
             title={event.title}
           >
             {event.title}
@@ -203,7 +203,7 @@ export function SmallEventPreview({
             title={event.locationName}
           >
             <FaLocationDot className="mt-0.5 shrink-0" />
-            <span className="min-w-0 line-clamp-2 wrap-break-words">
+            <span className="min-w-0 line-clamp-2 wrap-break-word">
               {event.locationName}
             </span>
           </span>

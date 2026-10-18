@@ -12,7 +12,7 @@ export default function EventPageClient({ eventId }: { eventId: number }) {
 
   // TODO: Add loading and error
   if (user === undefined || isLoading) return;
-  if (error) return;
+  if (error && !event) return;
   if (!user || !event) notFound();
 
   const isHost = event.createdById === user.id;
