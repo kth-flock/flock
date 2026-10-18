@@ -30,6 +30,19 @@ async function fetchData<T>(path: string, cookie: string): Promise<T | null> {
   return response?.data ?? null;
 }
 
+async function fetchFromBrowser<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    const response: { error?: string } = await res.json().catch(() => ({}));
+    throw new Error(response.error ?? `Request to ${path} failed`);
+  }
+
+  return res.json();
+}
+
 function withEventDates<T extends EventSummary>(event: T): T {
   return {
     ...event,
@@ -84,6 +97,16 @@ export async function getMyInvitedEvents(
     cookie,
   );
   return (events ?? []).map(withEventDates);
+}
+
+export async function getMyHostedEventsClient(): Promise<EventSummary[]> {
+  const events = await fetchFromBrowser<EventSummary[]>("/events/created");
+  return events.map(withEventDates);
+}
+
+export async function getMyInvitedEventsClient(): Promise<InvitedEvent[]> {
+  const events = await fetchFromBrowser<InvitedEvent[]>("/events/invited");
+  return events.map(withEventDates);
 }
 
 export async function getEventsTogether(
@@ -151,7 +174,7 @@ export async function changePassword(data: ChangePassword) {
   await patchMe("/password", data, "Failed to change your password");
 }
 
-export async function deleteMyAccount() {
+export async function deleteMyAccountFetch() {
   const res = await fetch(`${API_BASE_URL}/me`, {
     method: "DELETE",
     credentials: "include",

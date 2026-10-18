@@ -5,11 +5,12 @@ import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { UserSearchResult } from "@/shared/types/user";
 import type { ProfileDetails } from "../lib/types";
 import FriendStack from "./friendStack";
+import { PrivateUser, PublicUser } from "@/shared/types/user";
 
 const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
 
 type ProfileContentProps = {
-  profile: ProfileDetails;
+  profile: PrivateUser | PublicUser;
   friends: UserSearchResult[] | null;
   myId?: number;
   hostedEvents?: EventSummary[] | null;
@@ -25,7 +26,6 @@ export default function ProfileContent({
   invitedEvents,
   className = "grid-cols-2",
 }: ProfileContentProps) {
-  console.log(profile);
   const content = [
     {
       icon: <FaClock />,
