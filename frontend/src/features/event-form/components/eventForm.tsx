@@ -6,6 +6,7 @@ import Button from "@/shared/components/button";
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import type { EventPayloadMode } from "../lib/formValueFormat";
 import type { ZodType } from "zod";
+import { useToast } from "@/shared/components/toast";
 
 type Props<TPayload> = {
   heading?: string;
@@ -16,6 +17,7 @@ type Props<TPayload> = {
   currentImageUrl?: string | null;
   schema: ZodType<TPayload>;
   fallbackError: string;
+  successMessage: string;
   onSubmit: (payload: TPayload, imageFile: File | null) => Promise<void>;
 };
 
@@ -28,15 +30,20 @@ export default function EventForm<TPayload>({
   currentImageUrl,
   schema,
   fallbackError,
+  successMessage,
   onSubmit,
 }: Props<TPayload>) {
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const toast = useToast();
   const form = useEventForm({
     initialValues,
     mode,
     schema,
     fallbackError,
-    onSubmit: (payload) => onSubmit(payload, imageFile),
+    onSubmit: async (payload) => {
+      await onSubmit(payload, imageFile);
+      toast(successMessage, "success");
+    },
   });
 
   return (

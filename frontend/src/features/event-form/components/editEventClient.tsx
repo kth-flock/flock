@@ -35,6 +35,7 @@ export default function EditEventClient({ eventId }: { eventId: number }) {
         currentImageUrl={event.imageUrl}
         schema={updateEventSchema}
         fallbackError="Couldn't update the event. Please try again."
+        successMessage="Event updated successfully."
         onSubmit={async (payload, imageFile) => {
           await withUploadedImage(imageFile, (imageUrl) =>
             updateEvent(event.id, {
