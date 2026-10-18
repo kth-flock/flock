@@ -1,8 +1,10 @@
 "use client";
+import { useCallback } from "react";
 import { notFound } from "next/navigation";
 import DeleteEvent from "@/features/event-form/components/deleteEvent";
 import { useAuth } from "@/shared/auth/authContext";
-import { useEvent } from "@/shared/hooks/useEvent";
+import { useFetch } from "@/shared/hooks/useFetch";
+import { getEvent } from "@/features/event/lib/api";
 import { updateEvent } from "../lib/api";
 import { withUploadedImage } from "@/features/images/lib/image";
 import { updateEventSchema } from "@flock/shared/schemas/event";
@@ -12,7 +14,8 @@ import { eventToFormValues } from "../lib/formValueFormat";
 
 export default function EditEventClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
-  const { event, isLoading, error } = useEvent(eventId);
+  const fetchEvent = useCallback(() => getEvent(eventId), [eventId]);
+  const { data: event, isLoading, error } = useFetch(fetchEvent);
   const router = useRouter();
 
   // TODO: Add loading and error

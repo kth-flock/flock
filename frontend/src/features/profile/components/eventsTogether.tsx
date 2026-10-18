@@ -18,7 +18,7 @@ export default function EventsTogether({
           {"Couldn't load your events together. Try refreshing the page."}
         </LoadError>
       ) : events.length === 0 ? (
-        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-(--color-text-muted)">
+        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
           No upcoming events together yet.
         </p>
       ) : (

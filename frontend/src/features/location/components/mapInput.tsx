@@ -2,13 +2,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
-import debounce from "lodash/debounce";
 import type { Location } from "@flock/shared/schemas/geocode";
 import { FieldWrapper } from "../../../shared/components/formInputs";
 import { useFocusWithin } from "../../../shared/hooks/useFocusWithin";
 import { geocodeFetch } from "../lib/api";
+import { useDebouncedSearch } from "@/shared/hooks/useDebouncedSearch";
 
 const loadMap = () => import("./map");
 
@@ -38,34 +38,30 @@ export default function LocationPicker({
   );
   const [loading, setLoading] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const searchRequestRef = useRef(0);
   const skipNextSearchRef = useRef(Boolean(initialValue?.label));
   const pickerRef = useRef<HTMLDivElement>(null);
   const { ref, isFocused, focusWithinProps } =
     useFocusWithin<HTMLInputElement>();
 
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(async (searchQuery: string, requestId: number) => {
+  const { search: debouncedSearch, cancel: cancelSearch } =
+    useDebouncedSearch(
+      async (searchQuery: string, isCurrent: () => boolean) => {
         setLoading(true);
         try {
           const data = await geocodeFetch<Location[]>("search", {
             q: searchQuery,
           });
-          if (requestId === searchRequestRef.current) setResults(data);
+          if (isCurrent()) setResults(data);
         } catch (err) {
-          if (requestId === searchRequestRef.current) {
+          if (isCurrent()) {
             console.error("Geocoding search failed:", err);
           }
         } finally {
-          if (requestId === searchRequestRef.current) setLoading(false);
+          if (isCurrent()) setLoading(false);
         }
-      }, 400),
-    [],
-  );
-
-  // Cancel any pending search on unmount
-  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
+      },
+      400,
+    );
 
   // Close map and dropdown when clicking outside
   useEffect(() => {
@@ -73,8 +69,7 @@ export default function LocationPicker({
       if (!pickerRef.current?.contains(event.target as Node)) {
         setIsMapOpen(false);
         setResults([]);
-        debouncedSearch.cancel();
-        searchRequestRef.current += 1;
+        cancelSearch();
         setLoading(false);
       }
     }
@@ -82,12 +77,11 @@ export default function LocationPicker({
     document.addEventListener("pointerdown", handleOutsidePointer);
     return () =>
       document.removeEventListener("pointerdown", handleOutsidePointer);
-  }, [debouncedSearch]);
+  }, [cancelSearch]);
 
   // Run a debounced search when the query changes
   useEffect(() => {
-    const requestId = ++searchRequestRef.current;
-    debouncedSearch.cancel();
+    cancelSearch();
 
     if (skipNextSearchRef.current) {
       skipNextSearchRef.current = false;
@@ -101,13 +95,12 @@ export default function LocationPicker({
       return;
     }
 
-    debouncedSearch(query, requestId);
+    debouncedSearch(query);
 
     return () => {
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
+      cancelSearch();
     };
-  }, [query, debouncedSearch]);
+  }, [query, cancelSearch, debouncedSearch]);
 
   function commitLocation(location: Location) {
     setSelected(location);

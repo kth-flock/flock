@@ -21,7 +21,7 @@ export default function UpcomingEvents({
   const [showAll, setShowAll] = useState(false);
 
   if (events === undefined)
-    return <p className="flock-body text-(--color-text-muted)">Loading…</p>;
+    return <p className="flock-body text-text-muted">Loading…</p>;
   if (events === null)
     return (
       <LoadError>
