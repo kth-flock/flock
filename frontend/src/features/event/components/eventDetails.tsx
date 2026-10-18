@@ -64,7 +64,7 @@ export default function EventDetails({
         <div className="flex items-center gap-4">
           <DetailRow icon={FaCalendarDays} hasPassed={hasPassed}>
             <time
-              dateTime={new Date(event.startsAt).toISOString()}
+              dateTime={event.startsAt.toISOString()}
               className="capitalize"
             >
               {getRelativeDatetime(event.startsAt)}

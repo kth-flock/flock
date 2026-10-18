@@ -7,14 +7,18 @@ import type {
 import type { InvitedEvent } from "@/features/event/lib/types";
 import { apiData, apiFetch, apiDataOrNull } from "@/shared/lib/https";
 import { withCreatedAt } from "@/shared/lib/user";
-import type { PublicUser, SerializedUser } from "@/shared/types/user";
+import type { PublicUser } from "@/shared/types/user";
+import type { Serialized } from "@/shared/types/serialized";
 import { withEventDates } from "@/features/event/lib/api";
 
 export async function getProfile(id: number): Promise<PublicUser | null> {
-  const user = await apiDataOrNull<SerializedUser<PublicUser>>(`/users/${id}`, {
-    nullOn: [404],
-    fallbackError: "Failed to get profile",
-  });
+  const user = await apiDataOrNull<Serialized<PublicUser & { createdAt: Date }>>(
+    `/users/${id}`,
+    {
+      nullOn: [404],
+      fallbackError: "Failed to get profile",
+    },
+  );
   return user && withCreatedAt(user);
 }
 
@@ -28,11 +32,11 @@ export function getProfileFriends(id: number) {
 export async function getEventsTogether(
   profileId: number,
 ): Promise<InvitedEvent[]> {
-  const events = await apiDataOrNull<InvitedEvent[]>(
+  const events = await apiDataOrNull<Serialized<InvitedEvent>[]>(
     `/users/${profileId}/events-together`,
     { nullOn: [404], fallbackError: "Failed to get events together" },
   );
-  return (events ?? []).map(withEventDates);
+  return (events ?? []).map((event) => withEventDates<InvitedEvent>(event));
 }
 
 export async function getMyFriendshipStatuses(): Promise<

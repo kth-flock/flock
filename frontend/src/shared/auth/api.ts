@@ -1,9 +1,10 @@
 import type { LoginUser, RegisterUser } from "@flock/shared/schemas/auth";
 import { apiData, apiDataOrNull, apiFetch } from "../lib/https";
 import { withCreatedAt } from "@/shared/lib/user";
-import type { PrivateUser, SerializedUser } from "@/shared/types/user";
+import type { Serialized } from "@/shared/types/serialized";
+import type { PrivateUser } from "@/shared/types/user";
 
-type RawUser = SerializedUser<PrivateUser>;
+type RawUser = Serialized<PrivateUser & { createdAt: Date }>;
 
 export async function login(data: LoginUser): Promise<PrivateUser> {
   const user = await apiData<RawUser>("/auth/login", {
