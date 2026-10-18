@@ -6,13 +6,9 @@ import type { ExtendedEvent } from "@/shared/types/event";
 
 export type UpcomingEvent = { event: EventSummary; status: EventStatus };
 
-export async function getEvent(
-  eventId: number,
-  cookie?: string,
-): Promise<ExtendedEvent> {
+export async function getEvent(eventId: number): Promise<ExtendedEvent> {
   const res = await fetch(`${API_BASE_URL}/events/${eventId}`, {
     credentials: "include",
-    headers: cookie ? { cookie } : {},
   });
 
   if (!res.ok) {
