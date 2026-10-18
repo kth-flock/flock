@@ -6,6 +6,7 @@ export type PublicUser = {
   firstName: string;
   lastName: string;
   imageUrl: string | null;
+  createdAt: string;
 };
 
 export type PrivateUser = PublicUser & {
@@ -14,8 +15,4 @@ export type PrivateUser = PublicUser & {
 
 export type UserSearchResult = PublicUser & {
   friendshipStatus: FriendshipStatus;
-};
-
-export type ProfileUser = PublicUser & {
-  createdAt: string;
 };

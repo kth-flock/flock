@@ -1,15 +1,43 @@
+"use client";
+
+import { useState } from "react";
+import ProfileHeader from "./profileHeader";
+import { randomBannerColor } from "../lib/bannerColor";
+import ProfileContent from "./profileContent";
+import ProfileHistory from "./profileHistory";
+import { useFetch } from "@/shared/hooks/useFetch";
+import { getMyFriends } from "@/shared/lib/api";
+import type { MyProfileDetails } from "../lib/types";
+import LoadError from "@/shared/components/loadError";
+import Button from "@/shared/components/button";
+import { getCreatedEvents, getInvitedEvents } from "@/features/event/lib/api";
+import { useAuth } from "@/shared/auth/authContext";
+import { notFound } from "next/navigation";
+
 export default function ProfileClient() {
+  const { user } = useAuth();
+  const [bannerColor] = useState(randomBannerColor);
+  const { data: hostedEvents, isLoading: createdLoading } =
+    useFetch(getCreatedEvents);
+  const { data: invitedEvents, isLoading: invitedLoading } =
+    useFetch(getInvitedEvents);
+  const { data: friends } = useFetch(getMyFriends);
+
+  // TODO: Add loading and error
+  if (user === undefined) return;
+  if (!user) notFound();
+
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <ProfileHeader
-        profile={profile}
-        bannerColor={randomBannerColor()}
+        profile={user}
+        bannerColor={bannerColor}
         isOwnProfile
-        email={profile.email}
+        email={user.email}
       />
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent
-          profile={profile}
+          profile={user}
           friends={
             friends?.map((friend) => ({
               ...friend,
@@ -24,6 +52,7 @@ export default function ProfileClient() {
           <ProfileHistory
             hostedEvents={hostedEvents}
             invitedEvents={invitedEvents}
+            isLoading={createdLoading || invitedLoading}
           />
         </div>
       </div>
