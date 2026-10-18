@@ -15,8 +15,6 @@ export type CalendarEvent = {
 };
 
 export type CalendarViewProps = {
-  year: number;
-  month: number;
   today: Date;
   weeks: (Date | null)[][];
   eventsByDay: Map<string, CalendarEvent[]>;

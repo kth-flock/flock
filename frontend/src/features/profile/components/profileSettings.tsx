@@ -21,7 +21,6 @@ import {
 } from "../lib/api";
 import { useAuth } from "@/shared/auth/authContext";
 import type { UserInfo } from "@flock/shared/schemas/user";
-import type { ProfileDetails } from "../lib/types";
 import { PrivateUser } from "@/shared/types/user";
 
 const formRowStyle = "flex flex-col gap-2 md:flex-row md:items-start";

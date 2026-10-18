@@ -63,21 +63,6 @@ export function formatTimeInput(date: Date | string) {
   return `${parts.hour}:${parts.minute}`;
 }
 
-export function formatDateTimeRange(
-  startsAt: Date | string,
-  endsAt: Date | string | null,
-) {
-  const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
-  if (!endsAt) return start;
-
-  const sameDay = formatDate(startsAt) === formatDate(endsAt);
-  const end = sameDay
-    ? formatTime(endsAt)
-    : `${formatDate(endsAt)}, ${formatTime(endsAt)}`;
-
-  return `${start} - ${end}`;
-}
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RELATIVE_DAYS_AHEAD = 14;
 

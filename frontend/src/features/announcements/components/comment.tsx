@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { ExtendedComment } from "@/shared/types/event";
 import EditablePost from "./editablePost";
 

@@ -1,16 +1,5 @@
-import { RegisterUser, LoginUser } from "@flock/shared/schemas/auth";
-import type {
-  ChangeEmail,
-  ChangePassword,
-  UserInfo,
-} from "@flock/shared/schemas/user";
 import type { RsvpToEventData } from "@flock/shared/schemas/event";
-import type {
-  PrivateUser,
-  PublicUser,
-  SerializedUser,
-} from "../types/user";
-import type { ExtendedEvent } from "../types/event";
+import type { PrivateUser, PublicUser, SerializedUser } from "../types/user";
 import { withCreatedAt } from "./user";
 
 export const API_BASE_URL =
@@ -99,19 +88,6 @@ export async function removeFriendship(userId: number) {
   }
 }
 
-export async function getAllEvents() {
-  const res = await fetch(`${API_BASE_URL}/events/`, {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to load events");
-  }
-
-  return res.json();
-}
-
 export async function sendFriendRequest(requesteeId: number) {
   const res = await fetch(`${API_BASE_URL}/me/friendships/request`, {
     method: "POST",
@@ -154,12 +130,9 @@ export async function declineFriendRequest(friendId: number) {
   }
 }
 
-export async function getCurrentUser(
-  cookie?: string,
-): Promise<PrivateUser | null> {
+export async function getCurrentUser(): Promise<PrivateUser | null> {
   const res = await fetch(`${API_BASE_URL}/me`, {
     credentials: "include",
-    headers: cookie ? { cookie } : {},
   });
 
   if (res.status === 401) return null;
