@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getErrorMessage } from "@/shared/lib/errors";
 
 export function useFetch<T>(fetcher: () => Promise<T>) {
@@ -10,7 +10,6 @@ export function useFetch<T>(fetcher: () => Promise<T>) {
 
   useEffect(() => {
     let cancelled = false;
-    setData(null);
     setError(null);
 
     fetcher()
@@ -26,10 +25,13 @@ export function useFetch<T>(fetcher: () => Promise<T>) {
     };
   }, [fetcher, version]);
 
+  const refetch = useCallback(() => setVersion((v) => v + 1), []);
+
   return {
     data,
+    setData,
     error,
     isLoading: data === null && error === null,
-    refetch: () => setVersion((v) => v + 1),
+    refetch,
   };
 }
