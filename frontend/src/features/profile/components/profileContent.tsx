@@ -2,13 +2,14 @@ import { twMerge } from "tailwind-merge";
 import { FaCalendarCheck, FaCrown, FaClock, FaUsers } from "react-icons/fa6";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
-import type { ProfileUser, UserSearchResult } from "@/shared/types/user";
+import type { UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
+import { PrivateUser, PublicUser } from "@/shared/types/user";
 
 const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
 
 type ProfileContentProps = {
-  profile: ProfileUser;
+  profile: PrivateUser | PublicUser;
   friends: UserSearchResult[] | null;
   myId?: number;
   hostedEvents?: EventSummary[] | null;
@@ -24,7 +25,6 @@ export default function ProfileContent({
   invitedEvents,
   className = "grid-cols-2",
 }: ProfileContentProps) {
-  console.log(profile);
   const content = [
     {
       icon: <FaClock />,
