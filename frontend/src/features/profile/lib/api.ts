@@ -1,87 +1,36 @@
-import type { FriendshipStatus } from "@flock/shared/schemas/user";
-import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
-import { API_BASE_URL } from "@/shared/lib/api";
 import type {
-  PrivateUser,
-  ProfileUser,
-  PublicUser,
-  SerializedUser,
-} from "@/shared/types/user";
-import { withCreatedAt } from "@/shared/lib/user";
-import type {
-  UserInfo,
   ChangeEmail,
   ChangePassword,
+  FriendshipStatus,
+  UserInfo,
 } from "@flock/shared/schemas/user";
+import type { InvitedEvent } from "@/features/event/lib/types";
+import { apiData, apiFetch, apiDataOrNull } from "@/shared/lib/https";
+import { withCreatedAt } from "@/shared/lib/user";
+import type { PublicUser, SerializedUser } from "@/shared/types/user";
+import { withEventDates } from "@/features/event/lib/api";
 
-async function fetchFromBackend<T>(path: string): Promise<T | null> {
-  const res = await fetch(`${API_BASE_URL}${path}`, { credentials: "include" });
-
-  if (res.status === 404) return null;
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? `Request to ${path} failed`);
-  }
-
-  return res.json();
-}
-
-async function fetchData<T>(path: string): Promise<T | null> {
-  const response = await fetchFromBackend<{ data: T }>(path);
-  return response?.data ?? null;
-}
-
-function withEventDates<T extends EventSummary>(event: T): T {
-  return {
-    ...event,
-    startsAt: new Date(event.startsAt),
-    endsAt: event.endsAt && new Date(event.endsAt),
-    createdAt: new Date(event.createdAt),
-  };
-}
-
-export async function getProfile(
-  profileId: number,
-): Promise<ProfileUser | null> {
-  const res = await fetch(`${API_BASE_URL}/users/${profileId}`, {
-    credentials: "include",
+export async function getProfile(id: number): Promise<PublicUser | null> {
+  const user = await apiDataOrNull<SerializedUser<PublicUser>>(`/users/${id}`, {
+    nullOn: [404],
+    fallbackError: "Failed to get profile",
   });
-
-  if (res.status === 404) return null;
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? `Failed to get profile`);
-  }
-
-  const response: { data: SerializedUser<ProfileUser> } = await res.json();
-  return withCreatedAt(response.data);
+  return user && withCreatedAt(user);
 }
 
-export async function getProfileFriends(
-  profileId: number,
-): Promise<PublicUser[] | null> {
-  const res = await fetch(`${API_BASE_URL}/users/${profileId}/friends`, {
-    credentials: "include",
+export function getProfileFriends(id: number) {
+  return apiDataOrNull<PublicUser[]>(`/users/${id}/friends`, {
+    nullOn: [404],
+    fallbackError: "Failed to get profile friends",
   });
-
-  if (res.status === 404) return null;
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? `Failed to get profile friends`);
-  }
-
-  const response: { data: PublicUser[] } = await res.json();
-  return response.data;
 }
 
 export async function getEventsTogether(
   profileId: number,
 ): Promise<InvitedEvent[]> {
-  const events = await fetchData<InvitedEvent[]>(
+  const events = await apiDataOrNull<InvitedEvent[]>(
     `/users/${profileId}/events-together`,
+    { nullOn: [404], fallbackError: "Failed to get events together" },
   );
   return (events ?? []).map(withEventDates);
 }
@@ -90,52 +39,37 @@ export async function getMyFriendshipStatuses(): Promise<
   Map<number, FriendshipStatus>
 > {
   const [friends, sent, received] = await Promise.all([
-    fetchData<PublicUser[]>("/me/friendships"),
-    fetchData<PublicUser[]>("/me/friendships/requests?direction=sent"),
-    fetchData<PublicUser[]>("/me/friendships/requests?direction=received"),
+    apiData<PublicUser[]>("/me/friendships"),
+    apiData<PublicUser[]>("/me/friendships/requests", {
+      query: { direction: "sent" },
+    }),
+    apiData<PublicUser[]>("/me/friendships/requests", {
+      query: { direction: "received" },
+    }),
   ]);
 
   const statuses = new Map<number, FriendshipStatus>();
-  received?.forEach((user) => statuses.set(user.id, "REQUEST_RECEIVED"));
-  sent?.forEach((user) => statuses.set(user.id, "REQUEST_SENT"));
-  friends?.forEach((user) => statuses.set(user.id, "FRIENDS"));
+  received.forEach((user) => statuses.set(user.id, "REQUEST_RECEIVED"));
+  sent.forEach((user) => statuses.set(user.id, "REQUEST_SENT"));
+  friends.forEach((user) => statuses.set(user.id, "FRIENDS"));
   return statuses;
 }
 
-async function patchMe(path: string, body: unknown, fallbackError: string) {
-  const res = await fetch(`${API_BASE_URL}/me${path}`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? fallbackError);
-  }
+function patchMe(path: string, body: unknown, fallbackError: string) {
+  return apiFetch(`/me${path}`, { method: "PATCH", body, fallbackError });
 }
 
-export async function updateMyInfo(data: UserInfo) {
-  await patchMe("", data, "Failed to update your profile");
-}
+export const updateMyInfo = (data: UserInfo) =>
+  patchMe("", data, "Failed to update your profile");
 
-export async function changeEmail(data: ChangeEmail) {
-  await patchMe("/email", data, "Failed to change your email");
-}
+export const changeEmail = (data: ChangeEmail) =>
+  patchMe("/email", data, "Failed to change your email");
 
-export async function changePassword(data: ChangePassword) {
-  await patchMe("/password", data, "Failed to change your password");
-}
+export const changePassword = (data: ChangePassword) =>
+  patchMe("/password", data, "Failed to change your password");
 
-export async function deleteMyAccountFetch() {
-  const res = await fetch(`${API_BASE_URL}/me`, {
+export const deleteMyAccount = () =>
+  apiFetch("/me", {
     method: "DELETE",
-    credentials: "include",
+    fallbackError: "Failed to delete your account",
   });
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? "Failed to delete your account");
-  }
-}
