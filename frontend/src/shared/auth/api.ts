@@ -1,6 +1,7 @@
 import { API_BASE_URL } from "../lib/api";
 import type { LoginUser, RegisterUser } from "@flock/shared/schemas/auth";
-import type { PrivateUser } from "../types/user";
+import type { PrivateUser, SerializedUser } from "../types/user";
+import { withCreatedAt } from "../lib/user";
 
 export async function login(data: LoginUser) {
   const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -20,10 +21,10 @@ export async function login(data: LoginUser) {
 
   const response: {
     status: string;
-    data: { user: PrivateUser };
+    data: { user: SerializedUser<PrivateUser> };
   } = await res.json();
 
-  return response.data;
+  return { user: withCreatedAt(response.data.user) };
 }
 
 export async function register(data: RegisterUser) {
@@ -44,8 +45,8 @@ export async function register(data: RegisterUser) {
 
   const response: {
     status: string;
-    data: { user: PrivateUser };
+    data: { user: SerializedUser<PrivateUser> };
   } = await res.json();
 
-  return response.data;
+  return { user: withCreatedAt(response.data.user) };
 }

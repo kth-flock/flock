@@ -5,8 +5,13 @@ import type {
   UserInfo,
 } from "@flock/shared/schemas/user";
 import type { RsvpToEventData } from "@flock/shared/schemas/event";
-import { PrivateUser, PublicUser } from "../types/user";
+import type {
+  PrivateUser,
+  PublicUser,
+  SerializedUser,
+} from "../types/user";
 import type { ExtendedEvent } from "../types/event";
+import { withCreatedAt } from "./user";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
@@ -164,7 +169,10 @@ export async function getCurrentUser(
     throw new Error(response.error ?? "Failed to get current user");
   }
 
-  const response: { status: string; data: PrivateUser } = await res.json();
+  const response: {
+    status: string;
+    data: SerializedUser<PrivateUser>;
+  } = await res.json();
 
-  return response.data;
+  return withCreatedAt(response.data);
 }
