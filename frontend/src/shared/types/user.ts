@@ -8,11 +8,7 @@ export type PublicUser = {
   createdAt?: Date;
 };
 
-export type ProfileUser = PublicUser & {
-  createdAt: Date;
-};
-
-export type PrivateUser = ProfileUser & {
+export type PrivateUser = PublicUser & {
   email: string;
 };
 
