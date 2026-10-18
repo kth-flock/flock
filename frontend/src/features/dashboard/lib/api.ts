@@ -1,9 +1,6 @@
 import type { Notification } from "@flock/shared/schemas/notifications";
 import { apiData } from "@/shared/lib/https";
-
-type SerializedNotification = Omit<Notification, "createdAt"> & {
-  createdAt: string;
-};
+import type { Serialized } from "@/shared/types/serialized";
 
 export const getNotifications = async (): Promise<Notification[]> =>
   (
