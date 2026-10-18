@@ -28,6 +28,7 @@ export default function EditEventClient({ eventId }: { eventId: number }) {
         submitLabel="Update"
         cancelHref={`/event/${event.id}`}
         initialValues={eventToFormValues(event)}
+        mode="update"
         currentImageUrl={event.imageUrl}
         schema={updateEventSchema}
         fallbackError="Couldn't update the event. Please try again."

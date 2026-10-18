@@ -1,17 +1,22 @@
 import type { EventFormValues } from "@/features/event/lib/eventFormTypes";
 import { useState } from "react";
-import { formValuesToPayload } from "../lib/formValueFormat";
+import {
+  formValuesToPayload,
+  type EventPayloadMode,
+} from "../lib/formValueFormat";
 import { zodErrorsToRecord } from "@/shared/lib/zod";
 import type { ZodType } from "zod";
 import { getErrorMessage } from "@/shared/lib/errors";
 
 export function useEventForm<TPayload>({
   initialValues,
+  mode,
   schema,
   onSubmit,
   fallbackError,
 }: {
   initialValues: EventFormValues;
+  mode: EventPayloadMode;
   schema: ZodType<TPayload>;
   onSubmit: (payload: TPayload) => Promise<void>;
   fallbackError: string;
@@ -32,7 +37,7 @@ export function useEventForm<TPayload>({
     e.preventDefault();
     if (isSubmitting) return;
 
-    const { errors: dateErrors, payload } = formValuesToPayload(values);
+    const { errors: dateErrors, payload } = formValuesToPayload(values, mode);
     const parsed = schema.safeParse(payload);
 
     if (Object.keys(dateErrors).length || !parsed.success) {

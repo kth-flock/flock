@@ -7,8 +7,8 @@ export default async function LoginPage() {
 
   if (token) redirect("/");
   return (
-    <main className="bg-accent/10 rounded-3xl p-8 flex flex-col gap-4 justify-center max-w-6xl">
+    <div className="bg-accent/10 rounded-3xl p-8 flex flex-col gap-4 justify-center max-w-6xl">
       <LoginForm />
-    </main>
+    </div>
   );
 }

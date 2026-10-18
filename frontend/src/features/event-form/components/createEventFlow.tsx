@@ -22,6 +22,7 @@ export default function CreateEventFlow() {
           submitLabel="Create"
           cancelHref="/"
           initialValues={emptyEventFormValues}
+          mode="create"
           schema={createEventSchema}
           fallbackError="Couldn't create the event. Please try again."
           onSubmit={async (payload, imageFile) => {

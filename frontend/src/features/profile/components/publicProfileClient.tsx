@@ -77,7 +77,7 @@ function PublicProfileData({
     : undefined;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
       <ProfileHeader
         profile={profile}
         bannerColor={bannerColor}
@@ -94,6 +94,6 @@ function PublicProfileData({
           <EventsTogether events={eventsTogether} myId={user.id} />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

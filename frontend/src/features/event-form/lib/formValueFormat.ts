@@ -13,6 +13,8 @@ export const emptyEventFormValues: EventFormValues = {
   location: null,
 };
 
+export type EventPayloadMode = "create" | "update";
+
 export function eventToFormValues(event: ExtendedEvent): EventFormValues {
   return {
     title: event.title,
@@ -29,7 +31,10 @@ export function eventToFormValues(event: ExtendedEvent): EventFormValues {
   };
 }
 
-export function formValuesToPayload(v: EventFormValues) {
+export function formValuesToPayload(
+  v: EventFormValues,
+  mode: EventPayloadMode,
+) {
   const startsAt = combineDateTime(v.startDate, v.startTime);
   const endsAt = combineDateTime(v.endDate, v.endTime);
 
@@ -42,12 +47,13 @@ export function formValuesToPayload(v: EventFormValues) {
     errors,
     payload: {
       title: v.title,
-      description: v.description || null,
+      description:
+        mode === "create" ? v.description || undefined : v.description || null,
       locationName: v.location?.label,
       latitude: v.location?.lat,
       longitude: v.location?.lon,
       startsAt: startsAt ?? undefined,
-      endsAt,
+      endsAt: mode === "create" ? (endsAt ?? undefined) : endsAt,
     },
   };
 }
