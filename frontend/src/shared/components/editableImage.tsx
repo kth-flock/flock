@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { FaPenToSquare, FaTrash } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import Button, { IconButton } from "./button";
-import ImageUpload from "./imageUpload";
+import ImageUpload from "@/features/images/components/imageUpload";
 
 type EditableImageProps = {
   current: ReactNode;
