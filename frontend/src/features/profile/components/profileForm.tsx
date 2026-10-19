@@ -18,6 +18,7 @@ export default function ProfileForm({ profile }: { profile: PrivateUser }) {
 
   const [image, setImage] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
+  const [imageKey, setImageKey] = useState(0);
 
   const [firstName, setFirstName] = useState(profile.firstName);
   const [lastName, setLastName] = useState(profile.lastName);
@@ -52,6 +53,7 @@ export default function ProfileForm({ profile }: { profile: PrivateUser }) {
         setImage(null);
         setRemoveImage(false);
         refresh();
+        setImageKey((k) => k + 1);
       },
       "Changes saved",
       "Failed to save changes",
@@ -59,31 +61,35 @@ export default function ProfileForm({ profile }: { profile: PrivateUser }) {
   }
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-4 md:flex-row md:gap-16">
+    <form className="flex flex-col gap-2 md:gap-0" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-4 md:flex-row md:gap-10 ">
         <SettingsSection
           title="Profile image"
           bordered={false}
-          className="flex items-center"
+          className="flex items-center self-center md:self-auto "
         >
-          <EditableImage
-            key={profile.imageUrl ?? "none"}
-            className="size-28 rounded-full bg-accent/40"
-            iconSize={24}
-            current={
-              profile.imageUrl && (
-                <img
-                  src={profile.imageUrl}
-                  alt=""
-                  className="size-full object-cover"
-                />
-              )
-            }
-            onFileSelect={setImage}
-            onFileRemove={() => setImage(null)}
-            onDelete={profile.imageUrl ? () => setRemoveImage(true) : undefined}
-            onCancel={() => setRemoveImage(false)}
-          />
+          <div className="pl-4">
+            <EditableImage
+              key={profile.imageUrl ?? "none"}
+              className="size-28 rounded-full bg-accent/40 self-center"
+              iconSize={24}
+              current={
+                profile.imageUrl && (
+                  <img
+                    src={profile.imageUrl}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                )
+              }
+              onFileSelect={setImage}
+              onFileRemove={() => setImage(null)}
+              onDelete={
+                profile.imageUrl ? () => setRemoveImage(true) : undefined
+              }
+              onCancel={() => setRemoveImage(false)}
+            />
+          </div>
         </SettingsSection>
         <SettingsSection title="Name" bordered={false} className="flex-1">
           <Input
