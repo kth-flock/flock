@@ -16,6 +16,8 @@ type FieldWrapperProps = {
   align?: "center" | "start";
   children: React.ReactNode;
   error?: string;
+  size?: "default" | "compact";
+  className?: string;
 };
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -41,21 +43,36 @@ export function FieldWrapper({
   align = "center",
   children,
   error,
+  size = "default",
+  className,
 }: FieldWrapperProps) {
+  const isCompact = size === "compact";
+
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className={twMerge("flex w-full flex-col gap-1", className)}>
       <div
         onClick={onClick}
         className={twMerge(
-          "flex w-full cursor-text gap-3 md:gap-4 rounded-2xl border bg-white px-4 py-3 md:px-6 md:py-4 transition-colors hover:border-primary",
-          align === "center" ? "items-center" : "items-start",
-          isFocused ? "border-secondary shadow-md" : "border-primary/20",
+          "flex w-full cursor-text border bg-background transition-colors hover:border-primary",
+          isCompact
+            ? "items-center gap-2 rounded-full border-transparent px-3 py-2.5 shadow-none"
+            : "gap-3 rounded-2xl px-4 py-3 md:gap-4 md:px-6 md:py-4",
+          !isCompact &&
+            (align === "center" ? "items-center" : "items-start"),
+          isFocused
+            ? isCompact
+              ? "border-secondary"
+              : "border-secondary shadow-md"
+            : !isCompact && "border-primary/20",
           error && "border-error",
         )}
       >
         {icon && (
           <span
-            className={twMerge("text-primary", align === "start" && "pt-1")}
+            className={twMerge(
+              "shrink-0 text-primary",
+              isCompact ? "text-sm" : align === "start" && "pt-1",
+            )}
           >
             {icon}
           </span>

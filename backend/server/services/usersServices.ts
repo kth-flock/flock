@@ -1,7 +1,9 @@
 import { prisma } from "../prisma";
-import { publicUserInformationSelect } from "../utils/selectors";
+import {
+  publicUserInformationSelect,
+  profileUserInformationSelect,
+} from "../utils/selectors";
 import { FriendshipStatus, UserId } from "@flock/shared/schemas/user";
-import { withSignedImageUrl } from "./imageService";
 import { NotFoundError } from "../utils/errors";
 
 export async function getUsers() {
@@ -9,7 +11,7 @@ export async function getUsers() {
     select: publicUserInformationSelect,
   });
 
-  return Promise.all(users.map((user) => withSignedImageUrl(user)));
+  return users;
 }
 
 export async function getUserById(id: UserId) {
@@ -22,7 +24,18 @@ export async function getUserById(id: UserId) {
     throw new NotFoundError("User not found");
   }
 
-  return await withSignedImageUrl(user);
+  return user;
+}
+
+export async function getUserProfile(id: UserId) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: profileUserInformationSelect,
+  });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+  return user;
 }
 
 export async function searchUsers(myId: UserId, query = "") {
@@ -68,11 +81,7 @@ export async function searchUsers(myId: UserId, query = "") {
     );
   }
 
-  const usersWithImages = await Promise.all(
-    users.map((user) => withSignedImageUrl(user)),
-  );
-
-  return usersWithImages.map((user) => ({
+  return users.map((user) => ({
     ...user,
     friendshipStatus: statusById.get(user.id) ?? "NONE",
   }));

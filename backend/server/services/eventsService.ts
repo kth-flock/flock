@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { RSVP } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import {
   CreateEventData,
@@ -12,16 +13,12 @@ import {
   ValidationError,
 } from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
-import {
-  withSignedImageUrl,
-  withSignedEventUserImages,
-  deleteImageFromS3,
-} from "./imageService";
+import { deleteImageFromS3 } from "./imageService";
 
 export async function getEvents() {
   const events = await prisma.event.findMany();
 
-  return Promise.all(events.map((event) => withSignedImageUrl(event)));
+  return events;
 }
 
 export async function getEventById(eventId: EventId, userId: UserId) {
@@ -69,17 +66,14 @@ export async function getEventById(eventId: EventId, userId: UserId) {
     throw new ForbiddenError("User is not authorized to view this event");
   }
 
-  const eventWithImage = await withSignedEventUserImages(event);
-
   if (isHost) {
-    return eventWithImage;
+    return event;
   }
 
-  //If not host return data without rsvpComments
   return {
-    ...eventWithImage,
-    invitees: eventWithImage.invitees.map(
-      ({ rsvpComment, ...invitee }) => invitee,
+    ...event,
+    invitees: event.invitees.map(({ rsvpComment, ...invitee }) =>
+      invitee.userId === userId ? { ...invitee, rsvpComment } : invitee,
     ),
   };
 }
@@ -88,7 +82,7 @@ export async function getCreatedEvents(userId: UserId) {
   const events = await prisma.event.findMany({
     where: { createdById: userId },
   });
-  return Promise.all(events.map((event) => withSignedImageUrl(event)));
+  return events;
 }
 
 export async function getInvitedEvents(userId: UserId) {
@@ -105,9 +99,35 @@ export async function getInvitedEvents(userId: UserId) {
       createdBy: {
         select: publicUserInformationSelect,
       },
+      invitees: {
+        where: { userId },
+        select: { rsvp: true },
+      },
     },
   });
-  return Promise.all(events.map((event) => withSignedImageUrl(event)));
+  return events;
+}
+
+export async function getEventsTogether(myId: UserId, otherId: UserId) {
+  const isParticipant = (userId: UserId) => ({
+    OR: [
+      { createdById: userId },
+      { invitees: { some: { userId, rsvp: { not: RSVP.DECLINED } } } },
+    ],
+  });
+
+  const events = await prisma.event.findMany({
+    where: {
+      AND: [isParticipant(myId), isParticipant(otherId)],
+      startsAt: { gte: new Date() },
+    },
+    orderBy: { startsAt: "asc" },
+    include: {
+      createdBy: { select: publicUserInformationSelect },
+      invitees: { where: { userId: myId }, select: { rsvp: true } },
+    },
+  });
+  return events;
 }
 
 export async function createNewEvent(
@@ -149,10 +169,9 @@ export async function updateEventInfo(
     data: eventData,
   });
 
-  // Replaced image is no longer referenced, so remove it and a failed delete shouldn't fail the update.
   if (
     event.imageUrl &&
-    eventData.imageUrl &&
+    eventData.imageUrl !== undefined &&
     event.imageUrl !== eventData.imageUrl
   ) {
     deleteImageFromS3(event.imageUrl).catch((error) =>
@@ -170,10 +189,10 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
     },
     select: {
       createdById: true,
+      imageUrl: true,
     },
   });
 
-  //TODO: Should we return weather the event exists if they are not authorized to change it????
   if (!event) {
     throw new NotFoundError("Event not found");
   }
@@ -187,6 +206,12 @@ export async function deleteEvent(eventId: EventId, userId: UserId) {
       id: eventId,
     },
   });
+
+  if (event.imageUrl) {
+    await deleteImageFromS3(event.imageUrl).catch((error) =>
+      console.error("Failed to delete event image from S3:", error),
+    );
+  }
 }
 
 export async function rsvpToEvent(

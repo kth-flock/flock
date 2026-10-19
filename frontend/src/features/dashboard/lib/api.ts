@@ -1,7 +1,22 @@
-import { exampleNotifications } from "@/features/event/lib/exampleData";
-import type { DashboardNotification } from "./types";
+import type { Notification } from "@flock/shared/schemas/notifications";
+import { apiData } from "@/shared/lib/https";
+import type { Serialized } from "@/shared/types/serialized";
 
-// TODO: fetch from the backend once it has a notifications endpoint
-export async function getNotifications(): Promise<DashboardNotification[]> {
-  return exampleNotifications.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
-}
+export const getNotifications = async (): Promise<Notification[]> =>
+  (
+    await apiData<Serialized<Notification[]>>("/me/notifications", {
+      fallbackError: "Failed to get notifications",
+    })
+  ).map((notification) => {
+    const { createdAt: fromCreatedAt, ...from } = notification.from;
+    return {
+      ...notification,
+      from: {
+        ...from,
+        ...(fromCreatedAt === undefined
+          ? {}
+          : { createdAt: new Date(fromCreatedAt) }),
+      },
+      createdAt: new Date(notification.createdAt),
+    };
+  });

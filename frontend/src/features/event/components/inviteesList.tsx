@@ -1,10 +1,12 @@
+import Link from "next/link";
 import Modal from "@/shared/components/modal";
 import { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
-import RSVPStatus from "@/shared/components/rsvpStatus";
+import RsvpStatus from "@/features/rsvp/components/rsvpStatus";
 import { FaCommentDots } from "react-icons/fa6";
 import type { Rsvp } from "../lib/types";
 import type { ExtendedInvitee } from "@/shared/types/event";
+import { fullName } from "@/shared/lib/user";
 
 type InviteesListProps = {
   event: ExtendedEvent;
@@ -13,16 +15,12 @@ type InviteesListProps = {
   onClose?: () => void;
 };
 
-export function sortInviteesByRsvpStatus(invitees: ExtendedInvitee[]) {
-  const priority: Record<Rsvp, number> = {
-    ACCEPTED: 0,
-    MAYBE: 1,
-    DECLINED: 2,
-    PENDING: 3,
-  };
-
-  return [...invitees].sort((a, b) => priority[a.rsvp] - priority[b.rsvp]);
-}
+const rsvpGroups: { rsvp: Rsvp; label: string }[] = [
+  { rsvp: "ACCEPTED", label: "Going" },
+  { rsvp: "MAYBE", label: "Maybe" },
+  { rsvp: "DECLINED", label: "Can't go" },
+  { rsvp: "PENDING", label: "Not answered" },
+];
 
 export function countInviteesByRsvpStatus(
   invitees: ExtendedInvitee[],
@@ -47,48 +45,68 @@ export default function InviteesList({
   isOpen,
   onClose,
 }: InviteesListProps) {
-  const sortedInvitees = sortInviteesByRsvpStatus(event.invitees);
   const inviteeCounts = countInviteesByRsvpStatus(event.invitees);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flock-h4 flex flex-col items-center">
-        <p>Invitees</p>
-        <span className="flock-caption">
-          {inviteeCounts.ACCEPTED} going, {inviteeCounts.MAYBE} maybe,{" "}
-          {sortedInvitees.length} invited.
+      <div className="flex w-full flex-col items-center gap-2 md:w-md">
+        <p className="flock-h4">Invitees</p>
+        <span className="flock-caption text-center">
+          {inviteeCounts.ACCEPTED} going · {inviteeCounts.MAYBE} maybe ·{" "}
+          {inviteeCounts.DECLINED} {"can't go"} · {inviteeCounts.PENDING} not
+          answered
         </span>
-        {sortedInvitees.length > 0
-          ? sortedInvitees.map(({ user: invitee, rsvp, rsvpComment }) => (
-              <div
-                key={invitee.id}
-                className="w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center justify-center gap-x-2 gap-y-2 py-2 not-last:border-b border-neutral"
-              >
-                {/* TODO: Make sure it correctly links to profile page */}
 
-                <ProfileImage
-                  firstName={invitee.firstName}
-                  lastName={invitee.lastName}
-                  profileImgSrc={invitee.imageUrl ?? ""}
-                />
-                <p className="flock-body truncate">
-                  {invitee.firstName} {invitee.lastName}
-                </p>
-                <RSVPStatus status={rsvp} className="h-4" />
-                {isHost && rsvpComment && (
-                  <>
-                    <FaCommentDots
-                      aria-hidden
-                      className="place-self-center fill-secondary"
-                    />
-                    <span className="col-span-2 min-w-0 w-full p-1 border border-neutral flock-caption text-foreground! rounded-lg">
-                      {rsvpComment}
-                    </span>
-                  </>
-                )}
-              </div>
-            ))
-          : "No invitees yet"}
+        {event.invitees.length === 0 && (
+          <p className="flock-body-sm text-text-muted">No invitees yet</p>
+        )}
+
+        {rsvpGroups.map(({ rsvp, label }) => {
+          const group = event.invitees.filter(
+            (invitee) => invitee.rsvp === rsvp,
+          );
+          if (group.length === 0) return null;
+
+          return (
+            <section key={rsvp} className="flex w-full flex-col">
+              <h3 className="flock-h6 flex items-center gap-2 border-b border-primary/20 pb-1 pt-3 text-primary">
+                <RsvpStatus rsvp={rsvp} />
+                {label} ({group.length})
+              </h3>
+              <ul className="flex flex-col">
+                {group.map(({ user: invitee, rsvpComment }) => (
+                  <li
+                    key={invitee.id}
+                    className="flex flex-col gap-1 py-2 not-last:border-b border-neutral"
+                  >
+                    <Link
+                      href={`/profile/${invitee.id}`}
+                      className="group/invitee flex min-w-0 items-center gap-2 transition-colors hover:text-primary"
+                    >
+                      <ProfileImage
+                        firstName={invitee.firstName}
+                        lastName={invitee.lastName}
+                        profileImgSrc={invitee.imageUrl ?? ""}
+                      />
+                      <span className="flock-body truncate group-hover/invitee:underline">
+                        {fullName(invitee)}
+                      </span>
+                    </Link>
+                    {isHost && rsvpComment && (
+                      <p className="ml-10 flex items-start gap-2 rounded-lg border border-neutral px-2 py-1.5 flock-body-sm">
+                        <FaCommentDots
+                          aria-hidden
+                          className="mt-1 shrink-0 fill-secondary"
+                        />
+                        {rsvpComment}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
       </div>
     </Modal>
   );

@@ -1,76 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import EventPreview, {
-  NoNextEvent,
-  NoUpcomingEvents,
-  SmallEventPreview,
-} from "@/features/dashboard/components/eventPreview";
 import FriendPreview from "@/features/dashboard/components/friendPreview";
 import NotificationList from "@/features/dashboard/components/notificationList";
+import UpcomingEvents from "@/features/dashboard/components/upcomingEvents";
 import { getNotifications } from "@/features/dashboard/lib/api";
 import { getUpcomingEvents } from "@/features/event/lib/api";
-import { getMyFriends } from "@/shared/lib/friends";
+import { getMyFriends } from "@/shared/lib/api";
+import { useFetch } from "@/shared/hooks/useFetch";
+import { useRefreshWhenVisible } from "@/shared/hooks/useRefreshWhenVisible";
+import type { Notification } from "@flock/shared/schemas/notifications";
 
-import type { DashboardNotification } from "@/features/dashboard/lib/types";
-import type { ExtendedEvent } from "@/shared/types/event";
-import type { PublicUser } from "@/shared/types/user";
+const REFRESH_MS = 60_000;
 
-type DashboardData = {
-  events: ExtendedEvent[];
-  notifications: DashboardNotification[];
-  friends: PublicUser[];
-};
+const toLoadable = <T,>(r: { data: T | null; isLoading: boolean }) =>
+  r.isLoading ? undefined : r.data;
 
 export default function PrivateHomePage() {
-  const [data, setData] = useState<DashboardData | null>(null);
+  const events = useFetch(getUpcomingEvents);
+  const notifications = useFetch(getNotifications);
+  const friends = useFetch(getMyFriends);
 
-  useEffect(() => {
-    let ignore = false;
+  useRefreshWhenVisible(() => {
+    notifications.refetch();
+    friends.refetch();
+  }, REFRESH_MS);
 
-    Promise.all([getUpcomingEvents(), getNotifications(), getMyFriends()]).then(
-      ([events, notifications, friends]) => {
-        if (!ignore) setData({ events, notifications, friends });
-      },
+  function handleFriendRequest(notification: Notification, accepted: boolean) {
+    notifications.setData(
+      (prev) => prev?.filter(({ id }) => id !== notification.id) ?? null,
     );
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // TODO: Replace with proper loading page
-  if (!data) {
-    return (
-      <main className="flex flex-1 items-center justify-center">
-        <p className="flock-body text-(--color-text-muted)">Loading…</p>
-      </main>
-    );
+    if (accepted)
+      friends.setData((prev) => prev && [notification.from, ...prev]);
   }
 
-  const { notifications, friends } = data;
-  const [nextEvent, ...upcomingEvents] = data.events;
-
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:items-start md:gap-16">
-      <div className="flex w-full flex-col gap-4 md:sticky md:top-24 md:order-last md:gap-12">
-        <FriendPreview friends={friends} />
-        <NotificationList notifications={notifications} />
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
+      <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
+        <FriendPreview friends={toLoadable(friends)} />
+        <NotificationList
+          notifications={toLoadable(notifications)}
+          onFriendRequestHandled={handleFriendRequest}
+        />
       </div>
       <div className="flex w-full min-w-0 flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
-        {nextEvent ? <EventPreview event={nextEvent} /> : <NoNextEvent />}
-        <h3 className="flock-h3">Upcoming</h3>
-        <div className="flex flex-wrap justify-between gap-2">
-          {upcomingEvents.length > 0 ? (
-            upcomingEvents.map((event) => (
-              <SmallEventPreview key={event.id} event={event} />
-            ))
-          ) : (
-            <NoUpcomingEvents />
-          )}
-        </div>
+        <UpcomingEvents events={toLoadable(events)} />
       </div>
-    </main>
+    </div>
   );
 }

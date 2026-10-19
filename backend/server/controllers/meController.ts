@@ -31,7 +31,7 @@ export async function deleteMyAccount(req: Request, res: Response) {
     throw new NotFoundError("User not found");
   }
 
-  await meServices.deleteMyAccount(id);
+  await meServices.deleteMyAccount(id, user.imageUrl);
 
   res.status(200).json({ status: "Success", message: "User deleted" });
 }
@@ -50,7 +50,11 @@ export async function editUserInfo(req: Request, res: Response) {
     "Invalid request body",
   );
 
-  const updatedUser = await meServices.editUserInfo(id, editData);
+  const updatedUser = await meServices.editUserInfo(
+    id,
+    editData,
+    existingUser.imageUrl,
+  );
 
   res.status(200).json({
     status: "Success",

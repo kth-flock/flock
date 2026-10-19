@@ -9,10 +9,10 @@ const toCalendarDate = (date: Date) =>
     .replace(/\.\d{3}/, "");
 
 export function getGoogleCalendarUrl(event: ExtendedEvent) {
-  const start = new Date(event.startsAt);
+  const start = event.startsAt;
   // Events without an end time get a one hour slot
   const end = event.endsAt
-    ? new Date(event.endsAt)
+    ? event.endsAt
     : new Date(start.getTime() + DEFAULT_DURATION_MS);
 
   const params = new URLSearchParams({

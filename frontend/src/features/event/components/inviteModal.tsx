@@ -1,43 +1,44 @@
 "use client";
 import Modal from "@/shared/components/modal";
-import Button from "@/shared/components/button";
-import { FaUserPlus } from "react-icons/fa6";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import SearchBar from "@/shared/components/searchBar";
+import { useState, useEffect } from "react";
+import SearchBar from "@/features/search/components/searchBar";
 import InviteFriendCard from "@/features/invite-friends/inviteFriendCard";
-import { debounce } from "lodash";
-import {
-  searchUsersFetch,
-  inviteFriendFetch,
-  uninviteFriendFetch,
-} from "@/shared/lib/api";
+import { inviteFriend, uninviteFriend } from "@/shared/lib/api";
 import type { UserSearchResult, PublicUser } from "@/shared/types/user";
+import { getErrorMessage } from "@/shared/lib/errors";
+import { searchUsers } from "@/features/search/lib/api";
+import { useDebouncedSearch } from "@/shared/hooks/useDebouncedSearch";
 
 type InviteModalProps = {
   onClose: () => void;
   isOpen: boolean;
   invitees: PublicUser[];
   eventId: number;
+  onChange: () => void;
 };
 
-function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
-  const router = useRouter();
-  const searchRequestRef = useRef(0);
-  const debouncedSearch = useRef(
-    debounce(async (query: string, requestId: number) => {
+export default function InviteModal({
+  onClose,
+  isOpen,
+  invitees,
+  eventId,
+  onChange,
+}: InviteModalProps) {
+  const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
+    null,
+  );
+  const { search: debouncedSearch, cancel: cancelSearch } = useDebouncedSearch(
+    async (query: string, isCurrent: () => boolean) => {
       try {
-        const results = await searchUsersFetch(query);
-        if (requestId === searchRequestRef.current) setSearchResults(results);
+        const results = await searchUsers(query);
+        if (isCurrent()) setSearchResults(results);
       } catch (error) {
-        if (requestId === searchRequestRef.current) {
+        if (isCurrent()) {
           console.error("User search failed:", error);
         }
       }
-    }),
-  ).current;
-  const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
-    null,
+    },
+    300,
   );
   const [invitedUserIds, setInvitedUserIds] = useState(
     () => new Set(invitees.map((invitee) => invitee.id)),
@@ -49,45 +50,37 @@ function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
     setInvitedUserIds(new Set(invitees.map((invitee) => invitee.id)));
   }, [invitees]);
 
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-      searchRequestRef.current += 1;
-    },
-    [debouncedSearch],
-  );
-
   function onSearch(query: string) {
-    const requestId = ++searchRequestRef.current;
     if (!query.trim()) {
-      debouncedSearch.cancel();
+      cancelSearch();
       setSearchResults(null);
       return;
     }
-    debouncedSearch(query, requestId);
+    debouncedSearch(query);
   }
 
-  async function handleInvite(user: UserSearchResult, action: "add" | "remove") {
+  async function handleInvite(
+    user: UserSearchResult,
+    action: "add" | "remove",
+  ) {
     setPendingUserIds((pending) => new Set(pending).add(user.id));
     setInviteError(null);
 
     try {
       if (action === "add") {
-        await inviteFriendFetch(eventId, user.id);
+        await inviteFriend(eventId, user.id);
         setInvitedUserIds((invited) => new Set(invited).add(user.id));
       } else {
-        await uninviteFriendFetch(eventId, user.id);
+        await uninviteFriend(eventId, user.id);
         setInvitedUserIds((invited) => {
           const updated = new Set(invited);
           updated.delete(user.id);
           return updated;
         });
       }
-      router.refresh();
+      onChange();
     } catch (error) {
-      setInviteError(
-        error instanceof Error ? error.message : "Failed to update invitation",
-      );
+      setInviteError(getErrorMessage(error, "Failed to update invitation"));
     } finally {
       setPendingUserIds((pending) => {
         const updated = new Set(pending);
@@ -123,33 +116,5 @@ function InviteModal({ onClose, isOpen, invitees, eventId }: InviteModalProps) {
         )}
       </div>
     </Modal>
-  );
-}
-
-export default function InviteButton({
-  invitees,
-  eventId,
-}: {
-  invitees: PublicUser[];
-  eventId: number;
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  return (
-    <>
-      <InviteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        invitees={invitees}
-        eventId={eventId}
-      />
-      <Button
-        icon={<FaUserPlus aria-hidden />}
-        iconPlacement="right"
-        variant="secondary"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Invite
-      </Button>
-    </>
   );
 }

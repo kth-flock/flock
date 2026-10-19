@@ -1,0 +1,3777 @@
+{
+  "info": {
+    "_postman_id": "158e3df8-67b6-4256-b686-f3ab4142e5e1",
+    "name": "Flock API Copy",
+    "description": "API tests for the Flock backend. Run top to bottom (Newman or Collection Runner).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58577242"
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "POST /auth/register - 201 user A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.collectionVariables.set(\"userAId\", pm.response.json().data.user.id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"emailA\", `a${Date.now()}@test.com`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Test\",\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/register - 201 user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.collectionVariables.set(\"userBId\", pm.response.json().data.user.id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"emailB\", `b${Date.now()}@test.com`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Test\",\n  \"email\": \"{{emailB}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/register - 400 weak password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"X\",\n  \"lastName\": \"Y\",\n  \"email\": \"weak{{$timestamp}}@test.com\",\n  \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/register - 400 extra field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"X\",\n  \"lastName\": \"Y\",\n  \"email\": \"extra{{$timestamp}}@test.com\",\n  \"password\": \"{{password}}\",\n  \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/login - 400 invalid email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/login - 401 wrong password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"WrongPassword1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/login - 200 user A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.test(\"Auth cookie set\", () => pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"token=\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Events (user A)",
+      "item": [
+        {
+          "name": "POST /events - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\npm.test(\"Matches eventSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventSchema\"))));\npm.collectionVariables.set(\"eventId\", pm.response.json().id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const day = 24 * 60 * 60 * 1000;\npm.collectionVariables.set(\"startsAt\", new Date(Date.now() + 7 * day).toISOString());\npm.collectionVariables.set(\"endsAt\", new Date(Date.now() + 8 * day).toISOString());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test event\",\n  \"description\": \"This event is a test event\",\n  \"startsAt\": \"{{startsAt}}\",\n  \"endsAt\": \"{{endsAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events - 400 missing title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startsAt\": \"{{startsAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events - 400 start date in past",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Past event\",\n  \"startsAt\": \"2000-01-01T00:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches eventListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/created - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches eventListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventListSchema\"))));",
+                  "pm.test(\"Contains created event\", () => pm.expect(pm.response.json().map(e => e.id)).to.include(Number(pm.collectionVariables.get(\"eventId\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/created",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "created"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/:eventId - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches eventSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/:eventId - 404 not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/:eventId - 400 invalid id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches eventSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventSchema\"))));",
+                  "pm.test(\"Title updated\", () => pm.expect(pm.response.json().title).to.eql(\"Updated event\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated event\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId - 400 empty title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId - 404 not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nope\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/invitees/:inviteeId - 201 invite user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\npm.test(\"Matches inviteeSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"inviteeSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/invitees/{{userBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "invitees",
+                "{{userBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/invitees/:inviteeId - 404 event not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/999999/invitees/{{userBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "999999",
+                "invitees",
+                "{{userBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Matches announcementSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"announcementSchema\"))));",
+                  "pm.collectionVariables.set(\"announcementId\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Remember to bring snacks!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements - 400 empty content",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"   \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/announcements/:announcementId - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches announcementSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"announcementSchema\"))));",
+                  "pm.test(\"Content updated\", () => pm.expect(pm.response.json().data.content).to.eql(\"Remember to bring snacks and drinks!\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Remember to bring snacks and drinks!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/announcements/:announcementId - 404 not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Nope\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements/:announcementId/comments - 201 host comments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Matches commentSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"commentSchema\"))));",
+                  "pm.collectionVariables.set(\"commentAId\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Host comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements/:announcementId/comments - 400 empty content",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Friend requests (user A)",
+      "item": [
+        {
+          "name": "POST /me/friendships/request - 201 to user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\npm.test(\"Matches friendRequestSentSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"friendRequestSentSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requesteeId\": \"{{userBId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /me/friendships/request - 400 invalid id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requesteeId\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/friendships/requests - 200 sent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/requests?direction=sent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "direction",
+                  "value": "sent"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/friendships/requests - 400 invalid direction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/requests?direction=sideways",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "requests"
+              ],
+              "query": [
+                {
+                  "key": "direction",
+                  "value": "sideways"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. User B",
+      "item": [
+        {
+          "name": "POST /auth/login - 200 user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.test(\"Auth cookie set\", () => pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"token=\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailB}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements - 403 not host",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"I am not the host\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements/:announcementId/comments - 201 invitee comments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Matches commentSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"commentSchema\"))));",
+                  "pm.collectionVariables.set(\"commentBId\", pm.response.json().data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Invitee comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/announcements/:announcementId/comments/:commentId - 200 own comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches commentSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"commentSchema\"))));",
+                  "pm.test(\"Content updated\", () => pm.expect(pm.response.json().data.content).to.eql(\"Edited invitee comment\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Edited invitee comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments",
+                "{{commentBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/announcements/:announcementId/comments/:commentId - 403 someone else's comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hijacked\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentAId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments",
+                "{{commentAId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId/comments/:commentId - 403 someone else's comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentAId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments",
+                "{{commentAId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId - 403 not host",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/invited - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches eventListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/invited",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "invited"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/rsvp - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches inviteeSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"inviteeSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvp\": \"ACCEPTED\",\n  \"rsvpComment\": \"See you there\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "rsvp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/rsvp - 400 invalid status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rsvp\": \"YES\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "rsvp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /me/friendships/request - 200 accept",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches friendshipSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"friendshipSchema\"))));\n  pm.test(\"Accepted\", () => pm.expect(pm.response.json().data.status).to.eql(\"ACCEPTED\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requesterId\": \"{{userAId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /me/friendships/request - 404 not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requesterId\": \"999999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/friendships - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/notifications - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches notificationListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"notificationListSchema\"))));\npm.test(\"Has notifications\", () => pm.expect(pm.response.json().data).to.not.be.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "notifications"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches meSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"meSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /me - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches meSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"meSchema\"))));\npm.test(\"Name updated\", () => pm.expect(pm.response.json().data.firstName).to.eql(\"Tilde\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Tilde\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /me - 400 email not allowed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new@test.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Users",
+      "item": [
+        {
+          "name": "GET /users - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/:userId - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches publicUserSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"publicUserSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userAId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userAId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/:userId - 404 not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/:userId/friends - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userListSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userAId}}/friends",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{userAId}}",
+                "friends"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/:userId/friends - 400 invalid id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/abc/friends",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "abc",
+                "friends"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/search - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userSearchSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSearchSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?query=Alice",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "Alice"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/search - 400 query too long",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?query=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Images",
+      "item": [
+        {
+          "name": "POST /image/upload - 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));\npm.test(\"Matches imageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"imageSchema\"))));\n\npm.collectionVariables.set(\"imageKey\", pm.response.json().imageUrl);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "test_image.png"
+                },
+                {
+                  "key": "folder",
+                  "value": "events",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image",
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /image/upload - 400 no file",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "folder",
+                  "value": "events",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image",
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /image - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches wrappedMessageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"wrappedMessageSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"imageUrl\": \"{{imageKey}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /image - 400 invalid key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));\npm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"imageUrl\": \"not/a/valid/key.exe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Cleanup (user A)",
+      "item": [
+        {
+          "name": "POST /auth/login - 200 user A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.test(\"Auth cookie set\", () => pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"token=\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/invitees/:inviteeId - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches inviteeSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"inviteeSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/invitees/{{userBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "invitees",
+                "{{userBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/invitees/:inviteeId - 404 event not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/999999/invitees/{{userBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "999999",
+                "invitees",
+                "{{userBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /me/friendships - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches wrappedMessageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"wrappedMessageSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"friendId\": \"{{userBId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /me/friendships - 404 user not found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"friendId\": \"999999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId/comments/:commentId - 204 host deletes invitee comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.be.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments",
+                "{{commentBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId/comments/:commentId - 404 already deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments",
+                "{{commentBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.be.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId/announcements/:announcementId - 404 already deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId - 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));\npm.test(\"Empty body\", () => pm.expect(pm.response.text()).to.be.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /events/:eventId - 404 already deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/logout - 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches messageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"messageSchema\"))));",
+                  "pm.test(\"Token cookie cleared\", () => {",
+                  "  const header = pm.response.headers.get(\"Set-Cookie\");",
+                  "  pm.expect(header).to.include(\"token=;\");",
+                  "  pm.expect(header).to.include(\"1970\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Unauthenticated (after logout)",
+      "item": [
+        {
+          "name": "GET /events - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/created - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/created",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "created"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /events/invited - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/invited",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "invited"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /events/:eventId/rsvp - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "rsvp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /me - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/friendships - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/friendships",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "friendships"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me/notifications - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "notifications"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/search - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /geocode/search - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geocode/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geocode",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /geocode/reverse - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geocode/reverse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geocode",
+                "reverse"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /image/upload - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/image/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image",
+                "upload"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /image - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "image"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /events/:eventId/announcements/:announcementId/comments - 401 not logged in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "announcements",
+                "{{announcementId}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Delete test accounts",
+      "item": [
+        {
+          "name": "POST /auth/login - 200 user A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.test(\"Auth cookie set\", () => pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"token=\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /me - 200 user A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches wrappedMessageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"wrappedMessageSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/login - 200 user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Matches userSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userSchema\"))));",
+                  "pm.test(\"Auth cookie set\", () => pm.expect(pm.response.headers.get(\"Set-Cookie\")).to.include(\"token=\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailB}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /me - 200 user B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches wrappedMessageSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"wrappedMessageSchema\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "const ok = (data) => ({",
+          "  type: \"object\",",
+          "  required: [\"status\", \"data\"],",
+          "  properties: { status: { enum: [\"Success\"] }, data }",
+          "});",
+          "const okList = (item) => ok({ type: \"array\", items: item });",
+          "",
+          "const nullableString = { type: [\"string\", \"null\"] };",
+          "",
+          "const user = {",
+          "  type: \"object\",",
+          "  required: [\"id\", \"firstName\", \"lastName\", \"email\", \"imageUrl\", \"createdAt\"],",
+          "  properties: {",
+          "    id: { type: \"integer\" },",
+          "    firstName: { type: \"string\" },",
+          "    lastName: { type: \"string\" },",
+          "    email: { type: \"string\" },",
+          "    imageUrl: nullableString,",
+          "    createdAt: { type: \"string\" }",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const publicUser = {",
+          "  type: \"object\",",
+          "  required: [\"id\", \"firstName\", \"lastName\", \"imageUrl\"],",
+          "  properties: {",
+          "    id: { type: \"integer\" },",
+          "    firstName: { type: \"string\" },",
+          "    lastName: { type: \"string\" },",
+          "    imageUrl: nullableString,",
+          "    createdAt: { type: \"string\" }",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const searchUser = {",
+          "  ...publicUser,",
+          "  required: [...publicUser.required, \"friendshipStatus\"],",
+          "  properties: {",
+          "    ...publicUser.properties,",
+          "    friendshipStatus: { enum: [\"NONE\", \"FRIENDS\", \"REQUEST_SENT\", \"REQUEST_RECEIVED\"] }",
+          "  }",
+          "};",
+          "",
+          "const friendship = {",
+          "  type: \"object\",",
+          "  required: [\"requesterId\", \"requesteeId\", \"status\", \"createdAt\", \"updatedAt\"],",
+          "  properties: {",
+          "    requesterId: { type: \"integer\" },",
+          "    requesteeId: { type: \"integer\" },",
+          "    status: { enum: [\"PENDING\", \"ACCEPTED\"] },",
+          "    createdAt: { type: \"string\" },",
+          "    updatedAt: nullableString",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const invitee = {",
+          "  type: \"object\",",
+          "  required: [\"eventId\", \"userId\", \"rsvp\", \"rsvpComment\", \"createdAt\", \"updatedAt\"],",
+          "  properties: {",
+          "    eventId: { type: \"integer\" },",
+          "    userId: { type: \"integer\" },",
+          "    rsvp: { enum: [\"PENDING\", \"ACCEPTED\", \"MAYBE\", \"DECLINED\"] },",
+          "    rsvpComment: nullableString,",
+          "    createdAt: { type: \"string\" },",
+          "    updatedAt: nullableString",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const event = {",
+          "  type: \"object\",",
+          "  required: [",
+          "    \"id\", \"createdById\", \"title\", \"description\", \"locationName\",",
+          "    \"latitude\", \"longitude\", \"startsAt\", \"endsAt\", \"imageUrl\", \"createdAt\"",
+          "  ],",
+          "  properties: {",
+          "    id: { type: \"integer\" },",
+          "    createdById: { type: \"integer\" },",
+          "    title: { type: \"string\" },",
+          "    description: nullableString,",
+          "    locationName: nullableString,",
+          "    latitude: { type: [\"number\", \"null\"], minimum: -90, maximum: 90 },",
+          "    longitude: { type: [\"number\", \"null\"], minimum: -180, maximum: 180 },",
+          "    startsAt: { type: \"string\" },",
+          "    endsAt: nullableString,",
+          "    imageUrl: nullableString,",
+          "    createdAt: { type: \"string\" }",
+          "  }",
+          "};",
+          "",
+          "const notification = {",
+          "  type: \"object\",",
+          "  required: [\"id\", \"type\", \"createdAt\", \"from\"],",
+          "  properties: {",
+          "    id: { type: \"string\" },",
+          "    type: { enum: [\"INVITATION\", \"ANNOUNCEMENT\", \"ANNOUNCEMENT_COMMENT\", \"FRIEND_REQUEST\", \"FRIEND_REQUEST_ACCEPTED\"] },",
+          "    createdAt: { type: \"string\" },",
+          "    from: publicUser,",
+          "    event: {",
+          "      type: \"object\",",
+          "      required: [\"id\", \"title\"],",
+          "      properties: { id: { type: \"integer\" }, title: { type: \"string\" } }",
+          "    },",
+          "    announcement: {",
+          "      type: \"object\",",
+          "      required: [\"id\", \"content\"],",
+          "      properties: { id: { type: \"integer\" }, content: { type: \"string\" } }",
+          "    }",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const location = {",
+          "  type: \"object\",",
+          "  required: [\"label\"],",
+          "  properties: {",
+          "    lat: { type: \"number\", minimum: -90, maximum: 90 },",
+          "    lon: { type: \"number\", minimum: -180, maximum: 180 },",
+          "    label: { type: \"string\" }",
+          "  },",
+          "  additionalProperties: false",
+          "};",
+          "",
+          "const announcement = {",
+          "  type: \"object\",",
+          "  required: [\"id\", \"content\", \"user\"],",
+          "  properties: {",
+          "    id: { type: \"integer\" },",
+          "    content: { type: \"string\" },",
+          "    user: publicUser",
+          "  }",
+          "};",
+          "",
+          "const comment = {",
+          "  type: \"object\",",
+          "  required: [\"id\", \"content\", \"user\"],",
+          "  properties: {",
+          "    id: { type: \"integer\" },",
+          "    content: { type: \"string\" },",
+          "    user: publicUser",
+          "  }",
+          "};",
+          "",
+          "const schemas = {",
+          "  // Errors",
+          "  errorSchema: {",
+          "    type: \"object\",",
+          "    required: [\"status\", \"error\"],",
+          "    properties: { status: { enum: [\"Error\"] }, error: { type: \"string\" } }",
+          "  },",
+          "",
+          "  // Messages",
+          "  messageSchema: ok({",
+          "    type: \"object\",",
+          "    required: [\"message\"],",
+          "    properties: { message: { type: \"string\" } },",
+          "    additionalProperties: false",
+          "  }),",
+          "  wrappedMessageSchema: {",
+          "    type: \"object\",",
+          "    required: [\"status\", \"message\"],",
+          "    properties: { status: { enum: [\"Success\"] }, message: { type: \"string\" } }",
+          "  },",
+          "",
+          "  // Users",
+          "  userSchema: ok({ type: \"object\", required: [\"user\"], properties: { user } }),",
+          "  meSchema: ok(user),",
+          "  publicUserSchema: ok(publicUser),",
+          "  userListSchema: okList(publicUser),",
+          "  userSearchSchema: okList(searchUser),",
+          "",
+          "  // Friendship",
+          "  friendRequestSentSchema: {",
+          "    ...ok(friendship),",
+          "    required: [\"status\", \"message\", \"data\"],",
+          "    properties: { ...ok(friendship).properties, message: { type: \"string\" } }",
+          "  },",
+          "",
+          "  friendshipSchema: ok(friendship),",
+          "",
+          "  // Events",
+          "  eventSchema: event,",
+          "  eventListSchema: { type: \"array\", items: event },",
+          "  inviteeSchema: ok(invitee),",
+          "",
+          "  // Announcements & comments",
+          "  announcementSchema: ok(announcement),",
+          "  commentSchema: ok(comment),",
+          "",
+          "  // Notifications",
+          "  notificationListSchema: okList(notification),",
+          "",
+          "  // Geocode",
+          "  locationSchema: ok({ ...location, required: [\"lat\", \"lon\", \"label\"] }),",
+          "  locationListSchema: ok({ type: \"array\", items: location, maxItems: 5 }),",
+          "",
+          "  // Images",
+          "  imageSchema: {",
+          "    type: \"object\",",
+          "    required: [\"imageUrl\"],",
+          "    properties: {",
+          "      imageUrl: { type: \"string\", pattern: \"^(events|profiles)/[\\\\w-]+\\\\.(jpg|png|gif)$\" }",
+          "    },",
+          "    additionalProperties: false",
+          "  }",
+          "",
+          "};",
+          "",
+          "for (const [name, s] of Object.entries(schemas)) {",
+          "  pm.collectionVariables.set(name, JSON.stringify(s));",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "password",
+      "value": "Password123"
+    },
+    {
+      "key": "errorSchema",
+      "value": ""
+    },
+    {
+      "key": "messageSchema",
+      "value": ""
+    },
+    {
+      "key": "wrappedMessageSchema",
+      "value": ""
+    },
+    {
+      "key": "userSchema",
+      "value": ""
+    },
+    {
+      "key": "meSchema",
+      "value": ""
+    },
+    {
+      "key": "publicUserSchema",
+      "value": ""
+    },
+    {
+      "key": "userListSchema",
+      "value": ""
+    },
+    {
+      "key": "userSearchSchema",
+      "value": ""
+    },
+    {
+      "key": "eventSchema",
+      "value": ""
+    },
+    {
+      "key": "eventListSchema",
+      "value": ""
+    },
+    {
+      "key": "inviteeSchema",
+      "value": ""
+    },
+    {
+      "key": "notificationListSchema",
+      "value": ""
+    },
+    {
+      "key": "locationSchema",
+      "value": ""
+    },
+    {
+      "key": "locationListSchema",
+      "value": ""
+    },
+    {
+      "key": "imageSchema",
+      "value": ""
+    },
+    {
+      "key": "emailA",
+      "value": ""
+    },
+    {
+      "key": "userAId",
+      "value": ""
+    },
+    {
+      "key": "emailB",
+      "value": ""
+    },
+    {
+      "key": "userBId",
+      "value": ""
+    },
+    {
+      "key": "startsAt",
+      "value": ""
+    },
+    {
+      "key": "endsAt",
+      "value": ""
+    },
+    {
+      "key": "eventId",
+      "value": ""
+    },
+    {
+      "key": "imageKey",
+      "value": ""
+    },
+    {
+      "key": "friendRequestSentSchema",
+      "value": ""
+    },
+    {
+      "key": "friendshipSchema",
+      "value": ""
+    },
+    {
+      "key": "announcementSchema",
+      "value": ""
+    },
+    {
+      "key": "commentSchema",
+      "value": ""
+    },
+    {
+      "key": "announcementId",
+      "value": ""
+    },
+    {
+      "key": "commentAId",
+      "value": ""
+    },
+    {
+      "key": "commentBId",
+      "value": ""
+    }
+  ]
+}

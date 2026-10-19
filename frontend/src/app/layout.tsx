@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "../shared/components/navbar";
 import Footer from "../shared/components/footer";
 import { AuthProvider } from "@/shared/auth/authContext";
+import { ToastProvider } from "@/shared/components/toast";
 
 const libreBaskerville = Libre_Baskerville({
   variable: "--font-libre-baskerville",
@@ -28,13 +29,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex flex-col px-6 md:px-24 items-center">
         <AuthProvider>
-          <div className="flex min-h-dvh w-full flex-col">
-            <Navbar />
-            <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
-              {children}
-            </main>
-          </div>
-          <Footer /> {/* sibling after the min-h-dvh div */}
+          <ToastProvider>
+            <div className="flex min-h-dvh w-full flex-col">
+              <Navbar />
+              <main className="flex flex-1 flex-col items-center justify-start pt-6 w-full">
+                {children}
+              </main>
+            </div>
+            <Footer /> {/* sibling after the min-h-dvh div */}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

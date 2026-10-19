@@ -3,7 +3,6 @@ import { z } from "zod";
 
 export type RegisterUserDraft = RegisterUser & {
   confirmPassword: string;
-  profilePicture: File | null;
 };
 
 export const registerUserFormSchema = registerUserSchema

@@ -7,7 +7,7 @@ import {
 import bcrypt from "bcryptjs";
 import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
-import { withSignedImageUrl } from "./imageService";
+import { deleteImageFromS3 } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
 
 export async function getMyAccount(userId: UserId) {
@@ -18,26 +18,45 @@ export async function getMyAccount(userId: UserId) {
 
   if (!account) throw new NotFoundError("User not found");
 
-  return withSignedImageUrl(account);
+  return account;
 }
 
-export async function deleteMyAccount(userId: UserId) {
+export async function deleteMyAccount(userId: UserId, imageUrl: string | null) {
   await prisma.user.delete({
     where: { id: userId },
   });
+
+  if (imageUrl) {
+    await deleteImageFromS3(imageUrl).catch((error) =>
+      console.error("Failed to delete event image from S3:", error),
+    );
+  }
 }
 
-export async function editUserInfo(userId: UserId, data: UserInfo) {
+export async function editUserInfo(
+  userId: UserId,
+  data: UserInfo,
+  prevImageUrl: string | null,
+) {
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     select: privateUserInformationSelect,
     data,
   });
 
+  if (
+    prevImageUrl &&
+    data.imageUrl !== undefined &&
+    prevImageUrl !== data.imageUrl
+  ) {
+    deleteImageFromS3(prevImageUrl).catch((error) =>
+      console.error(`Failed to delete old image ${prevImageUrl}`, error),
+    );
+  }
+
   return updatedUser;
 }
 
-// Throws unless the given password is the user's current one
 async function checkPassword(userId: UserId, password: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },

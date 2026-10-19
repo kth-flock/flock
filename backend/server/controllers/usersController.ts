@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as usersServices from "../services/usersServices";
 import * as friendshipsServices from "../services/friendshipsServices";
+import * as eventsService from "../services/eventsService";
 import { idSchema } from "@flock/shared/schemas/common";
 import { searchUsersQuerySchema } from "@flock/shared/schemas/user";
 import { validate } from "../utils/validate";
@@ -14,7 +15,8 @@ export async function getUsers(req: Request, res: Response) {
 export async function getUser(req: Request, res: Response) {
   const userId = validate(idSchema, req.params.userId, "Invalid user ID");
 
-  const user = await usersServices.getUserById(userId);
+  // Includes createdAt, for "Member since" on the profile page
+  const user = await usersServices.getUserProfile(userId);
 
   if (!user) {
     throw new NotFoundError("User not found");
@@ -49,4 +51,18 @@ export async function searchUsers(req: Request, res: Response) {
   const data = await usersServices.searchUsers(userId, parsedQuery.query);
 
   res.status(200).json({ status: "Success", data: data });
+}
+
+export async function getEventsTogether(req: Request, res: Response) {
+  const myId = validate(idSchema, req.user.id, "Invalid user ID");
+  const otherId = validate(idSchema, req.params.userId, "Invalid user ID");
+
+  const user = await usersServices.getUserById(otherId);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const events = await eventsService.getEventsTogether(myId, otherId);
+
+  res.status(200).json({ status: "Success", data: events });
 }
