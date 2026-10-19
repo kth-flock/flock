@@ -1,7 +1,7 @@
 import Modal from "@/shared/components/modal";
 import type { CalendarEvent } from "../lib/types";
 import { formatDate } from "@/shared/lib/dateFormat";
-import { EventPillDetails } from "./eventPill";
+import EventPillDetails from "./eventPillDetails";
 
 type CalendarDayModalProps = {
   isOpen: boolean;
