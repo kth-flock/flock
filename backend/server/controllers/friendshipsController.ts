@@ -1,19 +1,10 @@
 import { Request, Response } from "express";
 import * as friendsServices from "../services/friendshipsServices";
 import { directionSchema, idSchema } from "@flock/shared/schemas/common";
-import { getUserById } from "../services/usersServices";
 import { validate } from "../utils/validate";
-import { ConflictError, NotFoundError } from "../utils/errors";
 
 export async function getMyFriends(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
-
-  // TODO remove check
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
 
   const friendsInfo = await friendsServices.getAllFriends(userId);
 
@@ -62,23 +53,13 @@ export async function acceptFriendship(req: Request, res: Response) {
     req.body.requesterId,
     "Invalid user ID",
   );
+
   const requesteeId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  const friendship = await friendsServices.getFriendship(
+  const updatedFriendship = await friendsServices.updateFriendship(
     requesterId,
     requesteeId,
   );
-
-  // TODO add these to service instead?
-  if (!friendship || friendship.requesteeId !== requesteeId) {
-    throw new NotFoundError("Friend request not found");
-  }
-
-  if (friendship.status === "ACCEPTED") {
-    throw new ConflictError("Users already friends");
-  }
-
-  const updatedFriendship = await friendsServices.updateFriendship(friendship);
 
   res.status(200).json({ status: "Success", data: updatedFriendship });
 }
@@ -87,19 +68,7 @@ export async function deleteFriendship(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
   const friendId = validate(idSchema, req.body.friendId, "Invalid user ID");
 
-  const friend = await getUserById(friendId);
-  if (!friend) {
-    throw new NotFoundError("User not found");
-  }
-
-  // TODO add a handle for friendship exist in service?
-  const friendship = await friendsServices.getFriendship(userId, friendId);
-
-  if (!friendship) {
-    throw new NotFoundError("Friendship not found");
-  }
-
-  await friendsServices.deleteFriendship(friendship);
+  await friendsServices.deleteFriendship(userId, friendId);
 
   res.status(200).json({ status: "Success", message: " Friendship deleted" });
 }
