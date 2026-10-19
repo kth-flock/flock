@@ -34,17 +34,17 @@ export default function EventsTogether({
           No upcoming events together yet.
         </p>
       ) : (
-        events.map((event) => (
-          <SmallEventPreview
-            key={event.id}
-            event={event}
-            status={
-              event.createdById === myId
-                ? "HOST"
-                : (event.invitees[0]?.rsvp ?? "PENDING")
-            }
-          />
-        ))
+        events.map((event) => {
+          const isMine = event.createdById === myId;
+          return (
+            <SmallEventPreview
+              key={event.id}
+              event={event}
+              status={isMine ? "HOST" : (event.invitees[0]?.rsvp ?? "PENDING")}
+              statusLabel={isMine ? "Hosted by you" : undefined}
+            />
+          );
+        })
       )}
     </section>
   );
