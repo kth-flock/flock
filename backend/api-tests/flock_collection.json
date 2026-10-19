@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "4545162b-4959-4c9b-b4e7-36ea61a1fcf8",
-    "name": "Flock API",
+    "_postman_id": "158e3df8-67b6-4256-b686-f3ab4142e5e1",
+    "name": "Flock API Copy",
     "description": "API tests for the Flock backend. Run top to bottom (Newman or Collection Runner).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "58577242"
@@ -850,6 +850,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Remember to bring snacks!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
               "host": [
@@ -860,15 +869,6 @@
                 "{{eventId}}",
                 "announcements"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Remember to bring snacks!\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -895,6 +895,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"   \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
               "host": [
@@ -905,15 +914,6 @@
                 "{{eventId}}",
                 "announcements"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"   \"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -941,6 +941,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Remember to bring snacks and drinks!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
               "host": [
@@ -952,15 +961,6 @@
                 "announcements",
                 "{{announcementId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Remember to bring snacks and drinks!\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -987,6 +987,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Nope\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/999999",
               "host": [
@@ -998,15 +1007,6 @@
                 "announcements",
                 "999999"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Nope\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1034,6 +1034,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Host comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
               "host": [
@@ -1046,15 +1055,6 @@
                 "{{announcementId}}",
                 "comments"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Host comment\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1081,6 +1081,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
               "host": [
@@ -1093,15 +1102,6 @@
                 "{{announcementId}}",
                 "comments"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1345,6 +1345,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"I am not the host\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
               "host": [
@@ -1355,15 +1364,6 @@
                 "{{eventId}}",
                 "announcements"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"I am not the host\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1391,6 +1391,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Invitee comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
               "host": [
@@ -1403,15 +1412,6 @@
                 "{{announcementId}}",
                 "comments"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Invitee comment\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1439,6 +1439,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Edited invitee comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
               "host": [
@@ -1452,15 +1461,6 @@
                 "comments",
                 "{{commentBId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Edited invitee comment\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -1487,6 +1487,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hijacked\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentAId}}",
               "host": [
@@ -1500,15 +1509,6 @@
                 "comments",
                 "{{commentAId}}"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"Hijacked\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -2185,162 +2185,7 @@
       ]
     },
     {
-      "name": "6. Geocode",
-      "item": [
-        {
-          "name": "GET /geocode/search - 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches locationListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"locationListSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/geocode/search?q=Stockholm",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "search"
-              ],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "Stockholm"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /geocode/search - 400 query too short",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/geocode/search?q=ab",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "search"
-              ],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "ab"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /geocode/reverse - 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches locationSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"locationSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/geocode/reverse?lat=59.33&lon=18.07",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "reverse"
-              ],
-              "query": [
-                {
-                  "key": "lat",
-                  "value": "59.33"
-                },
-                {
-                  "key": "lon",
-                  "value": "18.07"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "GET /geocode/reverse - 400 invalid lat",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/geocode/reverse?lat=100&lon=18.07",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "reverse"
-              ],
-              "query": [
-                {
-                  "key": "lat",
-                  "value": "100"
-                },
-                {
-                  "key": "lon",
-                  "value": "18.07"
-                }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "7. Images",
+      "name": "6. Images",
       "item": [
         {
           "name": "POST /image/upload - 201",
@@ -2364,9 +2209,7 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": [
-                    "test_image.png"
-                  ]
+                  "src": "test_image.png"
                 },
                 {
                   "key": "folder",
@@ -2515,7 +2358,7 @@
       ]
     },
     {
-      "name": "8. Cleanup (user A)",
+      "name": "7. Cleanup (user A)",
       "item": [
         {
           "name": "POST /auth/login - 200 user A",
@@ -2942,7 +2785,7 @@
       ]
     },
     {
-      "name": "9. Unauthenticated (after logout)",
+      "name": "8. Unauthenticated (after logout)",
       "item": [
         {
           "name": "GET /events - 401 not logged in",
@@ -3353,6 +3196,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
               "host": [
@@ -3363,15 +3215,6 @@
                 "{{eventId}}",
                 "announcements"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"x\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -3398,6 +3241,15 @@
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
               "host": [
@@ -3410,15 +3262,6 @@
                 "{{announcementId}}",
                 "comments"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"content\": \"x\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             }
           },
           "response": []
@@ -3426,7 +3269,7 @@
       ]
     },
     {
-      "name": "10. Delete test accounts",
+      "name": "9. Delete test accounts",
       "item": [
         {
           "name": "POST /auth/login - 200 user A",
@@ -3612,7 +3455,8 @@
           "    id: { type: \"integer\" },",
           "    firstName: { type: \"string\" },",
           "    lastName: { type: \"string\" },",
-          "    imageUrl: nullableString",
+          "    imageUrl: nullableString,",
+          "    createdAt: { type: \"string\" }",
           "  },",
           "  additionalProperties: false",
           "};",
