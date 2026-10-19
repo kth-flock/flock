@@ -99,7 +99,6 @@ export const rsvpStatusSchema = z.enum([
 
 export const rsvpToEventSchema = z.object({
   rsvp: rsvpStatusSchema,
-  rsvpComment: z.string().optional(),
   rsvpComment: z
     .string()
     .max(200, "Comment can be at most 200 characters")

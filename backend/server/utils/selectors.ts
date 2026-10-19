@@ -3,14 +3,10 @@ export const publicUserInformationSelect = {
   firstName: true,
   lastName: true,
   imageUrl: true,
-};
-
-export const profileUserInformationSelect = {
-  ...publicUserInformationSelect,
   createdAt: true,
 };
 
 export const privateUserInformationSelect = {
-  ...profileUserInformationSelect,
+  ...publicUserInformationSelect,
   email: true,
 };

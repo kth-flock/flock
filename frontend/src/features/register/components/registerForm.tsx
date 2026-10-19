@@ -26,7 +26,6 @@ export default function RegisterForm() {
     email: "",
     password: "",
     confirmPassword: "",
-    profilePicture: null,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
