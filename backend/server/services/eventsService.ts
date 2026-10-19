@@ -14,6 +14,7 @@ import {
 } from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
 import { deleteImageFromS3 } from "./imageService";
+import { getUserById } from "./usersServices";
 
 export async function getEventById(eventId: EventId, userId: UserId) {
   const event = await prisma.event.findUnique({
@@ -73,21 +74,23 @@ export async function getEventById(eventId: EventId, userId: UserId) {
 }
 
 export async function getCreatedEvents(userId: UserId) {
-  // TODO add assert user
+  const user = await getUserById(userId);
+
   const events = await prisma.event.findMany({
-    where: { createdById: userId },
+    where: { createdById: user.id },
   });
 
   return events;
 }
 
 export async function getInvitedEvents(userId: UserId) {
-  // TODO add assert user
+  const user = await getUserById(userId);
+
   const events = await prisma.event.findMany({
     where: {
       invitees: {
         some: {
-          userId: userId,
+          userId: user.id,
         },
       },
     },
@@ -97,7 +100,7 @@ export async function getInvitedEvents(userId: UserId) {
         select: publicUserInformationSelect,
       },
       invitees: {
-        where: { userId },
+        where: { userId: user.id },
         select: { rsvp: true },
       },
     },
