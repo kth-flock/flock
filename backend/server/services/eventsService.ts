@@ -109,6 +109,8 @@ export async function getInvitedEvents(userId: UserId) {
 }
 
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
+  await getUserById(myId);
+
   const isParticipant = (userId: UserId) => ({
     OR: [
       { createdById: userId },

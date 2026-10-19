@@ -19,13 +19,6 @@ export async function getUser(req: Request, res: Response) {
 export async function getUserFriends(req: Request, res: Response) {
   const userId = validate(idSchema, req.params.userId, "Invalid user ID");
 
-  // remove check
-  const user = await usersServices.getUserById(userId);
-
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
-
   const friendsInfo = await friendshipsServices.getAllFriends(userId);
 
   res.status(200).json({ status: "Success", data: friendsInfo });
@@ -48,11 +41,6 @@ export async function searchUsers(req: Request, res: Response) {
 export async function getEventsTogether(req: Request, res: Response) {
   const myId = validate(idSchema, req.user.id, "Invalid user ID");
   const otherId = validate(idSchema, req.params.userId, "Invalid user ID");
-
-  const user = await usersServices.getUserById(otherId);
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
 
   const events = await eventsService.getEventsTogether(myId, otherId);
 
