@@ -16,6 +16,7 @@ export default function EditablePost({
   label,
   disableEdit = false,
   isDeleting = false,
+  canModerate = false,
   onSave,
   onRemove,
   onEditingChange,
@@ -26,6 +27,7 @@ export default function EditablePost({
   label: string;
   disableEdit?: boolean;
   isDeleting?: boolean;
+  canModerate?: boolean;
   onSave: (content: string) => void;
   onRemove: () => void;
   onEditingChange?: (isEditing: boolean) => void;
@@ -50,14 +52,17 @@ export default function EditablePost({
     setEditing(false);
   }
 
-  const canEdit = user?.id === author.id && !isEditing && !disableEdit;
+  const isAuthor = user?.id === author.id;
+  const isAvailable = !isEditing && !disableEdit;
+  const canEdit = isAuthor && isAvailable;
+  const canRemove = (isAuthor || canModerate) && isAvailable;
 
   return (
     <div className="flex flex-col gap-1">
       <div className="inline-flex items-center justify-between">
         <PostMeta user={author} createdAt={createdAt} />
-        {canEdit && (
-          <span className="inline-flex">
+        <span className="inline-flex">
+          {canEdit && (
             <IconButton
               variant="tertiary"
               size="sm"
@@ -67,6 +72,8 @@ export default function EditablePost({
             >
               <FaPenToSquare aria-hidden />
             </IconButton>
+          )}
+          {canRemove && (
             <IconButton
               variant="tertiary"
               size="sm"
@@ -77,8 +84,8 @@ export default function EditablePost({
             >
               <FaTrash aria-hidden />
             </IconButton>
-          </span>
-        )}
+          )}
+        </span>
       </div>
 
       {isEditing ? (

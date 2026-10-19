@@ -7,24 +7,27 @@ import { TextArea } from "@/shared/components/formInputs";
 import { getErrorMessage } from "@/shared/lib/errors";
 import { createAnnouncement } from "../lib/api";
 import { createAnnouncementSchema } from "@flock/shared/schemas/announcement";
+import type { EventId } from "@flock/shared/schemas/event";
 
 export default function NewAnnouncementForm({
   eventId,
   onClose,
   onChange,
 }: {
-  eventId: number;
+  eventId: EventId;
   onClose: () => void;
   onChange: () => void;
 }) {
   const [announcement, setAnnouncement] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const result = createAnnouncementSchema.safeParse({ content: announcement });
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    const result = createAnnouncementSchema.safeParse({
+      content: announcement,
+    });
     if (!result.success) {
       setError(result.error.issues[0].message);
       return;
@@ -38,10 +41,7 @@ export default function NewAnnouncementForm({
       onClose();
     } catch (err) {
       setError(
-        getErrorMessage(
-          err,
-          "Couldn't create the announcement. Please try again.",
-        ),
+        getErrorMessage(err, "Couldn't create the update. Please try again."),
       );
       setIsSubmitting(false);
     }
