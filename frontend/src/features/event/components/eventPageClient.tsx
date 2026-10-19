@@ -7,14 +7,14 @@ import { useFetch } from "@/shared/hooks/useFetch";
 import { getEvent } from "@/features/event/lib/api";
 import EventInfo from "./eventInfo";
 import AnnouncementList from "../../announcements/components/announcementList";
+import EventPageSkeleton from "./eventPageSkeleton";
 
 export default function EventPageClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
   const fetchEvent = useCallback(() => getEvent(eventId), [eventId]);
   const { data: event, isLoading, error, refetch } = useFetch(fetchEvent);
 
-  // TODO: Add loading and error
-  if (user === undefined || isLoading) return;
+  if (user === undefined || isLoading) return <EventPageSkeleton />;
   if (error && !event) return;
   if (!user || !event) notFound();
 
