@@ -208,6 +208,16 @@ npm run test:api:full
 
 And all tests will run with the test database (docker commands are included in the script)
 
+## Deployment
+### Deploy frontend in Vercel
+To deploy frontend to [Vercel](https://vercel.com), create a new pull request from `main` --> `production`.
+This will create a new deployment in Vercel. Inspect build logs to ensure that everything is correct.
+**NOTE:** *Never* commit directly to `production`.
+
+### Deploy backend in Render
+To deploy backend to [Render](https://render.com), create a new pull request from `main` --> `production`.
+If server is not correctly deployed, log in to Render and create a manual deployment.
+
 ## Project structure
 
 ```bash
