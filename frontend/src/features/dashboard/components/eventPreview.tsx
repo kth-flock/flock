@@ -11,7 +11,7 @@ import {
 import { twMerge } from "tailwind-merge";
 import {
   formatDate,
-  formatRelativeDate,
+  getRelativeDatetime,
   formatTimeRange,
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
@@ -106,7 +106,7 @@ export default function EventPreview({
 
         <span className="flex flex-wrap gap-x-4 gap-y-2">
           <span
-            className="inline-flex gap-2 items-center flock-body text-nowrap"
+            className="inline-flex gap-2 items-center flock-body text-nowrap capitalize"
             title="Date"
           >
             <FaCalendar />
@@ -114,7 +114,7 @@ export default function EventPreview({
               dateTime={event.startsAt.toISOString()}
               title={formatDate(event.startsAt)}
             >
-              {formatRelativeDate(event.startsAt)}
+              {getRelativeDatetime(event.startsAt)}
             </time>
           </span>
           <span className="inline-flex gap-2 items-center flock-body text-nowrap">
@@ -185,7 +185,7 @@ export function SmallEventPreview({
         </span>
 
         <span
-          className="inline-flex items-center gap-1 flock-caption"
+          className="inline-flex items-center gap-1 flock-caption capitalize"
           title="Date"
         >
           <FaCalendar />
@@ -193,7 +193,7 @@ export function SmallEventPreview({
             dateTime={event.startsAt.toISOString()}
             title={formatDate(event.startsAt)}
           >
-            {formatRelativeDate(event.startsAt)}
+            {getRelativeDatetime(event.startsAt)}
           </time>
         </span>
 
