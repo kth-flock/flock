@@ -20,6 +20,7 @@ export default function CreateEventFlow() {
       {eventId === null ? (
         <EventForm
           submitLabel="Create"
+          loadingLabel="Creating..."
           cancelHref="/"
           initialValues={emptyEventFormValues}
           mode="create"
