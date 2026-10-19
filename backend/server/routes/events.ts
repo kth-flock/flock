@@ -11,10 +11,12 @@ import {
 } from "../controllers/eventsController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { inviteesRouter } from "./invitees";
+import { announcementsRouter } from "./announcement";
 
 export const eventsRouter = Router();
 
 eventsRouter.use("/:eventId/invitees", inviteesRouter);
+eventsRouter.use("/:eventId/announcements", announcementsRouter);
 
 //Get surface level data for all events (no annoncements, comments, or userData)
 eventsRouter.get("/", getEvents);
