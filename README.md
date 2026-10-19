@@ -1,45 +1,5 @@
 # Flock
 
-## Project structure
-
-```bash
-flock/
-│
-├─ frontend/                 # Frontend
-│  ├─ public/                # Static assets
-│  │
-│  ├─ src/
-│  │  ├─ app/                # Next.js App routing
-│  │  │  └─ event/
-│  │  │
-│  │  ├─ features/           # Feature components, hooks, etc.
-│  │  │  └─ event/
-│  │  │
-│  │  └─ shared/             # Shared components, hooks, etc.
-│  │     ├── components/
-│  │     ├── hooks/
-│  │     ├── types/
-│  │     └── utils/
-│  │
-│  └─ config and root files    # node_modules, .next, etc.
-│
-│
-└─ backend/                  # Backend
-    ├─ prisma/
-    │  ├─ schema.prisma      # Data model + generator/datasource config
-    │  ├─ migrations/        # SQL migration history
-    │  └─ generated/         # Generated Prisma Client (gitignored)
-    │
-    ├─ server/
-    │  ├─ routes/            # Express route handlers
-    │  └─ prisma.ts          # Shared PrismaClient instance
-    │
-    ├─ index.ts              # App entrypoint
-    ├─ docker-compose.yaml   # Local Postgres container
-    ├─ prisma.config.ts      # Prisma CLI config (loads .env)
-    └─ .env.example          # Template for required env vars
-```
-
 ## Frontend setup
 
 **Prerequisites:** Node.js
@@ -247,3 +207,53 @@ npm run test:api:full
 ```
 
 And all tests will run with the test database (docker commands are included in the script)
+
+## Project structure
+
+```bash
+flock/
+│
+├─ shared config and root files
+│
+├─ frontend/                 # Frontend
+│  ├─ public/                # Static assets
+│  │
+│  ├─ src/
+│  │  ├─ app/                # Next.js App routing
+│  │  │  ├── (protected)/    # Private pages protected by auth
+│  │  │  └─ login/
+│  │  │
+│  │  ├─ features/           # Feature components, hooks, etc.
+│  │  │  └─ event/           # etc.
+│  │  │     ├── components/
+│  │  │     ├── hooks/
+│  │  │     └── utils/
+│  │  │
+│  │  └─ shared/             # Shared components, hooks, etc.
+│  │     ├── components/
+│  │     ├── hooks/
+│  │     ├── types/
+│  │     └── utils/
+│  │
+│  └─ config and root files  # node_modules, .next, etc.
+│
+├─ backend/                  # Backend
+│   ├─ api-tests/            # Postman tests
+│   │
+│   ├─ prisma/
+│   │  ├─ migrations/        # SQL migration history
+│   │  └─ schema.prisma      # Data model + generator/datasource config
+│   │
+│   ├─ server/
+│   │  ├─ controllers/       # Handles HTTP requests and validations
+│   │  ├─ middleware/        # e.g. auth, error handling, image uploads
+│   │  ├─ routes/            # Express route handlers
+│   │  ├─ services/          # Database communication and business logic
+│   │  ├─ types/           
+│   │  └─ utils/
+│   │
+│   └─ index.ts              # App entrypoint
+│
+└─ shared/                 
+    └─ schemas/              # zod schemas and inferred types
+```
