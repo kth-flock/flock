@@ -7,7 +7,10 @@ import {
 import { twMerge } from "tailwind-merge";
 import {
   formatDate,
-  getRelativeDatetime,
+  formatEventDate,
+  formatMultiDayRange,
+  isMultiDay,
+  isOngoing,
   formatTimeRange,
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
@@ -15,6 +18,7 @@ import Button from "@/shared/components/button";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
 import RsvpStatus from "@/features/rsvp/components/rsvpStatus";
 import EventImage from "@/shared/components/eventImage";
+import OngoingPill from "@/features/event/components/ongoingPill";
 
 export type EventStatus = Rsvp | "HOST";
 
@@ -25,7 +29,6 @@ const chipLabel: Record<EventStatus, string> = {
   DECLINED: "Not going",
   PENDING: "Not answered",
 };
-
 
 const hasEnded = (event: EventSummary) =>
   (event.endsAt ?? event.startsAt).getTime() < Date.now();
@@ -60,46 +63,63 @@ export default function EventPreview({
           sizes="(min-width: 48rem) 32rem, 100vw"
           className="object-cover"
         />
-        <span
-          className={twMerge(
-            "absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm ring-[1.5px] ring-current [&_svg]:fill-current",
-            statusChipStyle[status],
-          )}
-        >
-          <span aria-hidden className="inline-flex">
-            <RsvpStatus rsvp={status} />
+        <div className="absolute left-3 top-3 right-2 flex flex-wrap gap-1.5">
+          <span
+            className={twMerge(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm ring-[1.5px] ring-current [&_svg]:fill-current",
+              statusChipStyle[status],
+            )}
+          >
+            <span aria-hidden className="inline-flex">
+              <RsvpStatus rsvp={status} />
+            </span>
+            {statusLabel ?? chipLabel[status]}
           </span>
-          {statusLabel ?? chipLabel[status]}
-        </span>
+          {isOngoing(event.startsAt, event.endsAt) && <OngoingPill />}
+        </div>
       </div>
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
-          <span
-            className="flock-h4 min-w-0 truncate"
-            title={event.title}
-          >
+          <span className="flock-h4 min-w-0 truncate" title={event.title}>
             {event.title}
           </span>
         </div>
 
-        <span className="flex flex-wrap gap-x-4 gap-y-2">
+        {/* A separate time range would read as "17:00 - 09:00" on the same
+            day, so events over several days get one row with both days */}
+        {isMultiDay(event.startsAt, event.endsAt) ? (
           <span
-            className="inline-flex gap-2 items-center flock-body text-nowrap capitalize"
+            className="inline-flex gap-2 items-center flock-body"
             title="Date"
           >
-            <FaCalendar />
+            <FaCalendar className="shrink-0" />
             <time
               dateTime={event.startsAt.toISOString()}
-              title={formatDate(event.startsAt)}
+              title={`${formatDate(event.startsAt)} – ${formatDate(event.endsAt!)}`}
             >
-              {getRelativeDatetime(event.startsAt)}
+              {formatMultiDayRange(event.startsAt, event.endsAt!)}
             </time>
           </span>
-          <span className="inline-flex gap-2 items-center flock-body text-nowrap">
-            <FaClock />
-            {formatTimeRange(event.startsAt, event.endsAt)}
+        ) : (
+          <span className="flex flex-wrap gap-x-4 gap-y-2">
+            <span
+              className="inline-flex gap-2 items-center flock-body text-nowrap"
+              title="Date"
+            >
+              <FaCalendar />
+              <time
+                dateTime={event.startsAt.toISOString()}
+                title={formatDate(event.startsAt)}
+              >
+                {formatEventDate(event.startsAt, event.endsAt)}
+              </time>
+            </span>
+            <span className="inline-flex gap-2 items-center flock-body text-nowrap">
+              <FaClock />
+              {formatTimeRange(event.startsAt, event.endsAt)}
+            </span>
           </span>
-        </span>
+        )}
         {event.locationName && (
           <span
             className="flex gap-2 items-start flock-body"
@@ -140,24 +160,24 @@ export function SmallEventPreview({
           sizes="(min-width: 48rem) 16rem, 50vw"
           className="object-cover"
         />
-        <span
-          className={twMerge(
-            "absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption ring-[1.5px] ring-current [&_svg]:fill-current",
-            statusChipStyle[status],
-          )}
-        >
-          <span aria-hidden className="inline-flex">
-            <RsvpStatus rsvp={status} />
+        <div className="absolute left-2 top-2 right-2 flex flex-wrap gap-1">
+          <span
+            className={twMerge(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption ring-[1.5px] ring-current [&_svg]:fill-current",
+              statusChipStyle[status],
+            )}
+          >
+            <span aria-hidden className="inline-flex">
+              <RsvpStatus rsvp={status} />
+            </span>
+            {statusLabel ?? chipLabel[status]}
           </span>
-          {statusLabel ?? chipLabel[status]}
-        </span>
+          {isOngoing(event.startsAt, event.endsAt) && <OngoingPill size="sm" />}
+        </div>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
-        <p
-          className="flock-ui-label min-w-0 truncate"
-          title={event.title}
-        >
+        <p className="flock-ui-label min-w-0 truncate" title={event.title}>
           {event.title}
         </p>
 
@@ -173,7 +193,7 @@ export function SmallEventPreview({
             dateTime={event.startsAt.toISOString()}
             title={formatDate(event.startsAt)}
           >
-            {getRelativeDatetime(event.startsAt)}
+            {formatEventDate(event.startsAt, event.endsAt)}
           </time>
         </span>
 

@@ -7,6 +7,8 @@ import AvatarStack from "@/shared/components/avatarStack";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
 import EventImage from "@/shared/components/eventImage";
+import { isOngoing } from "@/shared/lib/dateFormat";
+import OngoingPill from "./ongoingPill";
 
 export default function EventHeader({
   event,
@@ -44,6 +46,7 @@ export default function EventHeader({
 
         <div className="z-20 flex w-full items-end justify-between p-6 md:p-8">
           <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
+            {isOngoing(event.startsAt, event.endsAt) && <OngoingPill />}
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
             <Link
               href={`/profile/${createdBy.id}`}
