@@ -7,7 +7,7 @@ import type { PrivateUser } from "@/shared/types/user";
 type RawUser = Serialized<PrivateUser & { createdAt: Date }>;
 
 export async function login(data: LoginUser): Promise<PrivateUser> {
-  const user = await apiData<RawUser>("/auth/login", {
+  const { user } = await apiData<{ user: RawUser }>("/auth/login", {
     method: "POST",
     body: data,
     fallbackError: "Couldn't login",
@@ -16,7 +16,7 @@ export async function login(data: LoginUser): Promise<PrivateUser> {
 }
 
 export async function register(data: RegisterUser): Promise<PrivateUser> {
-  const user = await apiData<RawUser>("/auth/register", {
+  const { user } = await apiData<{ user: RawUser }>("/auth/register", {
     method: "POST",
     body: data,
     fallbackError: "Couldn't register your account.",
