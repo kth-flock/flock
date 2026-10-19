@@ -3,8 +3,8 @@
 import { useState } from "react";
 import CalendarDay from "./calendarDay";
 import CalendarDayModal from "./calendarDayModal";
-import { WEEKDAYS, dayKey, isSameDay } from "../lib/utils";
-import type { CalendarViewProps } from "../lib/types";
+import { WEEKDAYS, dayKey, isSameDay, assignLanes } from "../lib/utils";
+import type { CalendarEvent, CalendarViewProps } from "../lib/types";
 
 export default function CalendarGridView({
   today,
@@ -39,19 +39,34 @@ export default function CalendarGridView({
           </tr>
         </thead>
         <tbody>
-          {weeks.map((week, weekIndex) => (
-            <tr key={weekIndex}>
-              {week.map((day, dayIndex) => (
-                <CalendarDay
-                  key={day ? dayKey(day) : `empty-${dayIndex}`}
-                  day={day}
-                  isToday={day !== null && isSameDay(day, today)}
-                  events={day ? (eventsByDay.get(dayKey(day)) ?? []) : []}
-                  onClick={setOpenDay}
-                />
-              ))}
-            </tr>
-          ))}
+          {weeks.map((week, weekIndex) => {
+            const weekEvents = new Map<string, CalendarEvent>();
+            for (const day of week) {
+              if (!day) continue;
+              for (const e of eventsByDay.get(dayKey(day)) ?? [])
+                weekEvents.set(String(e.id), e);
+            }
+            const lanes = assignLanes(week, [...weekEvents.values()]);
+
+            return (
+              <tr key={weekIndex}>
+                {week.map((day, dayIndex) => (
+                  <CalendarDay
+                    key={day ? dayKey(day) : `empty-${dayIndex}`}
+                    day={day}
+                    isToday={day !== null && isSameDay(day, today)}
+                    slots={lanes[dayIndex]}
+                    isWeekStart={dayIndex === 0 || week[dayIndex - 1] === null}
+                    isWeekEnd={
+                      dayIndex === week.length - 1 ||
+                      week[dayIndex + 1] === null
+                    }
+                    onClick={setOpenDay}
+                  />
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </>
