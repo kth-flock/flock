@@ -1,20 +1,29 @@
-import { SmallEventPreview } from "@/features/dashboard/components/eventPreview";
 import type { InvitedEvent } from "@/features/event/lib/types";
 import LoadError from "@/shared/components/loadError";
 import Skeleton from "@/shared/components/skeleton";
+import EventHistory, { type HistoryItem } from "./eventHistory";
 
 export default function EventsTogether({
   events,
   error,
   onRetry,
   myId,
+  isLoading,
 }: {
   events: InvitedEvent[] | null;
   error?: string | null;
   onRetry?: () => void;
   myId: number;
+  isLoading: boolean;
 }) {
-  const isLoading = events === null && !error;
+    const items: HistoryItem[] = (events ?? []).map((event) => {
+    const isMine = event.createdById === myId;
+    return {
+      event,
+      status: isMine ? "HOST" : (event.invitees[0]?.rsvp ?? "PENDING"),
+      statusLabel: isMine ? "Hosted by you" : undefined,
+    };
+  });
 
   return (
     <section className="flex flex-col gap-4">
@@ -29,22 +38,20 @@ export default function EventsTogether({
         <LoadError onRetry={onRetry}>
           {error ?? "Couldn't load your events together."}
         </LoadError>
-      ) : events.length === 0 ? (
-        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
-          No upcoming events together yet.
-        </p>
-      ) : (
-        events.map((event) => {
-          const isMine = event.createdById === myId;
-          return (
-            <SmallEventPreview
-              key={event.id}
-              event={event}
-              status={isMine ? "HOST" : (event.invitees[0]?.rsvp ?? "PENDING")}
-              statusLabel={isMine ? "Hosted by you" : undefined}
-            />
-          );
-        })
+      ) :  (
+        <EventHistory
+      title="Events together"
+      sectionTitles={{
+        upcoming: "Upcoming events together",
+        past: "Past events together",
+      }}
+      items={items}
+      isLoading={isLoading}
+      hasError={!isLoading && !events}
+      emptyText="No events together yet."
+      errorText="Couldn't load your events together. Try refreshing the page."
+      hiddenFilters={["DECLINED"]}
+    />
       )}
     </section>
   );
