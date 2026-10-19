@@ -2,7 +2,7 @@
 
 import Announcement from "./announcement";
 import NewAnnouncementForm from "./newAnnouncementForm";
-import { ExtendedAnnouncement } from "@/shared/types/event";
+import type { ExtendedAnnouncement } from "@/shared/types/event";
 import Button from "@/shared/components/button";
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react";
@@ -22,6 +22,8 @@ export default function AnnouncementList({
   const [isAdding, setIsAdding] = useState(false);
 
   const sorted = [...announcements].sort(byNewest);
+
+  const showNoUpdate = sorted.length === 0 && !isAdding;
 
   return (
     <section className="flex flex-col gap-4">
@@ -48,7 +50,7 @@ export default function AnnouncementList({
         />
       )}
 
-      {sorted.length === 0 ? (
+      {showNoUpdate ? (
         <p className="flock-body text-foreground/60">No updates yet.</p>
       ) : (
         <ul className="flex flex-col gap-4">
@@ -56,6 +58,7 @@ export default function AnnouncementList({
             <Announcement
               key={announcement.id}
               announcement={announcement}
+              isHost={isHost}
               onChange={onChange}
             />
           ))}

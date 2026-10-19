@@ -12,9 +12,11 @@ import { updateAnnouncementSchema } from "@flock/shared/schemas/announcement";
 
 export default function Announcement({
   announcement,
+  isHost = false,
   onChange,
 }: {
   announcement: ExtendedAnnouncement;
+  isHost?: boolean;
   onChange: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -34,10 +36,7 @@ export default function Announcement({
       onChange();
     } catch (err) {
       setError(
-        getErrorMessage(
-          err,
-          "Couldn't delete the announcement. Please try again.",
-        ),
+        getErrorMessage(err, "Couldn't delete the update. Please try again."),
       );
       setIsDeleting(false);
     }
@@ -61,10 +60,7 @@ export default function Announcement({
       }
     } catch (err) {
       setError(
-        getErrorMessage(
-          err,
-          "Couldn't update the announcement. Please try again.",
-        ),
+        getErrorMessage(err, "Couldn't edit the update. Please try again."),
       );
     }
   }
@@ -94,6 +90,8 @@ export default function Announcement({
             <li key={comment.id}>
               <Comment
                 comment={comment}
+                eventId={announcement.eventId}
+                isHost={isHost}
                 disableEdit={isEditing}
                 onChange={onChange}
               />
@@ -102,7 +100,13 @@ export default function Announcement({
         </ul>
       )}
 
-      {!isEditing && <ReplyForm announcementId={announcement.id} />}
+      {!isEditing && (
+        <ReplyForm
+          announcementId={announcement.id}
+          eventId={announcement.eventId}
+          onChange={onChange}
+        />
+      )}
     </li>
   );
 }
