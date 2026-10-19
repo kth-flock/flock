@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
-import AuthSkeleton from "./authSkeleton";
 import Spinner from "../components/spinner";
 
 export default function RequireAuth({ children }: { children: ReactNode }) {
