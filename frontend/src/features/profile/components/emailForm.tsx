@@ -5,22 +5,26 @@ import { changeEmail } from "../lib/api";
 import SettingsSection from "./settingsSection";
 import Input from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
-import { SaveResult } from "./profileSettings";
+import { twMerge } from "tailwind-merge";
 
 export default function EmailForm({ currentEmail }: { currentEmail: string }) {
   const { refresh } = useAuth();
   const [email, setEmail] = useState(currentEmail);
   const [password, setPassword] = useState("");
-  const { save, isSaving, result } = useSave();
+  const { save, isSaving, errorMessage } = useSave();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    save(async () => {
-      await changeEmail({ email, password });
-      setPassword("");
-      await refresh();
-    }, "Email changed");
+    save(
+      async () => {
+        await changeEmail({ email, password });
+        setPassword("");
+        await refresh();
+      },
+      "Email changed",
+      "Failed to change email",
+    );
   }
 
   return (
@@ -33,11 +37,11 @@ export default function EmailForm({ currentEmail }: { currentEmail: string }) {
           id="settings-email"
           type="email"
           aria-label="Email"
-          placeholder="Email"
+          placeholder="New email"
           required
-          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <Input
           id="settings-email-password"
           type="password"
@@ -52,12 +56,18 @@ export default function EmailForm({ currentEmail }: { currentEmail: string }) {
           variant="secondary"
           size="sm"
           className="shrink-0 md:mt-3.5"
-          disabled={isSaving || email === currentEmail}
+          isLoading={isSaving}
+          disabled={isSaving || !email || !password}
         >
           {isSaving ? "Saving..." : "Update email"}
         </Button>
       </form>
-      <SaveResult result={result} />
+      <p className="text-foreground/50 flock-caption pl-2">
+        Current: {currentEmail}
+      </p>
+      <p role={"alert"} className={twMerge("flock-ui-label", "text-error")}>
+        {errorMessage}
+      </p>
     </SettingsSection>
   );
 }

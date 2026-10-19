@@ -7,6 +7,7 @@ import {
 import { zodErrorsToRecord } from "@/shared/lib/zod";
 import type { ZodType } from "zod";
 import { getErrorMessage } from "@/shared/lib/errors";
+import { useToast } from "@/shared/components/toast";
 
 export function useEventForm<TPayload>({
   initialValues,
@@ -25,7 +26,7 @@ export function useEventForm<TPayload>({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const toast = useToast();
   function setField<K extends keyof EventFormValues>(
     field: K,
     value: EventFormValues[K],
@@ -55,6 +56,9 @@ export function useEventForm<TPayload>({
       await onSubmit(parsed.data);
     } catch (error) {
       setSubmitError(getErrorMessage(error, fallbackError));
+      {
+        submitError && toast(submitError, "error");
+      }
       setIsSubmitting(false);
     }
   }
