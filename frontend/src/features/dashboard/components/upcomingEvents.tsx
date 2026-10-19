@@ -10,6 +10,7 @@ import EventPreview, {
   SmallEventPreview,
 } from "./eventPreview";
 import type { UpcomingEvent } from "@/features/event/lib/api";
+import UpcomingEventsSkeleton from "./upcomingEventsSkeleton";
 
 const MAX_UPCOMING_EVENTS = 6;
 
@@ -21,7 +22,7 @@ export default function UpcomingEvents({
   const [showAll, setShowAll] = useState(false);
 
   if (events === undefined)
-    return <p className="flock-body text-text-muted">Loading…</p>;
+    return <UpcomingEventsSkeleton />;
   if (events === null)
     return (
       <LoadError>
