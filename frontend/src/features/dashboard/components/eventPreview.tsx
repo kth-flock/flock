@@ -38,26 +38,6 @@ const statusChipStyle: Record<EventStatus, string> = {
   PENDING: "bg-neutral text-foreground!",
 };
 
-function ImagePlaceholder({
-  title,
-  className,
-}: {
-  title: string;
-  className: string;
-}) {
-  return (
-    <span
-      aria-hidden
-      className={twMerge(
-        "absolute inset-0 flex items-center justify-center px-4 font-serif",
-        className,
-      )}
-    >
-      <span className="truncate">{title}</span>
-    </span>
-  );
-}
-
 export default function EventPreview({
   event,
   status,
@@ -72,24 +52,17 @@ export default function EventPreview({
       href={`/event/${event.id}`}
       className="block rounded-2xl shadow-md bg-neutral/20  w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
-      <div className="relative bg-neutral w-full h-36">
-        {event.imageUrl ? (
-          <EventImage
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            sizes="(min-width: 48rem) 32rem, 100vw"
-            className="object-cover"
-          />
-        ) : (
-          <ImagePlaceholder
-            title={event.title}
-            className="text-3xl text-primary/50"
-          />
-        )}
+      <div className="relative w-full h-36">
+        <EventImage
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          sizes="(min-width: 48rem) 32rem, 100vw"
+          className="object-cover"
+        />
         <span
           className={twMerge(
-            "absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm shadow-sm [&_svg]:fill-current",
+            "absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm ring-[1.5px] ring-current [&_svg]:fill-current",
             statusChipStyle[status],
           )}
         >
@@ -159,24 +132,17 @@ export function SmallEventPreview({
       href={`/event/${event.id}`}
       className="flex min-h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/25 hover:shadow-lg hover:scale-[0.98] transition-all"
     >
-      <div className="relative w-1/2 shrink-0 bg-primary">
-        {event.imageUrl ? (
-          <EventImage
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            sizes="(min-width: 48rem) 16rem, 50vw"
-            className="object-cover"
-          />
-        ) : (
-          <ImagePlaceholder
-            title={event.title}
-            className="text-lg text-background/70"
-          />
-        )}
+      <div className="relative w-1/2 shrink-0">
+        <EventImage
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          sizes="(min-width: 48rem) 16rem, 50vw"
+          className="object-cover"
+        />
         <span
           className={twMerge(
-            "absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption shadow-sm [&_svg]:fill-current",
+            "absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption ring-[1.5px] ring-current [&_svg]:fill-current",
             statusChipStyle[status],
           )}
         >
