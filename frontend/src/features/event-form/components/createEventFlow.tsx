@@ -25,7 +25,7 @@ export default function CreateEventFlow() {
           mode="create"
           schema={createEventSchema}
           fallbackError="Couldn't create the event. Please try again."
-          successMessage="Event created successfully."
+          successMessage="Event created."
           onSubmit={async (payload, imageFile) => {
             const created = await withUploadedImage(imageFile, (imageUrl) =>
               createEvent({ ...payload, imageUrl }),

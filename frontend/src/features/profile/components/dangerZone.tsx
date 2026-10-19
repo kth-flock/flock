@@ -5,21 +5,25 @@ import { useSave } from "../hooks/useSave";
 import { deleteMyAccount } from "../lib/api";
 import Button from "@/shared/components/button";
 import { FaTrash } from "react-icons/fa6";
-import { SaveResult } from "./profileSettings";
+import { twMerge } from "tailwind-merge";
 
 export default function DangerZone() {
   const router = useRouter();
   const { logout } = useAuth();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
-  const { save, isSaving, result } = useSave();
+  const { save, isSaving, errorMessage } = useSave();
 
   function handleDeleteAccount() {
-    save(async () => {
-      await deleteMyAccount();
-      await logout();
-      router.push("/");
-      router.refresh();
-    }, "Account deleted");
+    save(
+      async () => {
+        await deleteMyAccount();
+        await logout();
+        router.push("/");
+        router.refresh();
+      },
+      "Account deleted",
+      "Failed to delete account",
+    );
   }
 
   return (
@@ -46,9 +50,8 @@ export default function DangerZone() {
             </Button>
             <Button
               size="sm"
-              icon={<FaTrash />}
-              iconPlacement="left"
               className="bg-error text-white hover:bg-error-dark"
+              isLoading={isSaving}
               disabled={isSaving}
               onClick={handleDeleteAccount}
             >
@@ -68,7 +71,9 @@ export default function DangerZone() {
           </Button>
         )}
       </div>
-      <SaveResult result={result} />
+      <p role={"alert"} className={twMerge("flock-ui-label", "text-error")}>
+        {errorMessage}
+      </p>
     </section>
   );
 }
