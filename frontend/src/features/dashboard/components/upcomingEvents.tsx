@@ -16,17 +16,20 @@ const MAX_UPCOMING_EVENTS = 6;
 
 export default function UpcomingEvents({
   events,
+  error,
+  onRetry,
 }: {
   events: UpcomingEvent[] | null | undefined;
+  error?: string | null;
+  onRetry?: () => void;
 }) {
   const [showAll, setShowAll] = useState(false);
 
-  if (events === undefined)
-    return <UpcomingEventsSkeleton />;
-  if (events === null)
+  if (events === undefined) return <UpcomingEventsSkeleton />;
+  if (events === null || error)
     return (
-      <LoadError>
-        {"Couldn't load your events. Try refreshing the page."}
+      <LoadError onRetry={onRetry}>
+        {error ?? "Couldn't load your events. Try again."}
       </LoadError>
     );
 

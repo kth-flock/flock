@@ -10,6 +10,7 @@ import { MONTHS, getMonthWeeks, groupEventsByDay } from "../lib/utils";
 import { useFetch } from "@/shared/hooks/useFetch";
 import { getMyEvents } from "@/features/event/lib/api";
 import type { CalendarViewProps } from "../lib/types";
+import ErrorState from "@/shared/components/ErrorState";
 
 export default function CalendarWrapper() {
   const { data, isLoading, error, refetch } = useFetch(getMyEvents);
@@ -37,17 +38,19 @@ export default function CalendarWrapper() {
     eventsByDay,
   };
 
+  if (error && !data) {
+    return (
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        action={{ label: "Try again", onClick: refetch }}
+      />
+    );
+  }
+
+
   return (
     <div className="w-full">
-      {error && (
-        <div className="mb-4 flex items-center gap-4" role="alert">
-          <p className="text-error">{error}</p>
-          <Button type="button" variant="secondary" size="sm" onClick={refetch}>
-            Retry
-          </Button>
-        </div>
-      )}
-
       <div className="sticky top-0 z-20 -mx-6 flex items-center justify-between bg-background px-4 py-2 md:static md:mx-0 md:bg-transparent md:p-0 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.15)]">
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
           <h2 className="flock-h2 w-48 md:w-64 text-center">

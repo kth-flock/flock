@@ -5,6 +5,7 @@ import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { ProfileUser, UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
 import { FriendStackSkeleton } from "./profilePageSkeleton";
+import LoadError from "@/shared/components/loadError";
 
 const countOf = (list: unknown[] | null | undefined) =>
   list ? String(list.length) : "-";
@@ -13,6 +14,8 @@ type ProfileContentProps = {
   profile: ProfileUser;
   /** undefined while loading, null if failed */
   friends: UserSearchResult[] | null | undefined;
+  friendsError?: string | null;
+  onFriendsRetry?: () => void;
   myId?: number;
   hostedEvents?: EventSummary[] | null;
   invitedEvents?: InvitedEvent[] | null;
@@ -22,6 +25,8 @@ type ProfileContentProps = {
 export default function ProfileContent({
   profile,
   friends,
+  friendsError,
+  onFriendsRetry,
   myId,
   hostedEvents,
   invitedEvents,
@@ -40,8 +45,11 @@ export default function ProfileContent({
       extra:
         friends === undefined ? (
           <FriendStackSkeleton />
+        ) : friends === null || friendsError ? (
+          <LoadError onRetry={onFriendsRetry}>
+            {friendsError ?? "Couldn't load friends"}
+          </LoadError>
         ) : (
-          friends &&
           friends.length > 0 && <FriendStack friends={friends} myId={myId} />
         ),
     },

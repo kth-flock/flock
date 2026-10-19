@@ -2,7 +2,8 @@
 
 import ErrorState from "@/shared/components/ErrorState";
 
-export default function EventError({
+export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -11,7 +12,7 @@ export default function EventError({
   return (
     <ErrorState
       title="Something went wrong"
-      message="We couldn’t load this event."
+      message={error.message || "Something went wrong. Please try again."}
       action={{ label: "Try again", onClick: reset }}
     />
   );

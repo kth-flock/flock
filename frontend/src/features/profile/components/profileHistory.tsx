@@ -4,17 +4,22 @@ import {
 } from "@/features/dashboard/components/eventPreview";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { ProfileHistorySkeleton } from "./profilePageSkeleton";
+import LoadError from "@/shared/components/loadError";
 
 type ProfileHistoryProps = {
   hostedEvents: EventSummary[] | null;
   invitedEvents: InvitedEvent[] | null;
   isLoading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 };
 
 export default function ProfileHistory({
   hostedEvents,
   invitedEvents,
   isLoading,
+  error,
+  onRetry,
 }: ProfileHistoryProps) {
   const byId = new Map<number, { event: EventSummary; status: EventStatus }>();
   for (const event of invitedEvents ?? []) {
@@ -37,11 +42,25 @@ export default function ProfileHistory({
 
       {isLoading && <ProfileHistorySkeleton />}
 
-      {!isLoading && history.length === 0 && hostedEvents && invitedEvents && (
-        <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
-          Nothing here yet.
-        </p>
+      {!isLoading && error && history.length === 0 && (
+        <LoadError onRetry={onRetry}>
+          {error ?? "Couldn't load your event history."}
+        </LoadError>
       )}
+
+      {!isLoading && error && history.length > 0 && (
+        <LoadError onRetry={onRetry}>{error}</LoadError>
+      )}
+
+      {!isLoading &&
+        !error &&
+        history.length === 0 &&
+        hostedEvents &&
+        invitedEvents && (
+          <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
+            Nothing here yet.
+          </p>
+        )}
 
       {!isLoading &&
         history.map(({ event, status }) => (

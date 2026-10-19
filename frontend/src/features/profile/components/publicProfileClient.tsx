@@ -58,18 +58,27 @@ function PublicProfileData({
 
   const { data: profile, error, errorStatus, isLoading, refetch } =
     useFetch(fetchProfile);
-  const { data: friends } = useFetch(fetchFriends);
+  const {
+    data: friends,
+    isLoading: friendsLoading,
+    error: friendsError,
+    refetch: refetchFriends,
+  } = useFetch(fetchFriends);
   const { data: friendStatuses } = useFetch(getMyFriendshipStatuses);
-  const { data: eventsTogether } = useFetch(fetchEventsTogether);
+  const {
+    data: eventsTogether,
+    error: eventsTogetherError,
+    refetch: refetchEventsTogether,
+  } = useFetch(fetchEventsTogether);
 
-  const friendsWithStatus = useMemo(
-    () =>
-      friends?.map((friend) => ({
-        ...friend,
-        friendshipStatus: friendStatuses?.get(friend.id) ?? ("NONE" as const),
-      })) ?? null,
-    [friends, friendStatuses],
-  );
+  const friendsWithStatus = useMemo(() => {
+    if (friendsLoading) return undefined;
+    if (friendsError || !friends) return null;
+    return friends.map((friend) => ({
+      ...friend,
+      friendshipStatus: friendStatuses?.get(friend.id) ?? ("NONE" as const),
+    }));
+  }, [friends, friendsLoading, friendsError, friendStatuses]);
 
   if (isLoading) return <ProfilePageSkeleton />;
   if (errorStatus === 404) notFound();
@@ -99,11 +108,19 @@ function PublicProfileData({
         <ProfileContent
           profile={profile}
           friends={friendsWithStatus}
+          friendsError={friendsError}
+          onFriendsRetry={refetchFriends}
           myId={friendStatuses ? user.id : undefined}
           className="grid-cols-2 md:grid-cols-1"
         />
         <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
-          <EventsTogether events={eventsTogether} myId={user.id} />
+          <EventsTogether
+            events={eventsTogether}
+            error={eventsTogetherError}
+            onRetry={refetchEventsTogether}
+            myId={user.id}
+          />
+
         </div>
       </div>
     </div>

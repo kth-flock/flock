@@ -1,11 +1,11 @@
 import ErrorState from "@/shared/components/ErrorState";
 
-export default function EventNotFound() {
+export default function GlobalNotFound() {
   return (
     <ErrorState
       variant="not-found"
-      title="Event not found"
-      message="This event doesn’t exist or has been removed."
+      title="Not found"
+      message="This page doesn’t exist or has been removed."
       action={{ label: "Back home", href: "/" }}
     />
   );
