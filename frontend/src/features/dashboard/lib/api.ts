@@ -4,10 +4,19 @@ import type { Serialized } from "@/shared/types/serialized";
 
 export const getNotifications = async (): Promise<Notification[]> =>
   (
-    await apiData<SerializedNotification[]>("/me/notifications", {
+    await apiData<Serialized<Notification[]>>("/me/notifications", {
       fallbackError: "Failed to get notifications",
     })
-  ).map((notification) => ({
-    ...notification,
-    createdAt: new Date(notification.createdAt),
-  }));
+  ).map((notification) => {
+    const { createdAt: fromCreatedAt, ...from } = notification.from;
+    return {
+      ...notification,
+      from: {
+        ...from,
+        ...(fromCreatedAt === undefined
+          ? {}
+          : { createdAt: new Date(fromCreatedAt) }),
+      },
+      createdAt: new Date(notification.createdAt),
+    };
+  });

@@ -18,7 +18,11 @@ type Props<TPayload> = {
   schema: ZodType<TPayload>;
   fallbackError: string;
   successMessage: string;
-  onSubmit: (payload: TPayload, imageFile: File | null) => Promise<void>;
+  onSubmit: (
+    payload: TPayload,
+    imageFile: File | null,
+    removeImage: boolean,
+  ) => Promise<void>;
 };
 
 export default function EventForm<TPayload>({
@@ -34,6 +38,7 @@ export default function EventForm<TPayload>({
   onSubmit,
 }: Props<TPayload>) {
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const toast = useToast();
   const form = useEventForm({
     initialValues,
@@ -41,7 +46,7 @@ export default function EventForm<TPayload>({
     schema,
     fallbackError,
     onSubmit: async (payload) => {
-      await onSubmit(payload, imageFile);
+      await onSubmit(payload, imageFile, removeImage);
       toast(successMessage, "success");
     },
   });
@@ -50,8 +55,11 @@ export default function EventForm<TPayload>({
     <form className="flex flex-col gap-2 md:gap-4" onSubmit={form.handleSubmit}>
       {heading && <h1 className="flock-h1 text-center">{heading}</h1>}
       <EventImageField
+        mode={mode}
         currentImageUrl={currentImageUrl}
         onChange={setImageFile}
+        onDelete={() => setRemoveImage(true)}
+        onCancelDelete={() => setRemoveImage(false)}
       />
       <EventFormFields
         values={form.values}
