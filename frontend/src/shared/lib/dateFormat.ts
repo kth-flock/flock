@@ -7,6 +7,11 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
+const shortDateFormatter = new Intl.DateTimeFormat("en-GB", {
+  day: "2-digit",
+  month: "short",
+});
+
 const timeFormatter = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
   minute: "2-digit",
@@ -40,6 +45,10 @@ const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
 
 export const formatDate = (iso: Date | string) =>
   dateFormatter.format(new Date(iso));
+
+export const formatShortDate = (iso: Date | string) =>
+  shortDateFormatter.format(new Date(iso));
+
 export const formatTime = (iso: Date | string) =>
   timeFormatter.format(new Date(iso));
 
@@ -89,6 +98,13 @@ export function formatTimeRange(
   if (!endsAt) return start;
 
   return `${start} - ${formatTime(endsAt)}`;
+}
+
+export function formatDateRange(
+  startsAt: Date | string,
+  endsAt: Date | string,
+) {
+  return `${formatShortDate(startsAt)} - ${formatShortDate(endsAt)}`;
 }
 
 export function getRelativeDatetime(datetime: Date) {

@@ -5,6 +5,7 @@ export type CalendarEvent = {
   id: number;
   title: string;
   startsAt: Date;
+  endsAt: Date | null;
   createdById: number;
   createdBy?: PublicUser;
   invitees: { rsvp: RsvpStatus }[];

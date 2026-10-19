@@ -60,7 +60,7 @@ export default function CalendarListView({
           <ul className="flex flex-1 flex-col gap-3 border-l pl-4">
             {events.map((event) => (
               <li key={event.id}>
-                <EventPillDetails event={event} />
+                <EventPillDetails event={event} day={day} />
               </li>
             ))}
           </ul>

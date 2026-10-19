@@ -31,8 +31,32 @@ export function dayKey(d: Date) {
 export function groupEventsByDay(events: CalendarEvent[]) {
   const map = new Map<string, CalendarEvent[]>();
   for (const event of events) {
-    const key = dayKey(event.startsAt);
-    map.set(key, [...(map.get(key) ?? []), event]);
+    const firstDay = new Date(
+      event.startsAt.getFullYear(),
+      event.startsAt.getMonth(),
+      event.startsAt.getDate(),
+    );
+    const lastDate =
+      event.endsAt && event.endsAt > event.startsAt
+        ? event.endsAt
+        : event.startsAt;
+    const lastDay = new Date(
+      lastDate.getFullYear(),
+      lastDate.getMonth(),
+      lastDate.getDate(),
+    );
+
+    for (
+      let day = firstDay;
+      day <= lastDay;
+      day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
+    ) {
+      const key = dayKey(day);
+      map.set(key, [...(map.get(key) ?? []), event]);
+    }
+  }
+  for (const dayEvents of map.values()) {
+    dayEvents.sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
   }
   return map;
 }
@@ -73,4 +97,41 @@ export function getScrollTargetKey(days: { day: Date }[], today: Date) {
     days.find(({ day }) => day > today) ??
     days[0];
   return target ? dayKey(target.day) : null;
+}
+
+const dayMs = (d: Date) =>
+  new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+
+/* lanes[dayIndex][laneIndex] = event | null. An event keeps one lane for the whole week. */
+export function assignLanes(
+  week: (Date | null)[],
+  events: CalendarEvent[],
+): (CalendarEvent | null)[][] {
+  const lanes: (CalendarEvent | null)[][] = week.map(() => []);
+  const dayKeys = week.map((d) => (d ? dayMs(d) : null));
+
+  const spans = events
+    .map((e) => {
+      const s = dayMs(e.startsAt);
+      const en = e.endsAt ? Math.max(s, dayMs(e.endsAt)) : s;
+      return { e, s, en };
+    })
+    // longest first so multi-day events get the top lanes
+    .sort((a, b) => b.en - b.s - (a.en - a.s) || a.s - b.s);
+
+  for (const { e, s, en } of spans) {
+    const covered = dayKeys.flatMap((k, i) =>
+      k !== null && k >= s && k <= en ? [i] : [],
+    );
+    if (covered.length === 0) continue;
+
+    let lane = 0;
+    while (covered.some((i) => lanes[i][lane])) lane++;
+
+    for (const i of covered) {
+      for (let l = lanes[i].length; l < lane; l++) lanes[i][l] = null;
+      lanes[i][lane] = e;
+    }
+  }
+  return lanes;
 }
