@@ -15,7 +15,6 @@ import {
   formatTimeRange,
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
-import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
 import EventImage from "@/shared/components/eventImage";
@@ -40,6 +39,20 @@ const statusIcon: Record<
     icon: <FaClock className="fill-(--color-text-muted)" />,
     label: "Not answered",
   },
+};
+
+const hasEnded = (event: EventSummary) =>
+  (event.endsAt ?? event.startsAt).getTime() < Date.now();
+
+// Status chip colours: the theme's light/dark pairs, which also flip in dark
+// mode. flock-caption sets its own text colour, hence the !
+const statusChipStyle: Record<EventStatus, string> = {
+  // Same colour as hosted events in the calendar
+  HOST: "bg-info-light text-info-dark!",
+  ACCEPTED: "bg-success-light text-success-dark!",
+  MAYBE: "bg-warn-light text-warn-dark!",
+  DECLINED: "bg-error-light text-error-dark!",
+  PENDING: "bg-neutral text-foreground!",
 };
 
 function ImagePlaceholder({
@@ -145,6 +158,8 @@ export function SmallEventPreview({
   event: EventSummary;
   status: EventStatus;
 }) {
+  const passed = hasEnded(event);
+
   return (
     <Link
       href={`/event/${event.id}`}
@@ -165,28 +180,33 @@ export function SmallEventPreview({
             className="text-lg text-background/70"
           />
         )}
+        <span
+          className={twMerge(
+            "absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption shadow-sm [&_svg]:fill-current",
+            statusChipStyle[status],
+          )}
+        >
+          <span aria-hidden className="inline-flex">
+            {statusIcon[status].icon}
+          </span>
+          {statusIcon[status].label}
+        </span>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
-        <span className="flex justify-between items-start gap-2">
-          <p
-            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
-            title={event.title}
-          >
-            {event.title}
-          </p>
-          <span
-            className="mt-0.5 shrink-0"
-            title={statusIcon[status].label}
-            aria-label={statusIcon[status].label}
-          >
-            {statusIcon[status].icon}
-          </span>
-        </span>
+        <p
+          className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
+          title={event.title}
+        >
+          {event.title}
+        </p>
 
         <span
-          className="inline-flex items-center gap-1 flock-caption capitalize"
-          title="Date"
+          className={twMerge(
+            "inline-flex items-center gap-1 flock-caption",
+            passed && "text-error!",
+          )}
+          title={passed ? "Date (this event is over)" : "Date"}
         >
           <FaCalendar />
           <time
