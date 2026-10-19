@@ -19,6 +19,8 @@ const rsvpMessage = {
   DECLINED: "can't come to",
 } as const;
 
+const nameStyle = "inline-block max-w-full truncate align-bottom";
+
 function message({ type, event, rsvp }: NotificationData) {
   const eventTitle = (
     <b className="inline-block max-w-full truncate align-bottom">
@@ -98,11 +100,15 @@ export default function Notification({
           <p className="flock-body wrap-break-word">
             {type === "NEW_FRIEND" ? (
               <>
-                You and <b>{fullName(from)}</b> are now friends
+                You and <b className={nameStyle}>{fullName(from)}</b> are now
+                friends
               </>
             ) : (
               <>
-                <b>{fullName(from)}</b> {message(notification)}
+                <b className={nameStyle} title={fullName(from)}>
+                  {fullName(from)}
+                </b>{" "}
+                {message(notification)}
               </>
             )}
           </p>

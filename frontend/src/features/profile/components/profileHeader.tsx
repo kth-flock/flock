@@ -43,7 +43,12 @@ export default function ProfileHeader({
               lastName={profile.lastName}
               profileImgSrc={profile.imageUrl ?? ""}
             />
-            <h1 className="flock-h1">{fullName(profile)}</h1>
+            <h1
+              className="flock-h1 min-w-0 line-clamp-2 wrap-break-word"
+              title={fullName(profile)}
+            >
+              {fullName(profile)}
+            </h1>
           </div>
 
           {isOwnProfile && "email" in profile && (
