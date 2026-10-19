@@ -8,6 +8,8 @@ import {
   ConflictError,
 } from "../utils/errors";
 
+// TODO add assert functions for the checks?
+
 export async function addInvitee(
   userId: UserId,
   eventId: EventId,

@@ -18,9 +18,6 @@ export const eventsRouter = Router();
 eventsRouter.use("/:eventId/invitees", inviteesRouter);
 eventsRouter.use("/:eventId/announcements", announcementsRouter);
 
-//Get surface level data for all events (no annoncements, comments, or userData)
-eventsRouter.get("/", getEvents);
-
 //Get surface level data for all events created by user (no annoncements, comments, or userData)
 eventsRouter.get("/created", getCreatedEvents);
 

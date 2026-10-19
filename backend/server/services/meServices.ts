@@ -22,6 +22,9 @@ export async function getMyAccount(userId: UserId) {
 }
 
 export async function deleteMyAccount(userId: UserId, imageUrl: string | null) {
+  // TODO add assert user
+  // TODO add check if you're allowed to delete this user
+
   await prisma.user.delete({
     where: { id: userId },
   });
@@ -38,6 +41,9 @@ export async function editUserInfo(
   data: UserInfo,
   prevImageUrl: string | null,
 ) {
+  // TODO add assert user
+  // TODO add check if you're allowed to edit this user
+
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     select: privateUserInformationSelect,
@@ -74,11 +80,12 @@ async function checkPassword(userId: UserId, password: string) {
 
 export async function changeEmail(userId: UserId, data: ChangeEmail) {
   await checkPassword(userId, data.password);
-
+  // TODO add user check ?
   const emailOwner = await prisma.user.findUnique({
     where: { email: data.email },
     select: { id: true },
   });
+
   if (emailOwner && emailOwner.id !== userId) {
     throw new ConflictError("Email is already in use");
   }
@@ -93,6 +100,7 @@ export async function changeEmail(userId: UserId, data: ChangeEmail) {
 }
 
 export async function changePassword(userId: UserId, data: ChangePassword) {
+  // TODO add user check (?)
   await checkPassword(userId, data.currentPassword);
 
   const pwdHash = await bcrypt.hash(data.newPassword, 10);

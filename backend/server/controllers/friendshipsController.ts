@@ -8,6 +8,7 @@ import { ConflictError, NotFoundError } from "../utils/errors";
 export async function getMyFriends(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
+  // TODO remove check
   const user = await getUserById(userId);
 
   if (!user) {
@@ -36,7 +37,6 @@ export async function getFriendRequests(req: Request, res: Response) {
   res.status(200).json({ status: "Success", data: friendshipRequests });
 }
 
-// Send request
 export async function sendFriendRequest(req: Request, res: Response) {
   const requesterId = validate(idSchema, req.user.id, "Invalid user ID");
   const requesteeId = validate(
@@ -69,6 +69,7 @@ export async function acceptFriendship(req: Request, res: Response) {
     requesteeId,
   );
 
+  // TODO add these to service instead?
   if (!friendship || friendship.requesteeId !== requesteeId) {
     throw new NotFoundError("Friend request not found");
   }
@@ -91,7 +92,7 @@ export async function deleteFriendship(req: Request, res: Response) {
     throw new NotFoundError("User not found");
   }
 
-  // check if friendship exists
+  // TODO add a handle for friendship exist in service?
   const friendship = await friendsServices.getFriendship(userId, friendId);
 
   if (!friendship) {
