@@ -2,7 +2,7 @@ import { z } from "zod";
 import { idSchema } from "./common";
 
 export type AnnouncementId = z.infer<typeof idSchema>;
-const MAX_ANNOUNCEMENT_LENGTH = 1000;
+const MAX_ANNOUNCEMENT_LENGTH = 3000;
 
 export const createAnnouncementSchema = z
   .object({
@@ -12,7 +12,7 @@ export const createAnnouncementSchema = z
       .min(1, "Announcement cannot be empty")
       .max(
         MAX_ANNOUNCEMENT_LENGTH,
-        "Announcement must be at most ${MAX_ANNOUNCEMENT_LENGTH} characters",
+        `Announcement must be at most ${MAX_ANNOUNCEMENT_LENGTH} characters`,
       ),
   })
   .strict();
