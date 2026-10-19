@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa6";
 import { useAuth } from "@/shared/auth/authContext";
 import InviteBar from "../../features/search/components/inviteBar";
+import ProfileImage from "./profileImage";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -64,7 +65,16 @@ export default function Navbar() {
             className={`flex h-full ${navLinkStyle}`}
             aria-label="Profile"
           >
-            <FaCircleUser className={navIconStyle} />
+            {user.imageUrl ? (
+              <ProfileImage
+                className="size-12 border-4 border-primary hover:drop-shadow-md"
+                firstName={user.firstName}
+                lastName={user.lastName}
+                profileImgSrc={user.imageUrl ?? ""}
+              />
+            ) : (
+              <FaCircleUser className={navIconStyle} />
+            )}
           </Link>
         </span>
       )}
