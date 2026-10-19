@@ -11,6 +11,7 @@ import { useToast } from "@/shared/components/toast";
 type Props<TPayload> = {
   heading?: string;
   submitLabel: string;
+  loadingLabel?: string;
   cancelHref: string;
   initialValues: EventFormValues;
   mode: EventPayloadMode;
@@ -28,6 +29,7 @@ type Props<TPayload> = {
 export default function EventForm<TPayload>({
   heading,
   submitLabel,
+  loadingLabel = "Loading...",
   cancelHref,
   initialValues,
   mode,
@@ -40,6 +42,7 @@ export default function EventForm<TPayload>({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
   const toast = useToast();
+
   const form = useEventForm({
     initialValues,
     mode,
@@ -75,8 +78,12 @@ export default function EventForm<TPayload>({
         <Button type="button" variant="secondary" href={cancelHref}>
           Cancel
         </Button>
-        <Button type="submit" disabled={form.isSubmitting}>
-          {submitLabel}
+        <Button
+          type="submit"
+          isLoading={form.isSubmitting}
+          disabled={form.isSubmitting}
+        >
+          {form.isSubmitting ? loadingLabel : submitLabel}
         </Button>
       </div>
     </form>

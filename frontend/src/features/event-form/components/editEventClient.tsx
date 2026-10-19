@@ -29,6 +29,7 @@ export default function EditEventClient({ eventId }: { eventId: number }) {
       <EventForm
         heading="Edit Event"
         submitLabel="Update"
+        loadingLabel="Updating..."
         cancelHref={`/event/${event.id}`}
         initialValues={eventToFormValues(event)}
         mode="update"
