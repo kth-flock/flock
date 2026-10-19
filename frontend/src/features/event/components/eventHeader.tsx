@@ -1,11 +1,11 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import type { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
 import { useState } from "react";
+import EventImage from "@/shared/components/eventImage";
 
 export default function EventHeader({
   event,
@@ -28,21 +28,25 @@ export default function EventHeader({
       )}
 
       <div className="relative flex flex-col justify-end h-64 w-full overflow-hidden rounded-2xl shadow-lg md:h-96">
-        <Image
-          src={event.imageUrl ?? "/placeholder.png"}
-          alt=""
+        <EventImage
+          src={event.imageUrl}
+          alt={`Cover image for ${event.title}`}
           fill
           sizes="(min-width: 48rem) 48rem, 100vw"
           loading="eager"
           fetchPriority="high"
           className="object-cover"
         />
+
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
         <div className="w-full flex justify-between items-end p-6 md:p-8 z-20">
           <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
-            <Link href={`/profile/${event.createdBy.id}`} className="group/host flock-body-sm flex w-fit items-center gap-2">
+            <Link
+              href={`/profile/${event.createdBy.id}`}
+              className="group/host flock-body-sm flex w-fit items-center gap-2"
+            >
               <ProfileImage
                 profileImgSrc={event.createdBy.imageUrl ?? ""}
                 firstName={event.createdBy.firstName}
