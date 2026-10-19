@@ -15,6 +15,7 @@ export default function EditablePost({
   content,
   label,
   disableEdit = false,
+  isDeleting = false,
   onSave,
   onRemove,
   onEditingChange,
@@ -24,6 +25,7 @@ export default function EditablePost({
   content: string;
   label: string;
   disableEdit?: boolean;
+  isDeleting?: boolean;
   onSave: (content: string) => void;
   onRemove: () => void;
   onEditingChange?: (isEditing: boolean) => void;
@@ -61,6 +63,7 @@ export default function EditablePost({
               size="sm"
               aria-label={`Edit ${label}`}
               onClick={startEditing}
+              disabled={isDeleting}
             >
               <FaPenToSquare aria-hidden />
             </IconButton>
@@ -70,6 +73,7 @@ export default function EditablePost({
               className="text-error!"
               aria-label={`Remove ${label}`}
               onClick={onRemove}
+              disabled={isDeleting}
             >
               <FaTrash aria-hidden />
             </IconButton>

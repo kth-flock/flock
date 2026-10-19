@@ -4,6 +4,9 @@ import { useState } from "react";
 import { FaPaperPlane } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import { TextArea } from "@/shared/components/formInputs";
+import { getErrorMessage } from "@/shared/lib/errors";
+import { createAnnouncement } from "../lib/api";
+import { createAnnouncementSchema } from "@flock/shared/schemas/announcement";
 
 export default function NewAnnouncementForm({
   eventId,
@@ -15,16 +18,33 @@ export default function NewAnnouncementForm({
   onChange: () => void;
 }) {
   const [announcement, setAnnouncement] = useState("");
-  const trimmed = announcement.trim();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const result = createAnnouncementSchema.safeParse({ content: announcement });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!trimmed) return;
+    setError(null);
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+    setIsSubmitting(true);
 
-    // TODO: post announcement to event
-    setAnnouncement("");
-    onChange();
-    onClose();
+    try {
+      await createAnnouncement(eventId, result.data);
+      setAnnouncement("");
+      onChange();
+      onClose();
+    } catch (err) {
+      setError(
+        getErrorMessage(
+          err,
+          "Couldn't create the announcement. Please try again.",
+        ),
+      );
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -37,7 +57,13 @@ export default function NewAnnouncementForm({
         onChange={(e) => setAnnouncement(e.target.value)}
         autoFocus
         className="-my-2"
+        disabled={isSubmitting}
       />
+      {error && (
+        <p className="flock-caption text-error!" role="alert">
+          {error}
+        </p>
+      )}
       <div className="flex w-full justify-between">
         <Button
           type="button"
@@ -45,6 +71,7 @@ export default function NewAnnouncementForm({
           variant="secondary"
           size="sm"
           onClick={onClose}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>
@@ -52,11 +79,11 @@ export default function NewAnnouncementForm({
           type="submit"
           icon={<FaPaperPlane />}
           iconPlacement="left"
-          disabled={!trimmed}
+          disabled={!announcement.trim() || isSubmitting}
           className="shrink-0"
           size="sm"
         >
-          Send update
+          {isSubmitting ? "Sending..." : "Send update"}
         </Button>
       </div>
     </form>
