@@ -13,3 +13,8 @@ services:
       POSTGRES_DB: flock_test
     tmpfs:
       - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U test -d flock_test"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
