@@ -3,7 +3,7 @@ import {
   type EventStatus,
 } from "@/features/dashboard/components/eventPreview";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
-import ProfileHistorySkeleton from "./profileHistorySkeleton";
+import { ProfileHistorySkeleton } from "./profilePageSkeleton";
 
 type ProfileHistoryProps = {
   hostedEvents: EventSummary[] | null;

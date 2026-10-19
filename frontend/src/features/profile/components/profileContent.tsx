@@ -4,7 +4,7 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { ProfileUser, UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
-import FriendStackSkeleton from "./friendStackSkeleton";
+import { FriendStackSkeleton } from "./profilePageSkeleton";
 
 const countOf = (list: unknown[] | null | undefined) =>
   list ? String(list.length) : "-";

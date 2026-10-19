@@ -16,7 +16,7 @@ import { useAuth } from "@/shared/auth/authContext";
 import { randomBannerColor } from "../lib/bannerColor";
 import { useFetch } from "@/shared/hooks/useFetch";
 import type { PrivateUser } from "@/shared/types/user";
-
+import ProfilePageSkeleton from "./profilePageSkeleton";
 export default function PublicProfileClient({
   profileId,
 }: {
@@ -68,8 +68,9 @@ function PublicProfileData({
     [friends, friendStatuses],
   );
 
-  // TODO: Error and loading
-  if (isLoading || error) return null;
+  // TODO: Error
+  if (isLoading) return <ProfilePageSkeleton />;
+  if (error) return;
   if (!profile) notFound();
 
   const friendshipStatus = friendStatuses
