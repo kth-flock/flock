@@ -55,10 +55,9 @@ export function useEventForm<TPayload>({
     try {
       await onSubmit(parsed.data);
     } catch (error) {
-      setSubmitError(getErrorMessage(error, fallbackError));
-      {
-        submitError && toast(submitError, "error");
-      }
+      const message = getErrorMessage(error, fallbackError);
+      setSubmitError(message);
+      toast(message, "error");
       setIsSubmitting(false);
     }
   }

@@ -52,7 +52,6 @@ export default function ProfileForm({ profile }: { profile: PrivateUser }) {
 
         setImage(null);
         setRemoveImage(false);
-        refresh();
         setImageKey((k) => k + 1);
       },
       "Changes saved",
