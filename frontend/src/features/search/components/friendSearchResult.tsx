@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { UserSearchResult } from "@/shared/types/user";
 import Button, { IconButton } from "../../../shared/components/button";
@@ -14,6 +15,7 @@ type FriendSearchResultProps = {
   onAddFriend?: () => void;
   onAcceptFriend?: () => void;
   onDeclineFriend?: () => void;
+  onOpenProfile?: () => void;
 };
 
 type ActionConfig = {
@@ -34,6 +36,7 @@ export default function FriendSearchResult({
   onAddFriend,
   onAcceptFriend,
   onDeclineFriend,
+  onOpenProfile,
 }: FriendSearchResultProps) {
   const actions: Record<FriendshipStatus, ActionConfig> = {
     NONE: {
@@ -74,14 +77,20 @@ export default function FriendSearchResult({
 
   return (
     <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-2 gap-1">
-      <ProfileImage
-        firstName={user.firstName}
-        lastName={user.lastName}
-        profileImgSrc={user.imageUrl ?? ""}
-      />
-      <p className="min-w-0 flex-1 break-words whitespace-normal px-2">
-        {fullName(user)}
-      </p>
+      <Link
+        href={`/profile/${user.id}`}
+        onClick={onOpenProfile}
+        className="group/result flex min-w-0 flex-1 items-center"
+      >
+        <ProfileImage
+          firstName={user.firstName}
+          lastName={user.lastName}
+          profileImgSrc={user.imageUrl ?? ""}
+        />
+        <span className="min-w-0 flex-1 break-words whitespace-normal px-2 group-hover/result:underline">
+          {fullName(user)}
+        </span>
+      </Link>
       {user.friendshipStatus === "REQUEST_RECEIVED" && (
         <IconButton
           variant="primary"
