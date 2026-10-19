@@ -1,8 +1,5 @@
 import { prisma } from "../prisma";
-import {
-  publicUserInformationSelect,
-  profileUserInformationSelect,
-} from "../utils/selectors";
+import { publicUserInformationSelect } from "../utils/selectors";
 import { FriendshipStatus, UserId } from "@flock/shared/schemas/user";
 import { NotFoundError } from "../utils/errors";
 
@@ -30,7 +27,7 @@ export async function getUserById(id: UserId) {
 export async function getUserProfile(id: UserId) {
   const user = await prisma.user.findUnique({
     where: { id },
-    select: profileUserInformationSelect,
+    select: publicUserInformationSelect,
   });
   if (!user) {
     throw new NotFoundError("User not found");
