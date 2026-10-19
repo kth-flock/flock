@@ -37,6 +37,8 @@ function message({ type, event, rsvp }: NotificationData) {
       return <>sent you a friend request</>;
     case "FRIEND_REQUEST_ACCEPTED":
       return <>accepted your friend request</>;
+    case "NEW_FRIEND":
+      return null;
     case "RSVP":
       return (
         <>
@@ -94,7 +96,15 @@ export default function Notification({
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <p className="flock-body wrap-break-word">
-            <b>{fullName(from)}</b> {message(notification)}
+            {type === "NEW_FRIEND" ? (
+              <>
+                You and <b>{fullName(from)}</b> are now friends
+              </>
+            ) : (
+              <>
+                <b>{fullName(from)}</b> {message(notification)}
+              </>
+            )}
           </p>
           {type === "ANNOUNCEMENT" && notification.announcement && (
             <p className="flock-body-sm truncate text-text-muted">
