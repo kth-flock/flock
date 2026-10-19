@@ -87,7 +87,10 @@ export default function FriendSearchResult({
           lastName={user.lastName}
           profileImgSrc={user.imageUrl ?? ""}
         />
-        <span className="min-w-0 flex-1 break-words whitespace-normal px-2 group-hover/result:underline">
+        <span
+          className="min-w-0 flex-1 line-clamp-2 wrap-break-word px-2 group-hover/result:underline"
+          title={fullName(user)}
+        >
           {fullName(user)}
         </span>
       </Link>

@@ -10,14 +10,19 @@ type PostMetaProps = {
 
 export default function PostMeta({ user, createdAt }: PostMetaProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <ProfileImage
         firstName={user.firstName}
         lastName={user.lastName}
         profileImgSrc={user.imageUrl ?? ""}
       />
-      <span className="flock-ui-label">{fullName(user)}</span>
-      <time dateTime={String(createdAt)} className="flock-caption">
+      <span className="flock-ui-label min-w-0 truncate" title={fullName(user)}>
+        {fullName(user)}
+      </span>
+      <time
+        dateTime={String(createdAt)}
+        className="flock-caption shrink-0 whitespace-nowrap"
+      >
         {formatDate(createdAt)}, {formatTime(createdAt)}
       </time>
     </div>
