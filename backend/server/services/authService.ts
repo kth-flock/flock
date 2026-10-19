@@ -6,6 +6,7 @@ import { ValidationError, InvalidCredentialsError } from "../utils/errors";
 export async function registerUser(userData: RegisterUser) {
   const { firstName, lastName, email, password } = userData;
 
+  // TODO add assert user function (functinality is there but we can make a helper function)
   const userExists = await prisma.user.findUnique({ where: { email } });
   if (userExists) {
     throw new ValidationError("Could not create account"); //Intentionally vague error message to prevent enumeration attacks

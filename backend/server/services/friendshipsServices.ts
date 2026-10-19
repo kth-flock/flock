@@ -8,6 +8,7 @@ import { getUserById } from "./usersServices";
 import { ConflictError, NotFoundError, ValidationError } from "../utils/errors";
 
 export async function getAllFriends(userId: UserId) {
+  // TODO add assert user
   const friendships = await prisma.friendship.findMany({
     where: {
       status: STATUS.ACCEPTED,
@@ -57,7 +58,7 @@ export async function sendFriendRequest(
   if (requesteeId === requesterId) {
     throw new ValidationError("Cannot send a friend request to yourself");
   }
-
+  // TODO add assert user check
   const requestee = await getUserById(requesteeId);
   if (!requestee) {
     throw new NotFoundError("User not found");
@@ -98,6 +99,7 @@ export async function getFriendship(userId: UserId, friendId: UserId) {
 }
 
 export async function updateFriendship(friendship: Friendship) {
+  // TODO add check if you're part of this friendship
   const updatedFriendship = await prisma.friendship.update({
     where: {
       requesterId_requesteeId: {
@@ -111,6 +113,8 @@ export async function updateFriendship(friendship: Friendship) {
 }
 
 export async function deleteFriendship(friendship: Friendship) {
+  // TODO add check if you're part of this friendship
+
   await prisma.friendship.delete({
     where: {
       requesterId_requesteeId: {

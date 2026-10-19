@@ -15,12 +15,6 @@ import {
 import { UserId } from "@flock/shared/schemas/user";
 import { deleteImageFromS3 } from "./imageService";
 
-export async function getEvents() {
-  const events = await prisma.event.findMany();
-
-  return events;
-}
-
 export async function getEventById(eventId: EventId, userId: UserId) {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -79,13 +73,16 @@ export async function getEventById(eventId: EventId, userId: UserId) {
 }
 
 export async function getCreatedEvents(userId: UserId) {
+  // TODO add assert user
   const events = await prisma.event.findMany({
     where: { createdById: userId },
   });
+
   return events;
 }
 
 export async function getInvitedEvents(userId: UserId) {
+  // TODO add assert user
   const events = await prisma.event.findMany({
     where: {
       invitees: {
@@ -227,14 +224,17 @@ export async function rsvpToEvent(
   if (!eventExists) {
     throw new NotFoundError("Event not found, you cannot RSVP to it");
   }
+
   if (eventExists.endsAt && new Date(eventExists.endsAt) < new Date()) {
     throw new ValidationError("Event has ended, you cannot RSVP to it");
   }
+
   const inviteeExists = await prisma.invitee.findUnique({
     where: { eventId_userId: { eventId, userId } },
   });
+
   if (!inviteeExists) {
-    throw new ValidationError(
+    throw new ForbiddenError(
       "You are not invited to this event, you cannot RSVP to it",
     );
   }
