@@ -141,18 +141,19 @@ to get your local database up to date
 ## Production Database in Neon
 
 ### Point db to production
+
 1. Go to neon flock project --> connect
 2. turn connection pooling OFF
 3. copy the URL from .env section
 4. Paste it into your local .env, replacing your local db connection string
-5. Run: 
+5. Run:
 
 ```bash
 npx prisma migrate deploy
 ```
 
-
 ### View database tables in Neon
+
 Go to the neon flock project --> Postgress database --> Tables
 
 ### When someone else has updated a schema
@@ -189,16 +190,18 @@ IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
    - If you don't, it will conflict with the new database container that will be created in the next step.
    - You could completely remove the first Postgres container if you want to
 4. Run the following line from root folder
-    ```
-    docker compose up --build -d
-    ```
+
+   ```
+   docker compose up --build -d
+   ```
+
    - Wait for the containers to be created and start
-6. Run from root folder.
+
+5. Run from root folder.
    ```
    docker compose exec express-api npx prisma migrate deploy
    ```
-   
-8. Now you should be able to open `http://localhost:4000/` and have a server that is running.
+6. Now you should be able to open `http://localhost:4000/` and have a server that is running.
 
 ### After updating dependencies in server
 
@@ -214,11 +217,11 @@ IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
    ```
    docker compose exec express-api npx prisma migrate deploy
    ```
-3. Run
+2. Run
    ```
    docker compose exec express-api npx prisma generate
    ```
-5. Run
+3. Run
    ```
    docker compose restart express-api
    ```
@@ -234,3 +237,13 @@ The backend/.env file is only needed if you want to run things on your local mac
 Because of this, the backend/.env file needs the following line, with your own database username, password and name filled in:
 
 `DATABASE_URL="postgresql://username:password@localhost:5432/databasename?schema=public"`
+
+## Run api tests
+
+From /backend run:
+
+```
+npm run test:api:full
+```
+
+And all tests will run with the test database (docker commands are included in the script)

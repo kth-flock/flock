@@ -1,0 +1,15 @@
+services:
+  express-api:
+    environment:
+      DATABASE_URL: postgresql://test:test@postgres-test:5432/flock_test
+    depends_on:
+      - postgres-test
+
+  postgres-test:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: flock_test
+    tmpfs:
+      - /var/lib/postgresql/data
