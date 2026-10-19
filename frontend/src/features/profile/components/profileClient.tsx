@@ -18,11 +18,18 @@ export default function ProfileClient() {
     useFetch(getCreatedEvents);
   const { data: invitedEvents, isLoading: invitedLoading } =
     useFetch(getInvitedEvents);
-  const { data: friends } = useFetch(getMyFriends);
+  const { data: friends, isLoading: friendsLoading } = useFetch(getMyFriends);
 
-  // TODO: Add loading and error
+  // TODO: Add error handling
   if (user === undefined) return;
   if (!user) notFound();
+
+  const friendsWithStatus = friendsLoading
+    ? undefined
+    : (friends?.map((friend) => ({
+        ...friend,
+        friendshipStatus: "FRIENDS" as const,
+      })) ?? null);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
@@ -35,12 +42,7 @@ export default function ProfileClient() {
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent
           profile={user}
-          friends={
-            friends?.map((friend) => ({
-              ...friend,
-              friendshipStatus: "FRIENDS" as const,
-            })) ?? null
-          }
+          friends={friendsWithStatus}
           hostedEvents={hostedEvents}
           invitedEvents={invitedEvents}
           className="grid-cols-2 md:grid-cols-1"

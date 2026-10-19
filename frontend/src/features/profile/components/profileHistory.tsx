@@ -3,7 +3,7 @@ import {
   type EventStatus,
 } from "@/features/dashboard/components/eventPreview";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
-import { byNewest } from "@/shared/lib/sort";
+import ProfileHistorySkeleton from "./profileHistorySkeleton";
 
 type ProfileHistoryProps = {
   hostedEvents: EventSummary[] | null;
@@ -31,11 +31,7 @@ export default function ProfileHistory({
     <section className="flex flex-col gap-4">
       <h2 className="flock-h2 text-primary">My history</h2>
 
-      {isLoading && (
-        <p className="flock-body-sm text-text-muted">
-          Loading your event history...
-        </p>
-      )}
+      {isLoading && <ProfileHistorySkeleton />}
 
       {!isLoading && history.length === 0 && hostedEvents && invitedEvents && (
         <p className="rounded-2xl border-2 border-dashed border-accent p-6 text-center flock-body-sm text-text-muted">
@@ -43,9 +39,10 @@ export default function ProfileHistory({
         </p>
       )}
 
-      {history.map(({ event, status }) => (
-        <SmallEventPreview key={event.id} event={event} status={status} />
-      ))}
+      {!isLoading &&
+        history.map(({ event, status }) => (
+          <SmallEventPreview key={event.id} event={event} status={status} />
+        ))}
     </section>
   );
 }

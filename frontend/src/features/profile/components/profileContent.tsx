@@ -4,12 +4,15 @@ import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
 import type { ProfileUser, UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
+import FriendStackSkeleton from "./friendStackSkeleton";
 
-const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
+const countOf = (list: unknown[] | null | undefined) =>
+  list ? String(list.length) : "-";
 
 type ProfileContentProps = {
   profile: ProfileUser;
-  friends: UserSearchResult[] | null;
+  /** undefined while loading, null if failed */
+  friends: UserSearchResult[] | null | undefined;
   myId?: number;
   hostedEvents?: EventSummary[] | null;
   invitedEvents?: InvitedEvent[] | null;
@@ -34,9 +37,13 @@ export default function ProfileContent({
       icon: <FaUsers />,
       value: countOf(friends),
       label: "Friends",
-      extra: friends && friends.length > 0 && (
-        <FriendStack friends={friends} myId={myId} />
-      ),
+      extra:
+        friends === undefined ? (
+          <FriendStackSkeleton />
+        ) : (
+          friends &&
+          friends.length > 0 && <FriendStack friends={friends} myId={myId} />
+        ),
     },
     ...(hostedEvents !== undefined
       ? [
