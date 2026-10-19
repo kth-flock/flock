@@ -4,7 +4,7 @@ import {
   formValuesToPayload,
   type EventPayloadMode,
 } from "../lib/formValueFormat";
-import { zodErrorsToRecord } from "@/shared/lib/zod";
+import { getFieldErrors } from "@/features/event/lib/eventFormFieldsUtils";
 import type { ZodType } from "zod";
 import { getErrorMessage } from "@/shared/lib/errors";
 
@@ -42,7 +42,7 @@ export function useEventForm<TPayload>({
 
     if (Object.keys(dateErrors).length || !parsed.success) {
       setErrors({
-        ...(parsed.success ? {} : zodErrorsToRecord(parsed.error)),
+        ...(parsed.success ? {} : getFieldErrors(parsed.error.issues)),
         ...dateErrors,
       });
       return;
