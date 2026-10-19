@@ -22,7 +22,7 @@ export default function EventDetails({
   return (
     <div
       className={twMerge(
-        "flex flex-col gap-4 rounded-2xl p-4 md:flex-row md:items-center md:justify-between md:p-6",
+        "flex flex-col gap-4 rounded-2xl p-4 md:p-6 lg:flex-row lg:items-center lg:justify-between",
         hasPassed ? "bg-error/10" : "bg-accent/10",
       )}
     >
@@ -57,7 +57,7 @@ export default function EventDetails({
             {formatTimeRange(event.startsAt, event.endsAt)}
           </p>
         </time>
-        {event.locationName && (
+        {(event.locationName || (event.latitude && event.longitude)) && (
           <p className="flock-lead flex items-center gap-2 text-foreground/80">
             <FaLocationDot
               className={twMerge(
@@ -84,17 +84,19 @@ export default function EventDetails({
           >
             Add to Google Calendar
           </Button>
-          <Button
-            href={getGoogleMapsUrl(event)}
-            variant="secondary"
-            externalLink
-            icon={<FaMapLocationDot />}
-            iconPlacement="left"
-            className="text-nowrap"
-            size="md"
-          >
-            Find on Google Maps
-          </Button>
+          {(event.locationName || (event.latitude && event.longitude)) && (
+            <Button
+              href={getGoogleMapsUrl(event)}
+              variant="secondary"
+              externalLink
+              icon={<FaMapLocationDot />}
+              iconPlacement="left"
+              className="text-nowrap"
+              size="md"
+            >
+              Find on Google Maps
+            </Button>
+          )}
         </div>
       )}
     </div>

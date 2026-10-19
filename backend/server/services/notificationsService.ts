@@ -1,6 +1,6 @@
 import { prisma } from "../prisma";
 import { UserId } from "@flock/shared/schemas/user";
-import { STATUS } from "../../prisma/generated/enums";
+import { RSVP, STATUS } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import type { Notification } from "@flock/shared/schemas/notifications";
 
@@ -18,6 +18,7 @@ export async function getNotifications(
     getCommentNotifications(userId),
     getFriendRequestNotifications(userId),
     getAcceptedFriendRequestNotifications(userId),
+    getRsvpNotifications(userId),
   ]);
 
   return results
@@ -199,6 +200,46 @@ async function getAcceptedFriendRequestNotifications(
             type: "FRIEND_REQUEST_ACCEPTED" as const,
             createdAt: friendship.updatedAt,
             from: friendship.requestee,
+          },
+        ]
+      : [],
+  );
+}
+
+async function getRsvpNotifications(userId: UserId): Promise<Notification[]> {
+  const answers = await prisma.invitee.findMany({
+    where: {
+      event: { createdById: userId },
+      userId: { not: userId },
+      rsvp: { not: RSVP.PENDING },
+      updatedAt: { not: null },
+      // Only answers with a comment notify the host
+      rsvpComment: { not: null },
+      NOT: { rsvpComment: "" },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: NOTIFICATIONS_PER_TYPE,
+    select: {
+      eventId: true,
+      userId: true,
+      rsvp: true,
+      rsvpComment: true,
+      updatedAt: true,
+      user: { select: publicUserInformationSelect },
+      event: { select: { id: true, title: true } },
+    },
+  });
+
+  return answers.flatMap((answer) =>
+    answer.updatedAt
+      ? [
+          {
+            id: `rsvp:${answer.eventId}:${answer.userId}`,
+            type: "RSVP" as const,
+            createdAt: answer.updatedAt,
+            from: answer.user,
+            event: answer.event,
+            rsvp: { status: answer.rsvp, comment: answer.rsvpComment },
           },
         ]
       : [],

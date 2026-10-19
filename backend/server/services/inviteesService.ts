@@ -51,6 +51,37 @@ export async function addInvitee(
   });
 }
 
+export async function AddInviteesInBatch(
+  userId: UserId,
+  eventId: EventId,
+  inviteeIds: UserId[],
+) {
+  const eventExists = await prisma.event.findUnique({
+    where: { id: eventId },
+  });
+
+  if (!eventExists) {
+    throw new NotFoundError("Event not found");
+  }
+
+  if (eventExists.createdById !== userId) {
+    throw new ForbiddenError("Only event host can invite users");
+  }
+
+  const uniqueIds = [...new Set(inviteeIds)].filter((id) => id !== userId);
+
+  const existingCount = await prisma.user.count({
+    where: { id: { in: uniqueIds } },
+  });
+
+  const invitees = await prisma.invitee.createMany({
+    data: uniqueIds.map((userId) => ({ userId, eventId })),
+    skipDuplicates: true,
+  });
+
+  return { invitees, skipped: uniqueIds.length - existingCount };
+}
+
 export async function removeInvitee(
   userId: UserId,
   eventId: EventId,

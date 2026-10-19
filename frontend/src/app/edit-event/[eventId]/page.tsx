@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import DeleteEvent from "@/features/event/components/deleteEvent";
 import { idSchema } from "@flock/shared/schemas/common";
 import { getEvent, getCurrentUser } from "@/shared/lib/api";
 import EditEventForm from "@/features/edit-event/editEventForm";
@@ -29,6 +30,7 @@ export default async function EditEventPage({
   return (
     <main className="bg-accent/10 rounded-3xl p-8 flex flex-col gap-4 justify-center max-w-6xl">
       <EditEventForm event={event} />
+      <DeleteEvent eventId={event.id} />
     </main>
   );
 }

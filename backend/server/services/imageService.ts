@@ -13,6 +13,8 @@ const EXTENSIONS: Record<string, string> = {
   "image/gif": "gif",
 };
 
+type UserWithImage = { id: number; imageUrl: string | null };
+
 export async function uploadImage(
   file: Express.Multer.File,
   folder: "events" | "profiles",
@@ -50,6 +52,31 @@ export async function withSignedImageUrl<
     console.error(`Failed to sign image for record ${record.id}`, error);
     return { ...record, imageUrl: null, imageFailed: true }; // adds imageFailed true for frontend to know that error occured
   }
+}
+
+export async function withSignedEventUserImages<
+  T extends {
+    id: number;
+    imageUrl: string | null;
+    createdBy?: UserWithImage;
+    invitees?: { user: UserWithImage }[];
+  },
+>(event: T) {
+  const signed = await withSignedImageUrl(event);
+
+  const createdBy =
+    event.createdBy && (await withSignedImageUrl(event.createdBy));
+
+  const invitees =
+    event.invitees &&
+    (await Promise.all(
+      event.invitees.map(async (invitee) => ({
+        ...invitee,
+        user: await withSignedImageUrl(invitee.user),
+      })),
+    ));
+
+  return { ...signed, createdBy, invitees };
 }
 
 export async function deleteImageFromS3(imageUrl: string) {

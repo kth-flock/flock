@@ -73,3 +73,29 @@ export type ExtendedAnnouncment = Prisma.AnnouncementGetPayload<{
     };
   };
 }>;
+
+export type ExtendedComment = Prisma.CommentGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        imageUrl: true;
+      };
+    };
+  };
+}>;
+
+export type ExtendedInvitee = Prisma.InviteeGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        firstName: true;
+        lastName: true;
+        imageUrl: true;
+      };
+    };
+  };
+}>;

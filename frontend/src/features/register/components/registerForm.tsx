@@ -10,6 +10,8 @@ import {
   registerUserFormSchema,
 } from "../types/registerTypes";
 import { useAuth } from "@/shared/auth/authContext";
+import Link from "next/link";
+import { useToast } from "@/shared/components/toast";
 
 export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
@@ -30,6 +32,7 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { register } = useAuth();
+  const toast = useToast();
 
   function handleInputChange<Key extends keyof RegisterUserDraft>(
     field: Key,
@@ -89,8 +92,8 @@ export default function RegisterForm() {
         email: payload.email,
         password: payload.password,
       });
-
       router.push("/");
+      toast("Welcome to Flock!", "info");
     } catch (error) {
       setSubmitError(
         error instanceof TypeError
@@ -187,11 +190,20 @@ export default function RegisterForm() {
           variant="primary"
           size="lg"
           className="w-full justify-center"
-          disabled={isSubmitting}
+          isLoading={isSubmitting}
         >
           {isSubmitting ? "Registering..." : "Register"}
         </Button>
       </form>
+      <span className="inline-flex gap-2 items-center flock-body justify-center">
+        Already have an account?
+        <Link
+          href="/login"
+          className="text-secondary font-semibold! hover:underline "
+        >
+          Log in
+        </Link>
+      </span>
     </>
   );
 }

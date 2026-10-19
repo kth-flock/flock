@@ -45,7 +45,7 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black/20"
       onClick={onClose}
       aria-modal="true"
       role="dialog"
@@ -55,7 +55,7 @@ export default function Modal({
           "min-w-75 max-w-[90vw] max-h-[90vh] shadow-lg flex flex-col",
           transparent
             ? "fixed rounded-2xl"
-            : (bg ?? "bg-white") + " rounded-lg relative",
+            : (bg ?? "bg-background") + " rounded-lg relative",
           className,
         )}
         onClick={(e) => e.stopPropagation()}
