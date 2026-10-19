@@ -16,8 +16,7 @@ export default function CalendarListView({
   today,
   weeks,
   eventsByDay,
-  isLoading,
-}: CalendarViewProps & { isLoading: boolean }) {
+}: CalendarViewProps) {
   const targetRef = useRef<HTMLLIElement | null>(null);
 
   const days = useMemo(
@@ -33,7 +32,7 @@ export default function CalendarListView({
   }, [monthKey, hasEvents]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!hasEvents) {
-    return isLoading ? null : (
+    return (
       <p className="py-8 text-center flock-body-serif">No events this month</p>
     );
   }

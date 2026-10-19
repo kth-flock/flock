@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import Button, { IconButton } from "@/shared/components/button";
 import CalendarGridView from "./calendarGridView";
 import CalendarListView from "./calendarListView";
+import CalendarSkeleton from "./calendarSkeleton";
 import { MONTHS, getMonthWeeks, groupEventsByDay } from "../lib/utils";
 import { useFetch } from "@/shared/hooks/useFetch";
 import { getMyEvents } from "@/features/event/lib/api";
@@ -76,17 +77,18 @@ export default function CalendarWrapper() {
         </Button>
       </div>
 
-      <div
-        aria-busy={isLoading}
-        className={isLoading ? "opacity-60 transition-opacity" : ""}
-      >
-        <div className="hidden md:block">
-          <CalendarGridView {...viewProps} />
-        </div>
-        <div className="md:hidden">
-          <CalendarListView {...viewProps} isLoading={isLoading} />
-        </div>
-      </div>
+      {isLoading ? (
+        <CalendarSkeleton />
+      ) : (
+        <>
+          <div className="hidden md:block">
+            <CalendarGridView {...viewProps} />
+          </div>
+          <div className="md:hidden">
+            <CalendarListView {...viewProps} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
