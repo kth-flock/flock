@@ -16,16 +16,20 @@ export default function ProfileHistory({
   invitedEvents,
   isLoading,
 }: ProfileHistoryProps) {
-  const history = [
-    ...(hostedEvents ?? []).map((event) => ({
-      event,
-      status: "HOST" as EventStatus,
-    })),
-    ...(invitedEvents ?? []).map((event) => ({
+  const byId = new Map<number, { event: EventSummary; status: EventStatus }>();
+  for (const event of invitedEvents ?? []) {
+    byId.set(event.id, {
       event,
       status: event.invitees[0]?.rsvp ?? "PENDING",
-    })),
-  ].toSorted((a, b) => b.event.startsAt.getTime() - a.event.startsAt.getTime());
+    });
+  }
+  for (const event of hostedEvents ?? []) {
+    byId.set(event.id, { event, status: "HOST" });
+  }
+
+  const history = [...byId.values()].toSorted(
+    (a, b) => b.event.startsAt.getTime() - a.event.startsAt.getTime(),
+  );
 
   return (
     <section className="flex flex-col gap-4">
