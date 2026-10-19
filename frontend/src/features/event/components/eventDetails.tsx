@@ -45,6 +45,36 @@ function DetailRow({
   );
 }
 
+function ExternalLinkButton({
+  href,
+  icon,
+  label,
+  className,
+  labelClassName,
+  size = "md",
+}: {
+  href?: string;
+  icon: React.ReactElement;
+  label: string;
+  className?: string;
+  labelClassName?: string;
+  size?: "md";
+}) {
+  return (
+    <Button
+      href={href}
+      variant="secondary"
+      externalLink
+      icon={icon}
+      iconPlacement="left"
+      className={twMerge("text-nowrap", className)}
+      size={size}
+    >
+      <span className={labelClassName}>{label}</span>
+    </Button>
+  );
+}
+
 export default function EventDetails({
   event,
   hasPassed,
@@ -64,9 +94,13 @@ export default function EventDetails({
     hasPassed ? "fill-error" : "fill-secondary",
   );
 
-  // Each button sits next to the detail it belongs to, and below it on phones
   const groupStyle =
     "flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between";
+
+  const revealButtonStyle =
+    "group lg:pointer-fine:gap-0 lg:pointer-fine:px-3 lg:pointer-fine:hover:pr-4 lg:pointer-fine:focus-visible:pr-4";
+  const revealLabelStyle =
+    "overflow-hidden transition-all duration-300 lg:pointer-fine:max-w-0 lg:pointer-fine:opacity-0 lg:pointer-fine:group-hover:ml-1.5 lg:pointer-fine:group-hover:max-w-xs lg:pointer-fine:group-hover:opacity-100 lg:pointer-fine:group-focus-visible:ml-1.5 lg:pointer-fine:group-focus-visible:max-w-xs lg:pointer-fine:group-focus-visible:opacity-100";
 
   return (
     <div
@@ -130,18 +164,14 @@ export default function EventDetails({
           </div>
         )}
         {!hasPassed && (
-          <div className="shrink-0">
-            <Button
+          <div className="hidden shrink-0 lg:block">
+            <ExternalLinkButton
               href={getGoogleCalendarUrl(event)}
-              variant="secondary"
-              externalLink
               icon={<FaCalendarPlus />}
-              iconPlacement="left"
-              className="text-nowrap"
-              size="md"
-            >
-              Add to Google Calendar
-            </Button>
+              label="Add to Google Calendar"
+              className={revealButtonStyle}
+              labelClassName={revealLabelStyle}
+            />
           </div>
         )}
       </div>
@@ -152,19 +182,34 @@ export default function EventDetails({
             {event.locationName ?? "Pinned location"}
           </DetailRow>
           {!hasPassed && (
-            <div className="shrink-0">
-              <Button
+            <div className="hidden shrink-0 lg:block">
+              <ExternalLinkButton
                 href={getGoogleMapsUrl(event)}
-                variant="secondary"
-                externalLink
                 icon={<FaMapLocationDot />}
-                iconPlacement="left"
-                className="text-nowrap"
-                size="md"
-              >
-                Find on Google Maps
-              </Button>
+                label="Find on Google Maps"
+                className={revealButtonStyle}
+                labelClassName={revealLabelStyle}
+              />
             </div>
+          )}
+        </div>
+      )}
+
+      {!hasPassed && (
+        <div className="flex flex-wrap justify-center gap-2 lg:hidden">
+          <ExternalLinkButton
+            href={getGoogleCalendarUrl(event)}
+            icon={<FaCalendarPlus />}
+            label="Add to Calendar"
+            size="md"
+          />
+          {hasLocation && (
+            <ExternalLinkButton
+              href={getGoogleMapsUrl(event)}
+              icon={<FaMapLocationDot />}
+              label="Find on Maps"
+              size="md"
+            />
           )}
         </div>
       )}
