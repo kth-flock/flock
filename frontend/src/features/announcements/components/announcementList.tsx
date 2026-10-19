@@ -33,7 +33,7 @@ export default function AnnouncementList({
           <Button
             icon={<FaPlus />}
             iconPlacement="left"
-            size="sm"
+            size="md"
             onClick={() => setIsAdding(true)}
             disabled={isAdding}
           >

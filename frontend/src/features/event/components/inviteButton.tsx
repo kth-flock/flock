@@ -29,7 +29,8 @@ export default function InviteButton({
       <Button
         icon={<FaUserPlus aria-hidden />}
         iconPlacement="right"
-        variant="secondary"
+        variant="primary"
+        className="border-2 border-transparent"
         onClick={() => setIsModalOpen(true)}
       >
         Invite
