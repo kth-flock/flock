@@ -7,6 +7,7 @@ export type NotificationType =
   | "ANNOUNCEMENT_COMMENT"
   | "FRIEND_REQUEST"
   | "FRIEND_REQUEST_ACCEPTED"
+  | "NEW_FRIEND"
   | "RSVP";
 
 export type Notification = {
