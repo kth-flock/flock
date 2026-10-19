@@ -12,15 +12,26 @@ import { useRouter } from "next/navigation";
 import EventForm from "./eventForm";
 import { eventToFormValues } from "../lib/formValueFormat";
 import EditEventSkeleton from "./editEventSkeleton";
+import ErrorState from "@/shared/components/ErrorState";
 
 export default function EditEventClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
   const fetchEvent = useCallback(() => getEvent(eventId), [eventId]);
-  const { data: event, isLoading, error } = useFetch(fetchEvent);
+  const { data: event, isLoading, error, errorStatus, refetch } =
+    useFetch(fetchEvent);
   const router = useRouter();
 
   if (user === undefined || isLoading) return <EditEventSkeleton />;
-  if (error) return;
+  if (errorStatus === 404) notFound();
+  if (error) {
+    return (
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        action={{ label: "Try again", onClick: refetch }}
+      />
+    );
+  }
   if (!user || !event) notFound();
   if (event.createdById !== user.id) notFound();
 

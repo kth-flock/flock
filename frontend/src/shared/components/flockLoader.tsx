@@ -6,8 +6,20 @@ import { twMerge } from "tailwind-merge";
 
 const LOADING_LOTTIE = "/flock-load.json";
 
-type LoadingStatusProps = {
-  message?: string | string[];
+export const DEFAULT_FLOCK_LOADER_MESSAGES = [
+  "Securing the pond…",
+  "Verifying your pond privileges…",
+  "Making sure you are not a swan…",
+  "Fetching your feathers…",
+  "Quackifying credentials…",
+  "Initiating quack protocol…",
+  "Finding your flock…",
+] as const;
+
+type FlockLoaderProps = {
+  /** Status line(s) under the animation. Defaults to the shared flock messages. */
+  message?: string | readonly string[];
+  /** How long each message stays when cycling (ms). Default 1000 */
   intervalMs?: number;
   className?: string;
   animationClassName?: string;
@@ -17,17 +29,16 @@ function pickRandomIndex(length: number) {
   return Math.floor(Math.random() * length);
 }
 
-export default function LoadingStatus({
-  message,
+/** Branded full-page / suspense loader (Lottie). Prefer `Spinner` for inline button loading. */
+export default function FlockLoader({
+  message = DEFAULT_FLOCK_LOADER_MESSAGES,
   intervalMs = 1000,
   className,
   animationClassName,
-}: LoadingStatusProps) {
-  const messages = Array.isArray(message)
-    ? message.filter(Boolean)
-    : message
-      ? [message]
-      : [];
+}: FlockLoaderProps) {
+  const messages = (
+    Array.isArray(message) ? message : message ? [message] : []
+  ).filter(Boolean);
 
   const [index, setIndex] = useState(() =>
     messages.length > 0 ? pickRandomIndex(messages.length) : 0,

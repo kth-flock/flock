@@ -3,17 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
-import LoadingStatus from "@/shared/components/loadingStatus";
-
-const AUTH_LOADING_MESSAGES = [
-  "Securing the pond…",
-  "Verifying your pond privileges…",
-  "Making sure you are not a swan…",
-  "Fetching your feathers…",
-  "Quackifying credentials…",
-  "Initiating quack protocol…",
-  "Finding your flock…",
-];
+import FlockLoader from "@/shared/components/flockLoader";
 
 export default function RequireAuth({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -23,7 +13,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
     if (user === null) router.replace("/");
   }, [user, router]);
 
-  if (!user) return <LoadingStatus message={AUTH_LOADING_MESSAGES} />;
+  if (!user) return <FlockLoader />;
 
   return <>{children}</>;
 }

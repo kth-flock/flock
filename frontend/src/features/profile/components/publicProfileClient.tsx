@@ -17,6 +17,8 @@ import { randomBannerColor } from "../lib/bannerColor";
 import { useFetch } from "@/shared/hooks/useFetch";
 import type { PrivateUser } from "@/shared/types/user";
 import ProfilePageSkeleton from "./profilePageSkeleton";
+import ErrorState from "@/shared/components/ErrorState";
+
 export default function PublicProfileClient({
   profileId,
 }: {
@@ -54,7 +56,8 @@ function PublicProfileData({
 
   const [bannerColor] = useState(randomBannerColor);
 
-  const { data: profile, error, isLoading } = useFetch(fetchProfile);
+  const { data: profile, error, errorStatus, isLoading, refetch } =
+    useFetch(fetchProfile);
   const { data: friends } = useFetch(fetchFriends);
   const { data: friendStatuses } = useFetch(getMyFriendshipStatuses);
   const { data: eventsTogether } = useFetch(fetchEventsTogether);
@@ -68,9 +71,17 @@ function PublicProfileData({
     [friends, friendStatuses],
   );
 
-  // TODO: Error
   if (isLoading) return <ProfilePageSkeleton />;
-  if (error) return;
+  if (errorStatus === 404) notFound();
+  if (error) {
+    return (
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        action={{ label: "Try again", onClick: refetch }}
+      />
+    );
+  }
   if (!profile) notFound();
 
   const friendshipStatus = friendStatuses

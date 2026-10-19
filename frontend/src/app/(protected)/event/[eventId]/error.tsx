@@ -1,17 +1,18 @@
 "use client";
 
-import Button from "@/shared/components/button";
+import ErrorState from "@/shared/components/ErrorState";
 
-// TODO: Make a shared error page component instead? with variable messages
-
-export default function EventError({ retry }: { retry: () => void }) {
+export default function EventError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
-    <section className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-      <h1 className="flock-h1 text-error">Something went wrong</h1>
-      <p className="flock-body text-foreground/70">
-        We couldn’t load this event.
-      </p>
-      <Button onClick={retry}>Try again</Button>
-    </section>
+    <ErrorState
+      title="Something went wrong"
+      message="We couldn’t load this event."
+      action={{ label: "Try again", onClick: reset }}
+    />
   );
 }
