@@ -1,4 +1,5 @@
 import type { CalendarEvent } from "./types";
+import { formatTime, formatShortDate } from "@/shared/lib/dateFormat";
 
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const MONTHS = [
@@ -15,6 +16,13 @@ export const MONTHS = [
   "November",
   "December",
 ];
+export const EventDetailStyles = {
+  PENDING: "border border-primary hover:bg-primary/10",
+  ACCEPTED: "bg-primary/15 text-primary hover:bg-primary/25",
+  MAYBE: "bg-warn/15 hover:bg-warn/25",
+  DECLINED: "bg-error/15 text-text-muted hover:bg-error/25",
+  HOST: "bg-info/15 hover:bg-info/25",
+};
 
 export function isSameDay(a: Date, b: Date) {
   return (
@@ -134,4 +142,39 @@ export function assignLanes(
     }
   }
   return lanes;
+}
+
+export function getDayInfo(event: CalendarEvent, day: Date) {
+  return {
+    startsToday: isSameDay(event.startsAt, day),
+    endsToday: event.endsAt ? isSameDay(event.endsAt, day) : true,
+    isMultiDay:
+      Boolean(event.endsAt) && !isSameDay(event.startsAt, event.endsAt!),
+  };
+}
+
+export function getTimeLabels(
+  event: CalendarEvent,
+  { startsToday, endsToday }: { startsToday: boolean; endsToday: boolean },
+) {
+  const { startsAt, endsAt } = event;
+
+  if (!startsToday && !endsToday) return { main: "All day" };
+
+  if (startsToday) {
+    return {
+      main: formatTime(startsAt),
+      sub: endsAt
+        ? endsToday
+          ? formatTime(endsAt)
+          : formatShortDate(endsAt)
+        : undefined,
+    };
+  }
+
+  // Ends today, started on an earlier day
+  return {
+    main: formatShortDate(startsAt),
+    sub: endsAt ? formatTime(endsAt) : undefined,
+  };
 }
