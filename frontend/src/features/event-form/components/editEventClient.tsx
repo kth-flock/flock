@@ -11,6 +11,7 @@ import { updateEventSchema } from "@flock/shared/schemas/event";
 import { useRouter } from "next/navigation";
 import EventForm from "./eventForm";
 import { eventToFormValues } from "../lib/formValueFormat";
+import EditEventSkeleton from "./editEventSkeleton";
 
 export default function EditEventClient({ eventId }: { eventId: number }) {
   const { user } = useAuth();
@@ -18,8 +19,7 @@ export default function EditEventClient({ eventId }: { eventId: number }) {
   const { data: event, isLoading, error } = useFetch(fetchEvent);
   const router = useRouter();
 
-  // TODO: Add loading and error
-  if (user === undefined || isLoading) return;
+  if (user === undefined || isLoading) return <EditEventSkeleton />;
   if (error) return;
   if (!user || !event) notFound();
   if (event.createdById !== user.id) notFound();
