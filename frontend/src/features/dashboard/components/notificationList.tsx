@@ -4,6 +4,7 @@ import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
 import Notification from "./notification";
+import NotificationListSkeleton from "./notificationListSkeleton";
 import { acceptFriendRequest, declineFriendRequest } from "@/shared/lib/api";
 
 const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
@@ -76,11 +77,7 @@ export default function NotificationList({
           isOpen ? "flex" : "hidden",
         )}
       >
-        {notifications === undefined && (
-          <p className="p-4 text-center flock-body-sm text-text-muted">
-            Loading…
-          </p>
-        )}
+        {notifications === undefined && <NotificationListSkeleton />}
         {notifications === null && (
           <p className="p-4 text-center flock-body-sm text-error" role="alert">
             {"Couldn't load your notifications"}

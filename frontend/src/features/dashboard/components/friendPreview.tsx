@@ -10,6 +10,7 @@ import { openFriendSearch } from "@/features/search/components/inviteBar";
 import { FriendsModal } from "@/features/profile/components/friendStack";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
+import FriendPreviewSkeleton from "./friendPreviewSkeleton";
 
 const MAX_SHOWN_FRIENDS = 7;
 
@@ -45,7 +46,7 @@ export default function FriendPreview({
       </span>
       <div className="flex flex-row justify-center gap-4 w-full">
         {friends === undefined ? (
-          <p className={messageStyle}>Loading…</p>
+          <FriendPreviewSkeleton />
         ) : friends === null ? (
           <p className={twMerge(messageStyle, "text-error")} role="alert">
             {"Couldn't load your friends"}
