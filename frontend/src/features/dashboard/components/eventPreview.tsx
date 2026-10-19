@@ -2,11 +2,7 @@ import {
   FaCalendar,
   FaClock,
   FaLocationDot,
-  FaCircleCheck,
   FaCirclePlus,
-  FaCircleQuestion,
-  FaCircleXmark,
-  FaCrown,
 } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import {
@@ -17,37 +13,24 @@ import {
 import Link from "next/link";
 import Button from "@/shared/components/button";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
+import RsvpStatus from "@/features/rsvp/components/rsvpStatus";
 import EventImage from "@/shared/components/eventImage";
 
 export type EventStatus = Rsvp | "HOST";
 
-const statusIcon: Record<
-  EventStatus,
-  { icon: React.ReactElement; label: string }
-> = {
-  HOST: { icon: <FaCrown className="fill-primary" />, label: "Hosting" },
-  ACCEPTED: {
-    icon: <FaCircleCheck className="fill-secondary" />,
-    label: "Going",
-  },
-  MAYBE: { icon: <FaCircleQuestion className="fill-warn" />, label: "Maybe" },
-  DECLINED: {
-    icon: <FaCircleXmark className="fill-error" />,
-    label: "Not going",
-  },
-  PENDING: {
-    icon: <FaClock className="fill-(--color-text-muted)" />,
-    label: "Not answered",
-  },
+const chipLabel: Record<EventStatus, string> = {
+  HOST: "Hosting",
+  ACCEPTED: "Going",
+  MAYBE: "Maybe",
+  DECLINED: "Not going",
+  PENDING: "Not answered",
 };
+
 
 const hasEnded = (event: EventSummary) =>
   (event.endsAt ?? event.startsAt).getTime() < Date.now();
 
-// Status chip colours: the theme's light/dark pairs, which also flip in dark
-// mode. flock-caption sets its own text colour, hence the !
 const statusChipStyle: Record<EventStatus, string> = {
-  // Same colour as hosted events in the calendar
   HOST: "bg-info-light text-info-dark!",
   ACCEPTED: "bg-success-light text-success-dark!",
   MAYBE: "bg-warn-light text-warn-dark!",
@@ -78,9 +61,11 @@ function ImagePlaceholder({
 export default function EventPreview({
   event,
   status,
+  statusLabel,
 }: {
   event: EventSummary;
   status: EventStatus;
+  statusLabel?: string;
 }) {
   return (
     <Link
@@ -102,18 +87,25 @@ export default function EventPreview({
             className="text-3xl text-primary/50"
           />
         )}
+        <span
+          className={twMerge(
+            "absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm shadow-sm [&_svg]:fill-current",
+            statusChipStyle[status],
+          )}
+        >
+          <span aria-hidden className="inline-flex">
+            <RsvpStatus rsvp={status} />
+          </span>
+          {statusLabel ?? chipLabel[status]}
+        </span>
       </div>
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
           <span
-            className="flock-h4 min-w-0 line-clamp-2 wrap-break-word"
+            className="flock-h4 min-w-0 truncate"
             title={event.title}
           >
             {event.title}
-          </span>
-          <span className="inline-flex shrink-0 gap-2 items-center flock-body">
-            {statusIcon[status].icon}
-            {statusIcon[status].label}
           </span>
         </div>
 
@@ -154,9 +146,11 @@ export default function EventPreview({
 export function SmallEventPreview({
   event,
   status,
+  statusLabel,
 }: {
   event: EventSummary;
   status: EventStatus;
+  statusLabel?: string;
 }) {
   const passed = hasEnded(event);
 
@@ -187,15 +181,15 @@ export function SmallEventPreview({
           )}
         >
           <span aria-hidden className="inline-flex">
-            {statusIcon[status].icon}
+            <RsvpStatus rsvp={status} />
           </span>
-          {statusIcon[status].label}
+          {statusLabel ?? chipLabel[status]}
         </span>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
         <p
-          className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
+          className="flock-ui-label min-w-0 truncate"
           title={event.title}
         >
           {event.title}

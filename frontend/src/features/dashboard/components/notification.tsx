@@ -20,7 +20,11 @@ const rsvpMessage = {
 } as const;
 
 function message({ type, event, rsvp }: NotificationData) {
-  const eventTitle = <b>{event?.title}</b>;
+  const eventTitle = (
+    <b className="inline-block max-w-full truncate align-bottom">
+      {event?.title}
+    </b>
+  );
 
   switch (type) {
     case "INVITATION":
@@ -88,17 +92,17 @@ export default function Notification({
           lastName={from.lastName}
           profileImgSrc={from.imageUrl ?? ""}
         />
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="flock-body">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="flock-body wrap-break-word">
             <b>{fullName(from)}</b> {message(notification)}
           </p>
           {type === "ANNOUNCEMENT" && notification.announcement && (
-            <p className="flock-body-sm line-clamp-1 text-text-muted">
+            <p className="flock-body-sm truncate text-text-muted">
               {notification.announcement.content}
             </p>
           )}
           {type === "RSVP" && notification.rsvp?.comment && (
-            <p className="flock-body-sm line-clamp-1 text-text-muted">
+            <p className="flock-body-sm truncate text-text-muted">
               {`"${notification.rsvp.comment}"`}
             </p>
           )}
