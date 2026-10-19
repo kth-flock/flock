@@ -8,9 +8,9 @@ import { IconButton } from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import ProfileImage from "@/shared/components/profileImage";
 import {
-  acceptFriendRequestFetch,
-  declineFriendRequestFetch,
-  sendFriendRequestFetch,
+  acceptFriendRequest,
+  declineFriendRequest,
+  sendFriendRequest,
 } from "@/shared/lib/api";
 import { fullName } from "@/shared/lib/user";
 import type { UserSearchResult } from "@/shared/types/user";
@@ -45,7 +45,7 @@ function FriendRowActions({
           size="sm"
           aria-label={`Add ${fullName(friend)} as friend`}
           disabled={isPending}
-          onClick={() => onAction(sendFriendRequestFetch, "REQUEST_SENT")}
+          onClick={() => onAction(sendFriendRequest, "REQUEST_SENT")}
         >
           <FaUserPlus aria-hidden />
         </IconButton>
@@ -57,7 +57,7 @@ function FriendRowActions({
             size="sm"
             aria-label={`Decline friend request from ${fullName(friend)}`}
             disabled={isPending}
-            onClick={() => onAction(declineFriendRequestFetch, "NONE")}
+            onClick={() => onAction(declineFriendRequest, "NONE")}
             className="bg-error hover:bg-error-dark"
           >
             <FaXmark aria-hidden />
@@ -66,7 +66,7 @@ function FriendRowActions({
             size="sm"
             aria-label={`Accept friend request from ${fullName(friend)}`}
             disabled={isPending}
-            onClick={() => onAction(acceptFriendRequestFetch, "FRIENDS")}
+            onClick={() => onAction(acceptFriendRequest, "FRIENDS")}
           >
             <FaCheck aria-hidden />
           </IconButton>
@@ -123,11 +123,11 @@ export function FriendsModal({
                 onClick={onClose}
                 className="flex min-w-0 flex-1 items-center gap-3 p-2"
               >
-                {friend.imageUrl ? (
-                  <ProfileImage profileImgSrc={friend.imageUrl} />
-                ) : (
-                  <ProfileImage firstName={friend.firstName} lastName={friend.lastName} />
-                )}
+                <ProfileImage
+                  firstName={friend.firstName}
+                  lastName={friend.lastName}
+                  profileImgSrc={friend.imageUrl ?? ""}
+                />
                 <span className="flock-body truncate">{fullName(friend)}</span>
               </Link>
               {myId !== undefined && onAction && (
@@ -225,11 +225,11 @@ export default function FriendStack({
             title={fullName(friend)}
             className={stackedImageStyle}
           >
-            {friend.imageUrl ? (
-              <ProfileImage profileImgSrc={friend.imageUrl} />
-            ) : (
-              <ProfileImage firstName={friend.firstName} lastName={friend.lastName} />
-            )}
+            <ProfileImage
+              firstName={friend.firstName}
+              lastName={friend.lastName}
+              profileImgSrc={friend.imageUrl ?? ""}
+            />
           </span>
         ))}
         {hiddenCount > 0 && (

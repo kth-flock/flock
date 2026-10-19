@@ -6,14 +6,14 @@ import { twMerge } from "tailwind-merge";
 import { FaUserPlus, FaUsers } from "react-icons/fa6";
 import ProfileImage from "@/shared/components/profileImage";
 import { IconButton } from "@/shared/components/button";
-import { openFriendSearch } from "@/shared/components/inviteBar";
+import { openFriendSearch } from "@/features/search/components/inviteBar";
 import { FriendsModal } from "@/features/profile/components/friendStack";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
 
 const MAX_SHOWN_FRIENDS = 7;
 
-const messageStyle = "self-center flock-body-sm text-(--color-text-muted)";
+const messageStyle = "self-center flock-body-sm text-text-muted";
 const friendLinkStyle =
   "group transition-all hover:scale-110 hover:-translate-y-0.5 hover:-rotate-5";
 
@@ -59,15 +59,11 @@ export default function FriendPreview({
                 title={fullName(friend)}
                 className={friendLinkStyle}
               >
-                {friend.imageUrl ? (
-                  <ProfileImage shadow profileImgSrc={friend.imageUrl} />
-                ) : (
-                  <ProfileImage
-                    shadow
-                    firstName={friend.firstName}
-                    lastName={friend.lastName}
-                  />
-                )}
+                <ProfileImage
+                  firstName={friend.firstName}
+                  lastName={friend.lastName}
+                  profileImgSrc={friend.imageUrl ?? ""}
+                />
               </Link>
             ))}
             {hiddenCount > 0 && (

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Modal from "@/shared/components/modal";
 import { ExtendedEvent } from "@/shared/types/event";
 import ProfileImage from "@/shared/components/profileImage";
-import RSVPStatus from "@/shared/components/rsvpStatus";
+import RsvpStatus from "@/features/rsvp/components/rsvpStatus";
 import { FaCommentDots } from "react-icons/fa6";
 import type { Rsvp } from "../lib/types";
 import type { ExtendedInvitee } from "@/shared/types/event";
@@ -58,9 +58,7 @@ export default function InviteesList({
         </span>
 
         {event.invitees.length === 0 && (
-          <p className="flock-body-sm text-(--color-text-muted)">
-            No invitees yet
-          </p>
+          <p className="flock-body-sm text-text-muted">No invitees yet</p>
         )}
 
         {rsvpGroups.map(({ rsvp, label }) => {
@@ -72,13 +70,19 @@ export default function InviteesList({
           return (
             <section key={rsvp} className="flex w-full flex-col">
               <h3 className="flock-h6 flex items-center gap-2 border-b border-primary/20 pb-1 pt-3 text-primary">
-                <RSVPStatus status={rsvp} className="h-4" />
+                <RsvpStatus rsvp={rsvp} />
                 {label} ({group.length})
               </h3>
               <ul className="flex flex-col">
                 {group.map(({ user: invitee, rsvpComment }) => (
-                  <li key={invitee.id} className="flex flex-col gap-1 py-2 not-last:border-b border-neutral">
-                    <Link href={`/profile/${invitee.id}`} className="group/invitee flex min-w-0 items-center gap-2 transition-colors hover:text-primary">
+                  <li
+                    key={invitee.id}
+                    className="flex flex-col gap-1 py-2 not-last:border-b border-neutral"
+                  >
+                    <Link
+                      href={`/profile/${invitee.id}`}
+                      className="group/invitee flex min-w-0 items-center gap-2 transition-colors hover:text-primary"
+                    >
                       <ProfileImage
                         firstName={invitee.firstName}
                         lastName={invitee.lastName}
@@ -90,7 +94,10 @@ export default function InviteesList({
                     </Link>
                     {isHost && rsvpComment && (
                       <p className="ml-10 flex items-start gap-2 rounded-lg border border-neutral px-2 py-1.5 flock-body-sm">
-                        <FaCommentDots aria-hidden className="mt-1 shrink-0 fill-secondary" />
+                        <FaCommentDots
+                          aria-hidden
+                          className="mt-1 shrink-0 fill-secondary"
+                        />
                         {rsvpComment}
                       </p>
                     )}

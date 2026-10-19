@@ -1,123 +1,78 @@
-import type { FriendshipStatus } from "@flock/shared/schemas/user";
-import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
-import { API_BASE_URL } from "@/shared/lib/api";
+import type {
+  ChangeEmail,
+  ChangePassword,
+  FriendshipStatus,
+  UserInfo,
+} from "@flock/shared/schemas/user";
+import type { InvitedEvent } from "@/features/event/lib/types";
+import { apiData, apiFetch, apiDataOrNull } from "@/shared/lib/https";
+import { withCreatedAt } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
-import type { MyProfileDetails, ProfileDetails } from "./types";
+import type { Serialized } from "@/shared/types/serialized";
+import { withEventDates } from "@/features/event/lib/api";
 
-async function fetchFromBackend<T>(
-  path: string,
-  cookie: string,
-): Promise<T | null> {
-  const res = await fetch(`${API_BASE_URL}${path}`, { headers: { cookie } });
-
-  if (res.status === 404) return null;
-
-  if (!res.ok) {
-    const response: { error?: string } = await res.json().catch(() => ({}));
-    throw new Error(response.error ?? `Request to ${path} failed`);
-  }
-
-  return res.json();
+export async function getProfile(id: number): Promise<PublicUser | null> {
+  const user = await apiDataOrNull<
+    Serialized<PublicUser & { createdAt: Date }>
+  >(`/users/${id}`, {
+    nullOn: [404],
+    fallbackError: "Failed to get profile",
+  });
+  return user && withCreatedAt(user);
 }
 
-async function fetchData<T>(path: string, cookie: string): Promise<T | null> {
-  const response = await fetchFromBackend<{ data: T }>(path, cookie);
-  return response?.data ?? null;
-}
-
-function withEventDates<T extends EventSummary>(event: T): T {
-  return {
-    ...event,
-    startsAt: new Date(event.startsAt),
-    endsAt: event.endsAt && new Date(event.endsAt),
-    createdAt: new Date(event.createdAt),
-  };
-}
-
-export async function getProfile(
-  profileId: string,
-  cookie: string,
-): Promise<ProfileDetails | null> {
-  return fetchData<ProfileDetails>(`/users/${profileId}`, cookie);
-}
-
-export async function getMyProfile(
-  cookie: string,
-): Promise<MyProfileDetails | null> {
-
-  const res = await fetch(`${API_BASE_URL}/me`, { headers: { cookie } });
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error("Failed to get your profile");
-
-  const response: { data: MyProfileDetails } = await res.json();
-  return response.data;
-}
-
-export async function getProfileFriends(
-  profileId: number,
-  cookie: string,
-): Promise<PublicUser[]> {
-  return (
-    (await fetchData<PublicUser[]>(`/users/${profileId}/friends`, cookie)) ?? []
-  );
-}
-
-export async function getMyHostedEvents(
-  cookie: string,
-): Promise<EventSummary[]> {
-  const events = await fetchFromBackend<EventSummary[]>(
-    "/events/created",
-    cookie,
-  );
-  return (events ?? []).map(withEventDates);
-}
-
-export async function getMyInvitedEvents(
-  cookie: string,
-): Promise<InvitedEvent[]> {
-  const events = await fetchFromBackend<InvitedEvent[]>(
-    "/events/invited",
-    cookie,
-  );
-  return (events ?? []).map(withEventDates);
+export function getProfileFriends(id: number) {
+  return apiDataOrNull<PublicUser[]>(`/users/${id}/friends`, {
+    nullOn: [404],
+    fallbackError: "Failed to get profile friends",
+  });
 }
 
 export async function getEventsTogether(
   profileId: number,
-  cookie: string,
 ): Promise<InvitedEvent[]> {
-  const events = await fetchData<InvitedEvent[]>(
+  const events = await apiDataOrNull<Serialized<InvitedEvent>[]>(
     `/users/${profileId}/events-together`,
-    cookie,
+    { nullOn: [404], fallbackError: "Failed to get events together" },
   );
-  return (events ?? []).map(withEventDates);
+  return (events ?? []).map((event) => withEventDates<InvitedEvent>(event));
 }
 
-export async function getMyFriendshipStatuses(
-  cookie: string,
-): Promise<Map<number, FriendshipStatus>> {
-
+export async function getMyFriendshipStatuses(): Promise<
+  Map<number, FriendshipStatus>
+> {
   const [friends, sent, received] = await Promise.all([
-    fetchData<PublicUser[]>("/me/friendships", cookie),
-    fetchData<PublicUser[]>("/me/friendships/requests?direction=sent", cookie),
-    fetchData<PublicUser[]>(
-      "/me/friendships/requests?direction=received",
-      cookie,
-    ),
+    apiData<PublicUser[]>("/me/friendships"),
+    apiData<PublicUser[]>("/me/friendships/requests", {
+      query: { direction: "sent" },
+    }),
+    apiData<PublicUser[]>("/me/friendships/requests", {
+      query: { direction: "received" },
+    }),
   ]);
 
   const statuses = new Map<number, FriendshipStatus>();
-  received?.forEach((user) => statuses.set(user.id, "REQUEST_RECEIVED"));
-  sent?.forEach((user) => statuses.set(user.id, "REQUEST_SENT"));
-  friends?.forEach((user) => statuses.set(user.id, "FRIENDS"));
+  received.forEach((user) => statuses.set(user.id, "REQUEST_RECEIVED"));
+  sent.forEach((user) => statuses.set(user.id, "REQUEST_SENT"));
+  friends.forEach((user) => statuses.set(user.id, "FRIENDS"));
   return statuses;
 }
 
-export async function orNull<T>(promise: Promise<T>): Promise<T | null> {
-  try {
-    return await promise;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
+function patchMe(path: string, body: unknown, fallbackError: string) {
+  return apiFetch(`/me${path}`, { method: "PATCH", body, fallbackError });
 }
+
+export const updateMyInfo = (data: UserInfo) =>
+  patchMe("", data, "Failed to update your profile");
+
+export const changeEmail = (data: ChangeEmail) =>
+  patchMe("/email", data, "Failed to change your email");
+
+export const changePassword = (data: ChangePassword) =>
+  patchMe("/password", data, "Failed to change your password");
+
+export const deleteMyAccount = () =>
+  apiFetch("/me", {
+    method: "DELETE",
+    fallbackError: "Failed to delete your account",
+  });

@@ -7,10 +7,9 @@ import {
   FaCalendarDays,
   FaHouseChimney,
   FaCirclePlus,
-  FaUserPlus,
 } from "react-icons/fa6";
 import { useAuth } from "@/shared/auth/authContext";
-import InviteBar from "./inviteBar";
+import InviteBar from "../../features/search/components/inviteBar";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
@@ -38,7 +37,6 @@ export default function Navbar() {
 
       {user && (
         <span className="flex h-full items-center gap-4 rounded-full bg-accent/10 px-4 md:px-8 py-2 md:py-4">
-          <InviteBar />
           <Link
             href="/"
             className={`flex h-[50%] ${navLinkStyle}`}
@@ -46,6 +44,7 @@ export default function Navbar() {
           >
             <FaHouseChimney className={navIconStyle} />
           </Link>
+          <InviteBar />
           <Link
             href="/create-event"
             className={`flex h-[50%] ${navLinkStyle}`}

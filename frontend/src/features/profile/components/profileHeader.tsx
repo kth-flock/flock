@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import ProfileImage from "@/shared/components/profileImage";
 import { fullName } from "@/shared/lib/user";
-import type { ProfileDetails } from "../lib/types";
+import type { PublicUser, PrivateUser } from "@/shared/types/user";
 import ProfileSettings from "./profileSettings";
 import LogoutButton from "./logoutButton";
 import FriendActions from "./friendActions";
@@ -9,7 +9,7 @@ import CopyProfileLink from "./copyProfileLink";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
 type ProfileHeaderProps = {
-  profile: ProfileDetails;
+  profile: PublicUser | PrivateUser;
   bannerColor: string;
   isOwnProfile?: boolean;
   friendshipStatus?: FriendshipStatus;
@@ -37,22 +37,16 @@ export default function ProfileHeader({
         </div>
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-6 text-white md:p-8">
           <div className="flex min-w-0 items-center gap-3 drop-shadow-md">
-            {profile.imageUrl ? (
-              <ProfileImage
-                className="size-16"
-                profileImgSrc={profile.imageUrl}
-              />
-            ) : (
-              <ProfileImage
-                className="size-16"
-                firstName={profile.firstName}
-                lastName={profile.lastName}
-              />
-            )}
+            <ProfileImage
+              className="size-16"
+              firstName={profile.firstName}
+              lastName={profile.lastName}
+              profileImgSrc={profile.imageUrl ?? ""}
+            />
             <h1 className="flock-h1">{fullName(profile)}</h1>
           </div>
 
-          {isOwnProfile && (
+          {isOwnProfile && "email" in profile && (
             <div className="flex shrink-0 items-start gap-2">
               <ProfileSettings profile={profile} email={email} />
               <LogoutButton />

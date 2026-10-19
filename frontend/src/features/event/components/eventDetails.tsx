@@ -1,16 +1,40 @@
-import { ExtendedEvent } from "@/shared/types/event";
-import { twMerge } from "tailwind-merge";
-import Button from "@/shared/components/button";
+import type { IconType } from "react-icons";
 import {
   FaCalendarDays,
+  FaCalendarPlus,
   FaClock,
   FaLocationDot,
-  FaCalendarPlus,
   FaMapLocationDot,
 } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
+import Button from "@/shared/components/button";
+import type { ExtendedEvent } from "@/shared/types/event";
+import { formatTimeRange, getRelativeDatetime } from "@/shared/lib/dateFormat";
 import { getGoogleCalendarUrl } from "../lib/calendar";
 import { getGoogleMapsUrl } from "../lib/googleMaps";
-import { getRelativeDatetime, formatTimeRange } from "@/shared/lib/dateFormat";
+
+function DetailRow({
+  icon: Icon,
+  hasPassed,
+  children,
+}: {
+  icon: IconType;
+  hasPassed: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <p className="flock-lead flex items-center gap-2 text-foreground/80">
+      <Icon
+        aria-hidden
+        className={twMerge(
+          "size-5 shrink-0",
+          hasPassed ? "fill-error" : "fill-secondary",
+        )}
+      />
+      {children}
+    </p>
+  );
+}
 
 export default function EventDetails({
   event,
@@ -19,6 +43,10 @@ export default function EventDetails({
   event: ExtendedEvent;
   hasPassed: boolean;
 }) {
+  const hasLocation =
+    Boolean(event.locationName) ||
+    (event.latitude != null && event.longitude != null);
+
   return (
     <div
       className={twMerge(
@@ -32,42 +60,27 @@ export default function EventDetails({
             This event has passed
           </p>
         )}
-        <time
-          dateTime={String(event.startsAt)}
-          className="flex gap-4 items-center"
-        >
-          <p className="flock-lead flex items-center gap-2 text-foreground/80 capitalize">
-            <FaCalendarDays
-              className={twMerge(
-                "size-5 shrink-0",
-                hasPassed ? "fill-error" : "fill-secondary",
-              )}
-              aria-hidden
-            />
-            {getRelativeDatetime(event.startsAt)}
-          </p>
-          <p className="flock-lead flex items-center gap-2 text-foreground/80 capitalize">
-            <FaClock
-              className={twMerge(
-                "size-5 shrink-0",
-                hasPassed ? "fill-error" : "fill-secondary",
-              )}
-              aria-hidden
-            />
-            {formatTimeRange(event.startsAt, event.endsAt)}
-          </p>
-        </time>
-        {(event.locationName || (event.latitude && event.longitude)) && (
-          <p className="flock-lead flex items-center gap-2 text-foreground/80">
-            <FaLocationDot
-              className={twMerge(
-                "size-5 shrink-0",
-                hasPassed ? "fill-error" : "fill-secondary",
-              )}
-              aria-hidden
-            />
-            {event.locationName}
-          </p>
+
+        <div className="flex items-center gap-4">
+          <DetailRow icon={FaCalendarDays} hasPassed={hasPassed}>
+            <time
+              dateTime={event.startsAt.toISOString()}
+              className="capitalize"
+            >
+              {getRelativeDatetime(event.startsAt)}
+            </time>
+          </DetailRow>
+          <DetailRow icon={FaClock} hasPassed={hasPassed}>
+            <span className="capitalize">
+              {formatTimeRange(event.startsAt, event.endsAt)}
+            </span>
+          </DetailRow>
+        </div>
+
+        {hasLocation && (
+          <DetailRow icon={FaLocationDot} hasPassed={hasPassed}>
+            {event.locationName ?? "Pinned location"}
+          </DetailRow>
         )}
       </div>
 
@@ -84,7 +97,7 @@ export default function EventDetails({
           >
             Add to Google Calendar
           </Button>
-          {(event.locationName || (event.latitude && event.longitude)) && (
+          {hasLocation && (
             <Button
               href={getGoogleMapsUrl(event)}
               variant="secondary"
