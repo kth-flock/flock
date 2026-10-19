@@ -1,18 +1,26 @@
 import type { ExtendedEvent } from "@/shared/types/event";
+import { DeleteEventButton } from "../../event-form/components/deleteEvent";
 import RsvpButtons from "./rsvpButtons";
 import EventHeader from "./eventHeader";
 import EventDetails from "./eventDetails";
 import Button from "@/shared/components/button";
-import { FaPenToSquare, FaUserPlus } from "react-icons/fa6";
+import { FaPenToSquare } from "react-icons/fa6";
+import InviteButton from "./inviteButton";
+import type { ExtendedInvitee } from "@/shared/types/event";
 
 export default function EventInfo({
   event,
   isHost,
+  userId,
+  onChange,
 }: {
   event: ExtendedEvent;
   isHost: boolean;
+  userId: number;
+  onChange: () => void;
 }) {
-  const eventEnd = new Date(event.endsAt ?? event.startsAt).getTime();
+  const myInvite = event.invitees.find((invitee) => invitee.userId === userId);
+  const eventEnd = (event.endsAt ?? event.startsAt).getTime();
   const hasPassed = Date.now() > eventEnd;
 
   return (
@@ -29,20 +37,30 @@ export default function EventInfo({
             >
               Edit
             </Button>
-            {/* TODO:  Wire up inviting*/}
-            <Button
-              icon={<FaUserPlus aria-hidden />}
-              iconPlacement="right"
-              variant="secondary"
-            >
-              Invite
-            </Button>
+            <InviteButton
+              invitees={event.invitees.map(
+                (invitee: ExtendedInvitee) => invitee.user,
+              )}
+              eventId={event.id}
+              onChange={onChange}
+            />
           </div>
         ) : (
-          <RsvpButtons />
+          <RsvpButtons
+            eventId={event.id}
+            initialRsvp={myInvite?.rsvp ?? "PENDING"}
+            initialComment={myInvite?.rsvpComment ?? ""}
+            onChange={onChange}
+          />
         ))}
 
       <EventDetails event={event} hasPassed={hasPassed} />
+
+      {hasPassed && isHost && (
+        <div className="flex justify-center">
+          <DeleteEventButton eventId={event.id} />
+        </div>
+      )}
 
       {event.description && (
         <section className="flex flex-col gap-2">

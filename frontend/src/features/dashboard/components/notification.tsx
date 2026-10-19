@@ -1,51 +1,71 @@
 "use client";
+import Link from "next/link";
+import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
 import ProfileImage from "@/shared/components/profileImage";
 import Button from "@/shared/components/button";
+import { getRelativeDatetime } from "@/shared/lib/dateFormat";
 import { fullName } from "@/shared/lib/user";
-import type { DashboardNotification } from "../lib/types";
-
-export type FriendRequestActionType = "ACCEPT" | "DECLINE";
-export type NotificationAction = FriendRequestActionType | "VIEW";
-export type NotificationType =
-  | "req"
-  | "invite"
-  | "RSVP"
-  | "announcement"
-  | "comment";
-
-// TODO: Add comment and announcements as notification
-// TODO: Add dates to notifications
 
 type NotificationProps = {
-  notification: DashboardNotification;
-  onAction: (action: NotificationAction) => void;
+  notification: NotificationData;
+  isPending: boolean;
+  onAccept: () => void;
+  onDecline: () => void;
 };
 
-const messageMap = {
-  req: "sent you a friend request!",
-  invite: "invited you to their event!",
-  RSVP: {
-    ACCEPTED: "responded YES to your event!",
-    MAYBE: "responded MAYBE to your event!",
-    DECLINED: "responded NO to your event!",
-  },
+const rsvpMessage = {
+  ACCEPTED: "is going to",
+  MAYBE: "might come to",
+  DECLINED: "can't come to",
 } as const;
 
-function FriendRequestAction({
-  onAction,
-}: {
-  onAction: (type: FriendRequestActionType) => void;
-}) {
+function message({ type, event, rsvp }: NotificationData) {
+  const eventTitle = <b>{event?.title}</b>;
+
+  switch (type) {
+    case "INVITATION":
+      return <>invited you to {eventTitle}</>;
+    case "ANNOUNCEMENT":
+      return <>posted an announcement in {eventTitle}</>;
+    case "ANNOUNCEMENT_COMMENT":
+      return <>commented on an announcement in {eventTitle}</>;
+    case "FRIEND_REQUEST":
+      return <>sent you a friend request</>;
+    case "FRIEND_REQUEST_ACCEPTED":
+      return <>accepted your friend request</>;
+    case "RSVP":
+      return (
+        <>
+          {rsvp && rsvp.status !== "PENDING"
+            ? rsvpMessage[rsvp.status]
+            : "responded to"}{" "}
+          {eventTitle}
+        </>
+      );
+  }
+}
+
+function FriendRequestActions({
+  isPending,
+  onAccept,
+  onDecline,
+}: Omit<NotificationProps, "notification">) {
   return (
     <div className="flex gap-2">
-      <Button variant="secondary" size="sm" onClick={() => onAction("ACCEPT")}>
+      <Button
+        variant="secondary"
+        size="sm"
+        disabled={isPending}
+        onClick={onAccept}
+      >
         Accept
       </Button>
       <Button
         variant="secondary"
         size="sm"
         className="text-error border-error"
-        onClick={() => onAction("DECLINE")}
+        disabled={isPending}
+        onClick={onDecline}
       >
         Decline
       </Button>
@@ -55,28 +75,46 @@ function FriendRequestAction({
 
 export default function Notification({
   notification,
-  onAction,
+  ...actions
 }: NotificationProps) {
-  const { from } = notification;
+  const { from, event, type } = notification;
+  const href = event ? `/event/${event.id}` : `/profile/${from.id}`;
 
   return (
-    <div className="flex gap-4 items-center p-4 cursor-pointer hover:bg-accent/10">
-      {from.imageUrl ? (
-        <ProfileImage profileImgSrc={from.imageUrl} />
-      ) : (
-        <ProfileImage firstName={from.firstName} lastName={from.lastName} />
+    <div className="flex flex-col transition-colors has-[a:hover]:bg-accent/10">
+      <Link href={href} className="flex items-center gap-4 p-4">
+        <ProfileImage
+          firstName={from.firstName}
+          lastName={from.lastName}
+          profileImgSrc={from.imageUrl ?? ""}
+        />
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="flock-body">
+            <b>{fullName(from)}</b> {message(notification)}
+          </p>
+          {type === "ANNOUNCEMENT" && notification.announcement && (
+            <p className="flock-body-sm line-clamp-1 text-text-muted">
+              {notification.announcement.content}
+            </p>
+          )}
+          {type === "RSVP" && notification.rsvp?.comment && (
+            <p className="flock-body-sm line-clamp-1 text-text-muted">
+              {`"${notification.rsvp.comment}"`}
+            </p>
+          )}
+          <time
+            className="flock-caption"
+            dateTime={notification.createdAt.toISOString()}
+          >
+            {getRelativeDatetime(notification.createdAt)}
+          </time>
+        </div>
+      </Link>
+      {type === "FRIEND_REQUEST" && (
+        <div className="pb-4 pl-16">
+          <FriendRequestActions {...actions} />
+        </div>
       )}
-      <div className="flex flex-col gap-2">
-        <p className="flock-body">
-          <b>{fullName(from)}</b>{" "}
-          {notification.type === "RSVP"
-            ? messageMap.RSVP[notification.RSVPstatus]
-            : messageMap[notification.type]}
-        </p>
-        {notification.type === "req" && (
-          <FriendRequestAction onAction={onAction} />
-        )}
-      </div>
     </div>
   );
 }

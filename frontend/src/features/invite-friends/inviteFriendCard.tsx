@@ -1,10 +1,13 @@
-import { FaUser, FaPaperPlane, FaTrash } from "react-icons/fa6";
+import { FaPaperPlane, FaTrash } from "react-icons/fa6";
 import Button from "@/shared/components/button";
 import type { UserSearchResult } from "@/shared/types/user";
+import ProfileImage from "@/shared/components/profileImage";
+import { fullName } from "@/shared/lib/user";
 
 type InviteFriendCardProps = {
   user: UserSearchResult;
   isInvited: boolean;
+  isPending?: boolean;
   onInvite?: () => void;
   onRemove?: () => void;
 };
@@ -12,24 +15,22 @@ type InviteFriendCardProps = {
 export default function InviteFriendCard({
   user,
   isInvited,
+  isPending = false,
   onInvite,
   onRemove,
 }: InviteFriendCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-3 flex flex-row justify-between items-center">
+    <div className="bg-background rounded-2xl p-3 flex flex-row gap-4 justify-between items-center">
       <div className="flex flex-row gap-4 items-center">
-        {user.imageUrl ? (
-          ""
-        ) : (
-          <div className="rounded-full w-12 h-12 border-primary border-3 flex items-end justify-center overflow-clip">
-            <FaUser className="fill-primary" size={36} />
-          </div>
-        )}
+        <ProfileImage
+          className="h-12 w-12"
+          firstName={user.firstName}
+          lastName={user.lastName}
+          profileImgSrc={user.imageUrl ?? ""}
+        />
 
         <div className="flex flex-col">
-          <p className="flock-body font-bold!">
-            {user.firstName} {user.lastName}
-          </p>
+          <p className="flock-body font-bold!">{fullName(user)}</p>
           {user.friendshipStatus !== "NONE" && (
             <p className="flock-caption">Friend</p>
           )}
@@ -43,8 +44,9 @@ export default function InviteFriendCard({
           iconPlacement="right"
           className="border-error! text-error!"
           onClick={onRemove}
+          disabled={isPending}
         >
-          Remove
+          {isPending ? "Uninviting..." : "Uninvite"}
         </Button>
       ) : (
         <Button
@@ -53,8 +55,9 @@ export default function InviteFriendCard({
           icon={<FaPaperPlane aria-hidden />}
           iconPlacement="right"
           onClick={onInvite}
+          disabled={isPending}
         >
-          Invite
+          {isPending ? "Inviting..." : "Invite"}
         </Button>
       )}
     </div>

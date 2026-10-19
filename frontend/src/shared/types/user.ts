@@ -1,12 +1,11 @@
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 
-// Public user info the backend includes on events, announcements and comments
 export type PublicUser = {
   id: number;
   firstName: string;
   lastName: string;
   imageUrl: string | null;
-  createdAt: string;
+  createdAt?: Date;
 };
 
 export type PrivateUser = PublicUser & {

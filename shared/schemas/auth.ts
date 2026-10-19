@@ -1,6 +1,15 @@
 import { z } from "zod";
 
-const emailSchema = z.string().email("Invalid email address");
+export const emailSchema = z.string().email("Invalid email address");
+
+// Used both when registering and when changing your password
+export const passwordSchema = z
+  .string()
+  .min(8, "Must be at least 8 characters")
+  .max(50, "Must be at most 50 characters")
+  .regex(/^(?=.*[A-Z])(?=.*\d).{8,}$/, {
+    message: "Should contain at least one uppercase letter and one number.",
+  });
 
 export const registerUserSchema = z
   .object({
@@ -8,14 +17,7 @@ export const registerUserSchema = z
     lastName: z.string().trim().min(1, "Last name cannot be empty"),
     email: emailSchema,
     // TODO: for now its not optional but in future we may add google login.
-    password: z
-      .string()
-      .min(8, "Must be at least 8 characters")
-      .max(50, "Must be at most 50 characters")
-      .regex(/^(?=.*[A-Z])(?=.*\d).{8,}$/, {
-        message:
-          "Should contain at least one uppercase letter and one number.",
-      }),
+    password: passwordSchema,
   })
   .strict();
 

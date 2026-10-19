@@ -1,5 +1,8 @@
+"use client";
+
 import { twMerge } from "tailwind-merge";
 import Image from "next/image";
+import { useState } from "react";
 
 type ProfileImageProps =
   | {
@@ -24,16 +27,31 @@ export default function ProfileImage({
   firstName,
   lastName,
 }: ProfileImageProps) {
+  const [failed, setFailed] = useState(false);
+
   return (
-    <div className="rounded-full overflow-hidden h-8 w-8 shrink-0 group relative">
+    <div
+      className={twMerge(
+        "rounded-full overflow-hidden h-8 w-8 shrink-0 group relative",
+        className,
+      )}
+    >
       {profileImgSrc ? (
-        <Image src={profileImgSrc} fill alt={`${firstName} ${lastName}`} />
+        <Image
+          src={failed ? "/profileImgFailed.png" : profileImgSrc}
+          fill
+          sizes="128px"
+          alt={`${firstName} ${lastName}`}
+          onError={() => setFailed(true)}
+          className="object-cover"
+          unoptimized
+          loading="eager"
+        />
       ) : (
         <div
           className={twMerge(
             "@container group relative flex h-full w-full items-center justify-center bg-accent/40",
             shadow ? "drop-shadow-lg" : "",
-            className,
           )}
         >
           {firstName && lastName && (

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -6,14 +8,15 @@ import {
   FaHouseChimney,
   FaCirclePlus,
 } from "react-icons/fa6";
-import { cookies } from "next/headers";
+import { useAuth } from "@/shared/auth/authContext";
+import InviteBar from "../../features/search/components/inviteBar";
 
 const navLinkStyle =
   "aspect-square items-center justify-center group hover:scale-110 hover:-rotate-5 transition-all";
 const navIconStyle = "h-full w-full fill-primary group-hover:drop-shadow-md";
 
-export default async function Navbar() {
-  const token = (await cookies()).get("token")?.value;
+export default function Navbar() {
+  const { user } = useAuth();
 
   return (
     <nav className="w-full py-2 md:p-6 flex flex-row justify-between h-20 md:h-32 items-center">
@@ -32,7 +35,7 @@ export default async function Navbar() {
         />
       </Link>
 
-      {token && (
+      {user && (
         <span className="flex h-full items-center gap-4 rounded-full bg-accent/10 px-4 md:px-8 py-2 md:py-4">
           <Link
             href="/"
@@ -41,6 +44,7 @@ export default async function Navbar() {
           >
             <FaHouseChimney className={navIconStyle} />
           </Link>
+          <InviteBar />
           <Link
             href="/create-event"
             className={`flex h-[50%] ${navLinkStyle}`}
@@ -49,14 +53,14 @@ export default async function Navbar() {
             <FaCirclePlus className={navIconStyle} />
           </Link>
           <Link
-            href="/"
+            href="/calendar"
             className={`flex h-[50%] ${navLinkStyle}`}
             aria-label="Calendar"
           >
             <FaCalendarDays className={navIconStyle} />
           </Link>
           <Link
-            href="/"
+            href="/profile"
             className={`flex h-full ${navLinkStyle}`}
             aria-label="Profile"
           >

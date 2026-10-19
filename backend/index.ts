@@ -10,9 +10,19 @@ import { authMiddleware } from "./server/middleware/authMiddleware";
 import { errorHandler } from "./server/middleware/errorHandlers";
 import cookieParser from "cookie-parser";
 import { imageRouter } from "./server/routes/image";
+import { signImages } from "./server/middleware/signImages";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://stage-flock-kth.vercel.app",
+      "https://flock-kth.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json()); //body parsing middleware
 app.use(cookieParser()); //cookie parsing middleware
 
@@ -20,12 +30,12 @@ app.get("/", (req, res) => {
   res.json({ message: "Express server running" });
 });
 
-// Routes
-app.use("/users", usersRouter);
+// Routes (signImages turns image keys into signed URLs; /image is left out because its upload response returns a raw key)
+app.use("/users", signImages, usersRouter);
 app.use("/auth", authRouter);
 app.use("/geocode", authMiddleware, geocodeRouter);
-app.use("/events", authMiddleware, eventsRouter);
-app.use("/me", authMiddleware, meRouter);
+app.use("/events", authMiddleware, signImages, eventsRouter);
+app.use("/me", authMiddleware, signImages, meRouter);
 app.use("/image", authMiddleware, imageRouter);
 
 app.use(errorHandler);

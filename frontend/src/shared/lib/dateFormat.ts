@@ -1,10 +1,6 @@
-// Formatting runs on the server, so pin the time zone instead of using the server's
-// TODO: check how server saves time in regards to timezone etc. Convert to local timezone?
-
-const TIME_ZONE = "Europe/Stockholm";
+// Event timestamps are displayed and edited in the browser's local time zone.
 
 const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
   weekday: "short",
   day: "numeric",
   month: "short",
@@ -12,20 +8,31 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 });
 
 const timeFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
 });
 
+const monthYearFormatter = new Intl.DateTimeFormat("en-GB", {
+  month: "short",
+  year: "numeric",
+});
+
 const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
 });
 
+export const formatMonthYear = (iso: string | Date) => {
+  const date = typeof iso === "string" ? new Date(iso) : iso;
+  if (Number.isNaN(date.getTime())) {
+    throw new TypeError("Invalid date passed to formatMonthYear");
+  }
+
+  return monthYearFormatter.format(date);
+};
+
 const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  timeZone: TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
   hourCycle: "h23",
@@ -56,34 +63,14 @@ export function formatTimeInput(date: Date | string) {
   return `${parts.hour}:${parts.minute}`;
 }
 
-export function formatDateTimeRange(
-  startsAt: Date | string,
-  endsAt: Date | string | null,
-) {
-  const start = `${formatDate(startsAt)}, ${formatTime(startsAt)}`;
-  if (!endsAt) return start;
-
-  const sameDay = formatDate(startsAt) === formatDate(endsAt);
-  const end = sameDay
-    ? formatTime(endsAt)
-    : `${formatDate(endsAt)}, ${formatTime(endsAt)}`;
-
-  return `${start} - ${end}`;
-}
-
-const calendarDayFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: TIME_ZONE,
-});
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const RELATIVE_DAYS_AHEAD = 14;
 
+const localDayNumber = (date: Date) =>
+  Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+
 const daysFromToday = (iso: Date | string) =>
-  Math.round(
-    (Date.parse(calendarDayFormatter.format(new Date(iso))) -
-      Date.parse(calendarDayFormatter.format(new Date()))) /
-      MS_PER_DAY,
-  );
+  (localDayNumber(new Date(iso)) - localDayNumber(new Date())) / MS_PER_DAY;
 
 // Relative date formatting
 export function formatRelativeDate(iso: Date | string) {
@@ -140,4 +127,11 @@ export function getRelativeDatetime(datetime: Date) {
     }
   }
   return formatDate(eventDate);
+}
+
+export function combineDateTime(date: string, time: string): Date | null {
+  if (!date || !time) return null;
+
+  const result = new Date(`${date}T${time}`);
+  return Number.isNaN(result.getTime()) ? null : result;
 }
