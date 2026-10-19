@@ -68,6 +68,7 @@ function PublicProfileData({
   const {
     data: eventsTogether,
     error: eventsTogetherError,
+    isLoading: isLoadingEventsTogether,
     refetch: refetchEventsTogether,
   } = useFetch(fetchEventsTogether);
 
@@ -119,8 +120,8 @@ function PublicProfileData({
             error={eventsTogetherError}
             onRetry={refetchEventsTogether}
             myId={user.id}
+            isLoading={isLoadingEventsTogether}
           />
-
         </div>
       </div>
     </div>

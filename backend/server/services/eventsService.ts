@@ -122,7 +122,6 @@ export async function getEventsTogether(myId: UserId, otherId: UserId) {
   const events = await prisma.event.findMany({
     where: {
       AND: [isParticipant(myId), isParticipant(otherId)],
-      startsAt: { gte: new Date() },
     },
     orderBy: { startsAt: "asc" },
     include: {

@@ -11,4 +11,4 @@ export const usersRouter = Router();
 usersRouter.get("/search", searchUsers); // Endpoints for user search with friend status
 usersRouter.get("/:userId", getUser); // GET specific user account
 usersRouter.get("/:userId/friends", getUserFriends); // Endpoints for to get a users friends list
-usersRouter.get("/:userId/events-together", getEventsTogether); // Upcoming events you and this user both take part in
+usersRouter.get("/:userId/events-together", getEventsTogether); // Upcoming and past events users both take part in
