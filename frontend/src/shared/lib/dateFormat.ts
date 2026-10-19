@@ -58,6 +58,58 @@ export function formatMonthYear(value: Date | string) {
   return monthYearFormatter.format(toValidDayjs(value).toDate());
 }
 
+// True if the event ends on a later day than it starts
+export const isMultiDay = (
+  startsAt: Date | string,
+  endsAt: Date | string | null,
+) => endsAt !== null && formatDate(startsAt) !== formatDate(endsAt);
+
+// "In 5 days, 17:00 – Sun 25 Oct, 09:00", keeping each time next to its day
+export function formatMultiDayRange(
+  startsAt: Date | string,
+  endsAt: Date | string,
+) {
+  return `${formatRelativeDate(startsAt)}, ${formatTime(startsAt)} – ${formatShortDate(endsAt)}, ${formatTime(endsAt)}`;
+}
+
+// "Mon 19 Oct", with the year only when it isn't the current one
+export function formatEventDay(iso: Date | string) {
+  const date = new Date(iso);
+  const year =
+    date.getFullYear() === new Date().getFullYear()
+      ? ""
+      : ` ${date.getFullYear()}`;
+  return `${formatShortDate(date)}${year}`;
+}
+
+// True between start and end. Events without an end time count as over once
+// they start (see hasPassed in eventInfo), so they're never ongoing
+export function isOngoing(startsAt: Date, endsAt: Date | null) {
+  const now = Date.now();
+  return endsAt !== null && startsAt.getTime() <= now && now < endsAt.getTime();
+}
+
+// "Tomorrow" for one-day events, "Tomorrow – Sun 25 Oct" for longer ones
+export function formatEventDate(
+  startsAt: Date | string,
+  endsAt: Date | string | null,
+) {
+  const start = formatRelativeDate(startsAt);
+  return isMultiDay(startsAt, endsAt)
+    ? `${start} – ${formatShortDate(endsAt!)}`
+    : start;
+}
+
+export function formatDateInput(date: Date | string) {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const parts = Object.fromEntries(
+    dateInputFormatter
+      .formatToParts(dateObj)
+      .map(({ type, value }) => [type, value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 export function formatDate(value: Date | string) {
   return dateFormatter.format(toValidDayjs(value).toDate());
 }
