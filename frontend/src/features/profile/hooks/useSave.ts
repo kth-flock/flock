@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export type Result = { ok: boolean; message: string };
 
@@ -15,12 +16,7 @@ export function useSave() {
     } catch (err) {
       setResult({
         ok: false,
-        message:
-          err instanceof TypeError
-            ? "Couldn't reach the server. Try again."
-            : err instanceof Error
-              ? err.message
-              : "Something went wrong",
+        message: getErrorMessage(err, "Couldn't save. Try again."),
       });
     } finally {
       setIsSaving(false);

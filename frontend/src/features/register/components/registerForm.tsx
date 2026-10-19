@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import Button from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
 import {
@@ -12,6 +11,7 @@ import {
 import { useAuth } from "@/shared/auth/authContext";
 import Link from "next/link";
 import { useToast } from "@/shared/components/toast";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export default function RegisterForm() {
   const [validationError, setValidationError] = useState<
@@ -95,11 +95,10 @@ export default function RegisterForm() {
       toast("Welcome to Flock!", "info");
     } catch (error) {
       setSubmitError(
-        error instanceof TypeError
-          ? "Couldn't connect to the server. Check your connection and try again."
-          : error instanceof Error
-            ? error.message
-            : "Couldn't register your account. Please try again.",
+        getErrorMessage(
+          error,
+          "Couldn't register your account. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);
