@@ -15,6 +15,7 @@ import {
 import { UserId } from "@flock/shared/schemas/user";
 import { deleteImageFromS3 } from "./imageService";
 import { getUserById } from "./usersServices";
+import { assertEventHost } from "../utils/service";
 
 export async function getEventById(eventId: EventId, userId: UserId) {
   const event = await prisma.event.findUnique({

@@ -1,22 +1,8 @@
 import { prisma } from "../prisma";
 import { UserId } from "@flock/shared/schemas/user";
 import { EventId } from "@flock/shared/schemas/event";
-import {
-  NotFoundError,
-  ForbiddenError,
-  ValidationError,
-  ConflictError,
-} from "../utils/errors";
-
-async function assertEventHost(
-  userId: UserId,
-  eventId: EventId,
-  forbiddenMessage: string,
-) {
-  const event = await prisma.event.findUnique({ where: { id: eventId } });
-  if (!event) throw new NotFoundError("Event not found");
-  if (event.createdById !== userId) throw new ForbiddenError(forbiddenMessage);
-}
+import { NotFoundError, ValidationError, ConflictError } from "../utils/errors";
+import { assertEventHost } from "../utils/service";
 
 async function assertUserExists(inviteeId: UserId) {
   const user = await prisma.user.findUnique({ where: { id: inviteeId } });
@@ -28,7 +14,7 @@ export async function addInvitee(
   eventId: EventId,
   inviteeId: UserId,
 ) {
-  await assertEventHost(userId, eventId, "Only event host can invite users");
+  await assertEventHost(eventId, userId, "Only event host can invite users");
 
   await assertUserExists(inviteeId);
 
@@ -56,7 +42,7 @@ export async function AddInviteesInBatch(
   eventId: EventId,
   inviteeIds: UserId[],
 ) {
-  await assertEventHost(userId, eventId, "Only event host can invite users");
+  await assertEventHost(eventId, userId, "Only event host can invite users");
 
   const uniqueIds = [...new Set(inviteeIds)].filter((id) => id !== userId);
 
@@ -77,11 +63,7 @@ export async function removeInvitee(
   eventId: EventId,
   inviteeId: UserId,
 ) {
-  await assertEventHost(
-    userId,
-    eventId,
-    "Only event host can remove invitees",
-  );
+  await assertEventHost(eventId, userId, "Only event host can remove invitees");
 
   await assertUserExists(inviteeId);
 
