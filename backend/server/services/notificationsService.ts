@@ -4,8 +4,8 @@ import { RSVP, STATUS } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import type { Notification } from "@flock/shared/schemas/notifications";
 
-const NOTIFICATIONS_PER_TYPE = 20;
-const NOTIFICATIONS_LIMIT = 20;
+const NOTIFICATIONS_PER_TYPE = 10;
+const NOTIFICATIONS_LIMIT = 10;
 
 export async function getNotifications(
   userId: UserId,
