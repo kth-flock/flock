@@ -46,7 +46,7 @@ export default function FriendActions({
       router.refresh();
     } catch (err) {
       setError(
-        getErrorMessage(error, "Couldn't update friendship. Please try again."),
+        getErrorMessage(err, "Couldn't update friendship. Please try again."),
       );
       if (!(err instanceof TypeError)) router.refresh();
     } finally {
