@@ -7,6 +7,7 @@ import { getErrorMessage } from "@/shared/lib/errors";
 import { deleteComment, updateComment } from "../lib/api";
 import { updateCommentSchema } from "@flock/shared/schemas/comment";
 import type { EventId } from "@flock/shared/schemas/event";
+import { useToast } from "@/shared/components/toast";
 
 export default function Comment({
   comment,
@@ -23,6 +24,7 @@ export default function Comment({
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   async function handleRemove() {
     setIsDeleting(true);
@@ -30,6 +32,7 @@ export default function Comment({
     try {
       await deleteComment(eventId, comment.announcementId, comment.id);
       onChange();
+      toast("Comment edited!", "success");
     } catch (err) {
       setError(
         getErrorMessage(err, "Couldn't delete the reply. Please try again."),
@@ -50,6 +53,7 @@ export default function Comment({
           updateCommentResult.data,
         );
         onChange();
+        toast("Comment edited!", "success");
       } else {
         setError(updateCommentResult.error.issues[0].message);
       }
