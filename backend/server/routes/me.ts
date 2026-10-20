@@ -8,7 +8,6 @@ import {
   changeEmail,
   changePassword,
 } from "../controllers/meController";
-import { authMiddleware } from "../middleware/authMiddleware";
 
 export const meRouter = Router();
 

@@ -5,7 +5,6 @@ import * as eventsService from "../services/eventsService";
 import { idSchema } from "@flock/shared/schemas/common";
 import { searchUsersQuerySchema } from "@flock/shared/schemas/user";
 import { validate } from "../utils/validate";
-import { NotFoundError } from "../utils/errors";
 
 export async function getUser(req: Request, res: Response) {
   const userId = validate(idSchema, req.params.userId, "Invalid user ID");
