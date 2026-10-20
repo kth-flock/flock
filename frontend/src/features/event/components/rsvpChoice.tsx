@@ -9,8 +9,8 @@ import {
 import { twMerge } from "tailwind-merge";
 import Button from "@/shared/components/button";
 import { updateRsvp } from "@/shared/lib/api";
-import { getErrorMessage } from "@/shared/lib/errors";
 import type { Rsvp } from "../lib/types";
+import { useToast } from "@/shared/components/toast";
 
 const options: {
   value: Rsvp;
@@ -53,6 +53,7 @@ export default function RsvpChoice({
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   async function handleSelect(value: Rsvp) {
     if (isSaving || value === rsvp) return;
@@ -64,9 +65,10 @@ export default function RsvpChoice({
     try {
       await updateRsvp(eventId, { rsvp: value });
       onChange();
+      toast("Response updated");
     } catch (err) {
       onRsvpChange(previous);
-      setError(getErrorMessage(err, "Couldn't save your answer. Try again."));
+      toast("Couldn't save your answer. Try again.");
     } finally {
       setIsSaving(false);
     }
@@ -92,11 +94,6 @@ export default function RsvpChoice({
           </Button>
         ))}
       </div>
-      {error && (
-        <p className="flock-caption text-error" role="alert">
-          {error}
-        </p>
-      )}
     </>
   );
 }

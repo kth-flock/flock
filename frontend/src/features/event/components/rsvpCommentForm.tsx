@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import { FaComment, FaTrash } from "react-icons/fa6";
-import { twMerge } from "tailwind-merge";
 import Button, { IconButton } from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
 import { updateRsvp } from "@/shared/lib/api";
-import { getErrorMessage } from "@/shared/lib/errors";
 import type { Rsvp } from "../lib/types";
-import { error } from "console";
 import { useToast } from "@/shared/components/toast";
 
 const MAX_COMMENT_LENGTH = 200;
@@ -104,8 +101,8 @@ export default function RsvpCommentForm({
         )}
       </form>
       {savedComment && comment.trim() !== savedComment && (
-        <p className={"flock-caption text-error!"} role={"alert"}>
-          This will replace your previous rsvp comment
+        <p className={"flock-caption text-warn!"} role={"alert"}>
+          This will replace your previous comment
         </p>
       )}
     </>
