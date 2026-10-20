@@ -1,7 +1,8 @@
 # Flock
 
-## Frontend setup
+## Setup
 
+### Frontend
 **Prerequisites:** Node.js
 
 1. Install dependencies
@@ -12,6 +13,8 @@
    ```
 
 2. Start dev server
+   
+*Note* Dev server can be started from both the root folder AND /frontend
 
    ```bash
    npm run dev
@@ -19,136 +22,15 @@
 
    The frontend will be running at `http://localhost:3000`.
 
-## Backend setup
+---
+### Backend (Docker)
+**Prerequisites:** Docker
 
-**Prerequisites:** Node.js, Docker
-
-1. Install dependencies
-
-   ```bash
-   cd backend
-   npm install
-   ```
-
-2. Create your `.env` file from the template and fill in real values
-
-   ```bash
+1. Create a new .env file in the **root** folder (`/flock`) based on the example file.
+```bash
    cp .env.example .env
    ```
-
-3. Start Postgres
-
-   ```bash
-   docker compose up -d
-   ```
-
-4. Run migrations and generate the Prisma client
-
-   ```bash
-   npx prisma migrate dev
-   ```
-
-5. Start the dev server
-
-   ```bash
-   npm run dev
-   ```
-
-The API will be running at `http://localhost:4000`.
-
-## Local Database
-
-To run local database if docker container is off:
-
-```bash
-docker run --name flockdatabase -e POSTGRES_PASSWORD=yourpassword -p 5434:5432 -d postgres:14.5
-```
-
-After editing schema.prisma, for example when you add a table or update a table, run:
-
-### After editing schema
-
-#### 1 Create a new migration
-
-Replace the "migration-name" with a short description of your change.
-
-```bash
-npx prisma migrate dev --name migration-name
-```
-
-#### 2 Regenerate Prisma Client
-
-```bash
-npx prisma generate
-```
-
-### When someone else has updated a schema
-
-If someone else has updated a schema, you need to run
-
-```bash
-npx prisma migrate deploy
-```
-
-and
-
-```bash
-npx prisma generate
-```
-
-to get your local database up to date
-
-## Production Database in Neon
-
-### Point db to production
-
-1. Go to neon flock project --> connect
-2. turn connection pooling OFF
-3. copy the URL from .env section
-4. Paste it into your local .env, replacing your local db connection string
-5. Run:
-
-```bash
-npx prisma migrate deploy
-```
-
-### View database tables in Neon
-
-Go to the neon flock project --> Postgress database --> Tables
-
-### When someone else has updated a schema
-
-If someone else has updated a schema, you need to run
-
-```bash
-npx prisma migrate deploy
-```
-
-### Prisma Studio
-
-If you want a visual representation of the database and tables, open prisma studio:
-
-```bash
-npx prisma studio
-```
-
-This command will open a browser at http://localhost:51212 where you can see your database.
-
-Important: You need to run this command in a separate terminal because your development server (npm run dev) must stay running at the same time.
-
-## Server
-
-IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
-
-## Docker
-
-### How to get container on your machine
-
-1. Create a new .env file in the **root** folder (`/flock`) based on the example file. You can probably copy over most of the things from your backend .env file.
-2. Change DATABASE_URL to say `@postgres` instead of `@localhost`
-3. Stop the running of your Postgres database in Docker
-   - If you don't, it will conflict with the new database container that will be created in the next step.
-   - You could completely remove the first Postgres container if you want to
+3. Change DATABASE_URL to say `@postgres` instead of `@localhost`
 4. Run the following line from root folder
 
    ```
@@ -156,23 +38,51 @@ IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
    ```
 
    - Wait for the containers to be created and start
-
+     
 5. Run from root folder.
    ```
    docker compose exec express-api npx prisma migrate deploy
    ```
-6. Now you should be able to open `http://localhost:4000/` and have a server that is running.
+The server will be running at `http://localhost:4000`.
 
-### After updating dependencies in server
+---
+### Local database
 
-- After changing dependencies in the server, rebuild with
+If you want a visual representation of the database and tables, open prisma studio:
+
+1. Create a new .env file in the **/backend** folder based on the example file.
+```bash
+cd backend
+   cp .env.example .env
+   ```
+2. Run local database in Prisma Studio
+```bash
+cd backend
+npx prisma studio
+```
+
+The visual representation of the local database will running at `http://localhost:51212`.
+
+*Important:* You need to run this command in a separate terminal because your development server (npm run dev) must stay running at the same time.
+
+## Changes in the backend
+**After changing server dependencies**
+After changing dependencies in the server, rebuild with
   ```
   docker compose up --build --renew-anon-volumes -d
   ```
-- This is sthe same if someone else has updated the backend dependencies and you pull their changes from github.
+This is sthe same if someone else has updated the backend dependencies and you pull their changes from github.
 
-#### If there's a new migration and/or schema.prisma has been updated
+---
 
+**Changes in Prisma Schema**
+When you have made a change in `prisma.schema`:
+```
+cd backend
+npx prisma migrate dev --name [name of migration]
+```
+
+**When you, or someone else, as created a new migration**
 1. Run
    ```
    docker compose exec express-api npx prisma migrate deploy
@@ -186,18 +96,6 @@ IMPORTANT: All routes need to import the prisma.ts file at the top of the files.
    docker compose restart express-api
    ```
 
-#### Two .env files
-
-We now have two .env files: one in the root folder and one in the /backend folder. Follow the example files to see what belongs in each.
-
-The backend/.env file is only needed if you want to run things on your local machine instead of through the Docker container.
-
-> Prisma Studio only works when you run npx prisma studio in a terminal inside the backend folder.
-
-Because of this, the backend/.env file needs the following line, with your own database username, password and name filled in:
-
-`DATABASE_URL="postgresql://username:password@localhost:5432/databasename?schema=public"`
-
 ## Run api tests
 
 From /backend run:
@@ -208,11 +106,31 @@ npm run test:api:full
 
 And all tests will run with the test database (docker commands are included in the script)
 
+## Production Database in Neon
+If you want to connect your localhost to the production database.
+### Point db to production
+
+1. Go to Neon flock project --> connect
+2. Turn connection pooling OFF
+3. Copy the URL from .env section
+4. Paste it into your local .env, replacing your local db connection string
+5. Run:
+
+```bash
+npx prisma migrate deploy
+```
+
+### View database tables in Neon
+
+Go to the neon flock project --> Postgress database --> Tables
+
 ## Deployment
 ### Deploy frontend in Vercel
 To deploy frontend to [Vercel](https://vercel.com), create a new pull request from `main` --> `production`.
 This will create a new deployment in Vercel. Inspect build logs to ensure that everything is correct.
 **NOTE:** *Never* commit directly to `production`.
+
+---
 
 ### Deploy backend in Render
 To deploy backend to [Render](https://render.com), create a new pull request from `main` --> `production`.
