@@ -102,6 +102,7 @@ export const rsvpToEventSchema = z.object({
   rsvpComment: z
     .string()
     .max(200, "Comment can be at most 200 characters")
+    .nullable()
     .optional(),
 });
 export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;
