@@ -40,9 +40,7 @@ export default function FlockLoader({
     Array.isArray(message) ? message : message ? [message] : []
   ).filter(Boolean);
 
-  const [index, setIndex] = useState(() =>
-    messages.length > 0 ? pickRandomIndex(messages.length) : 0,
-  );
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     if (messages.length <= 1) return;
@@ -60,7 +58,7 @@ export default function FlockLoader({
     <div
       role="status"
       aria-live="polite"
-      aria-label={current ?? "Loading"}
+      aria-label={"Loading"}
       className={twMerge(
         "flex flex-col items-center justify-center gap-1",
         className,
