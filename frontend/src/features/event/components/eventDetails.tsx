@@ -14,6 +14,7 @@ import {
   formatEventDay,
   formatTime,
   formatTimeRange,
+  formatWeekdayDate,
   getRelativeDatetime,
   isMultiDay,
 } from "@/shared/lib/dateFormat";
@@ -79,6 +80,9 @@ export default function EventDetails({
   const revealLabelStyle =
     "overflow-hidden transition-all duration-300 lg:pointer-fine:max-w-0 lg:pointer-fine:opacity-0 lg:pointer-fine:group-hover:ml-1.5 lg:pointer-fine:group-hover:max-w-xs lg:pointer-fine:group-hover:opacity-100 lg:pointer-fine:group-focus-visible:ml-1.5 lg:pointer-fine:group-focus-visible:max-w-xs lg:pointer-fine:group-focus-visible:opacity-100";
 
+  const relativeStartDate = getRelativeDatetime(event.startsAt);
+  const startDate = formatWeekdayDate(event.startsAt);
+
   return (
     <div
       className={twMerge(
@@ -93,53 +97,65 @@ export default function EventDetails({
       )}
 
       <div className={twMerge(groupStyle, "lg:items-end")}>
-        {isMultiDay(event.startsAt, event.endsAt) ? (
-          <div className="flock-lead grid grid-cols-[auto_auto_auto_auto_1fr] items-baseline gap-x-2 gap-y-2 text-foreground/80">
-            <FaRegCalendar
-              aria-hidden
-              className={twMerge(rowIconStyle, "self-center")}
-            />
-            <span className="pr-3 font-bold">Starts</span>
-            <time dateTime={event.startsAt.toISOString()} className="contents">
-              <span className="pr-2">{formatEventDay(event.startsAt)}</span>
-              <FaClock
+        <div className="flex flex-col gap-4">
+          {!hasPassed && relativeStartDate !== startDate && (
+            <p className="flock-h4 font-bold! capitalize text-primary">
+              {relativeStartDate}
+            </p>
+          )}
+          {isMultiDay(event.startsAt, event.endsAt) ? (
+            <div className="flock-lead grid grid-cols-[auto_auto_auto_auto_1fr] items-baseline gap-x-2 gap-y-4 text-foreground/80 capitalize">
+              <FaRegCalendar
                 aria-hidden
-                className={twMerge(clockStyle, "self-center")}
+                className={twMerge(rowIconStyle, "self-center")}
               />
-              <span>{formatTime(event.startsAt)}</span>
-            </time>
-
-            <FaRegCalendarCheck
-              aria-hidden
-              className={twMerge(rowIconStyle, "self-center")}
-            />
-            <span className="pr-3 font-bold">Ends</span>
-            <time dateTime={event.endsAt!.toISOString()} className="contents">
-              <span className="pr-2">{formatEventDay(event.endsAt!)}</span>
-              <FaClock
-                aria-hidden
-                className={twMerge(clockStyle, "self-center")}
-              />
-              <span>{formatTime(event.endsAt!)}</span>
-            </time>
-          </div>
-        ) : (
-          <div className="flex items-center gap-4">
-            <DetailRow icon={FaRegCalendar} hasPassed={hasPassed}>
+              <span className="pr-3 font-bold">Starts</span>
               <time
                 dateTime={event.startsAt.toISOString()}
-                className="capitalize"
+                className="contents"
               >
-                {getRelativeDatetime(event.startsAt)}
+                <span className="pr-2">
+                  {formatWeekdayDate(event.startsAt)}
+                </span>
+                <FaClock
+                  aria-hidden
+                  className={twMerge(clockStyle, "self-center")}
+                />
+                <span>{formatTime(event.startsAt)}</span>
               </time>
-            </DetailRow>
-            <DetailRow icon={FaClock} hasPassed={hasPassed}>
-              <span className="capitalize">
-                {formatTimeRange(event.startsAt, event.endsAt)}
-              </span>
-            </DetailRow>
-          </div>
-        )}
+
+              <FaRegCalendarCheck
+                aria-hidden
+                className={twMerge(rowIconStyle, "self-center")}
+              />
+              <span className="pr-3 font-bold">Ends</span>
+              <time dateTime={event.endsAt!.toISOString()} className="contents">
+                <span className="pr-2">{formatEventDay(event.endsAt!)}</span>
+                <FaClock
+                  aria-hidden
+                  className={twMerge(clockStyle, "self-center")}
+                />
+                <span>{formatTime(event.endsAt!)}</span>
+              </time>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <DetailRow icon={FaRegCalendar} hasPassed={hasPassed}>
+                <time
+                  dateTime={event.startsAt.toISOString()}
+                  className="capitalize"
+                >
+                  {formatWeekdayDate(event.startsAt)}
+                </time>
+              </DetailRow>
+              <DetailRow icon={FaClock} hasPassed={hasPassed}>
+                <span className="capitalize">
+                  {formatTimeRange(event.startsAt, event.endsAt)}
+                </span>
+              </DetailRow>
+            </div>
+          )}
+        </div>
         {!hasPassed && (
           <div className="hidden shrink-0 lg:block">
             <Button

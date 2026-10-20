@@ -30,7 +30,7 @@ export function formatMonthYear(value: Date | string) {
   return toValidDayjs(value).format("MMM YYYY");
 }
 
-const formatWeekdayDate = (value: Date | string) =>
+export const formatWeekdayDate = (value: Date | string) =>
   toValidDayjs(value).format("ddd, D MMM");
 
 export const isMultiDay = (
@@ -68,16 +68,6 @@ export function formatDateRange(
   endsAt: Date | string,
 ) {
   return `${formatShortDate(startsAt)} - ${formatShortDate(endsAt)}`;
-}
-
-export function formatEventDate(
-  startsAt: Date | string,
-  endsAt: Date | string | null,
-) {
-  const start = getRelativeDatetime(startsAt);
-  return isMultiDay(startsAt, endsAt)
-    ? `${start} – ${formatWeekdayDate(endsAt!)}`
-    : start;
 }
 
 export function formatMultiDayRange(
@@ -129,7 +119,7 @@ export function getRelativeDatetime(value: Date | string) {
     }
   }
 
-  return formatDate(value);
+  return formatWeekdayDate(value);
 }
 
 export function combineDateTime(date: string, time: string): Date | null {
