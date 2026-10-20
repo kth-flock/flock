@@ -7,11 +7,12 @@ import {
 import { twMerge } from "tailwind-merge";
 import {
   formatDate,
-  formatEventDate,
+  formatWeekdayDate,
   formatMultiDayRange,
   isMultiDay,
   isOngoing,
   formatTimeRange,
+  getRelativeDatetime,
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
 import Button from "@/shared/components/button";
@@ -89,7 +90,7 @@ export default function EventPreview({
             day, so events over several days get one row with both days */}
         {isMultiDay(event.startsAt, event.endsAt) ? (
           <span
-            className="inline-flex gap-2 items-center flock-body"
+            className="inline-flex gap-2 items-center flock-body capitalize"
             title="Date"
           >
             <FaCalendar className="shrink-0" />
@@ -103,7 +104,7 @@ export default function EventPreview({
         ) : (
           <span className="flex flex-wrap gap-x-4 gap-y-2">
             <span
-              className="inline-flex gap-2 items-center flock-body text-nowrap"
+              className="inline-flex gap-2 items-center flock-body text-nowrap capitalize"
               title="Date"
             >
               <FaCalendar />
@@ -111,7 +112,7 @@ export default function EventPreview({
                 dateTime={event.startsAt.toISOString()}
                 title={formatDate(event.startsAt)}
               >
-                {formatEventDate(event.startsAt, event.endsAt)}
+                {getRelativeDatetime(event.startsAt)}
               </time>
             </span>
             <span className="inline-flex gap-2 items-center flock-body text-nowrap">
@@ -183,7 +184,7 @@ export function SmallEventPreview({
 
         <span
           className={twMerge(
-            "inline-flex items-center gap-1 flock-caption",
+            "inline-flex items-center gap-1 flock-caption capitalize",
             passed && "text-error!",
           )}
           title={passed ? "Date (this event is over)" : "Date"}
@@ -192,8 +193,15 @@ export function SmallEventPreview({
           <time
             dateTime={event.startsAt.toISOString()}
             title={formatDate(event.startsAt)}
+            className="inline-flex"
           >
-            {formatEventDate(event.startsAt, event.endsAt)}
+            {getRelativeDatetime(event.startsAt)}
+            {getRelativeDatetime(event.startsAt) !==
+              formatWeekdayDate(event.startsAt) && (
+              <span className="inline-block scale-80 ">
+                {formatWeekdayDate(event.startsAt)}
+              </span>
+            )}
           </time>
         </span>
 
