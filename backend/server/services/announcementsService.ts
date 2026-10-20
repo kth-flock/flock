@@ -7,22 +7,8 @@ import {
   CreateAnnouncementData,
   UpdateAnnouncementData,
 } from "@flock/shared/schemas/announcement";
-import { NotFoundError, ForbiddenError } from "../utils/errors";
-
-async function assertHost(eventId: EventId, userId: UserId) {
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    select: { createdById: true },
-  });
-
-  if (!event) {
-    throw new NotFoundError("Event not found");
-  }
-
-  if (event.createdById !== userId) {
-    throw new ForbiddenError("Only the host can manage announcements");
-  }
-}
+import { NotFoundError } from "../utils/errors";
+import { assertEventHost } from "../utils/service";
 
 async function assertAnnouncementInEvent(
   eventId: EventId,
@@ -34,7 +20,7 @@ async function assertAnnouncementInEvent(
   });
 
   if (!announcement || announcement.eventId !== eventId) {
-    throw new NotFoundError("Announcement not found");
+    throw new NotFoundError("Update not found");
   }
 }
 
@@ -43,7 +29,7 @@ export async function addAnnouncement(
   userId: UserId,
   announcementData: CreateAnnouncementData,
 ) {
-  await assertHost(eventId, userId);
+  await assertEventHost(eventId, userId, "Only event host can create updates");
 
   return prisma.announcement.create({
     data: { ...announcementData, eventId, userId },
@@ -57,7 +43,7 @@ export async function updateAnnouncement(
   userId: UserId,
   announcementData: UpdateAnnouncementData,
 ) {
-  await assertHost(eventId, userId);
+  await assertEventHost(eventId, userId, "Only event host can edit updates");
   await assertAnnouncementInEvent(eventId, announcementId);
 
   return prisma.announcement.update({
@@ -72,7 +58,7 @@ export async function deleteAnnouncement(
   announcementId: AnnouncementId,
   userId: UserId,
 ) {
-  await assertHost(eventId, userId);
+  await assertEventHost(eventId, userId, "Only event host can delete updates");
   await assertAnnouncementInEvent(eventId, announcementId);
 
   await prisma.announcement.delete({

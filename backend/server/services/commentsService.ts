@@ -33,7 +33,7 @@ async function getAccess(
   });
 
   if (!announcement || announcement.eventId !== eventId) {
-    throw new NotFoundError("Announcement not found");
+    throw new NotFoundError("Update not found");
   }
 
   return {
@@ -52,7 +52,7 @@ async function getCommentInAnnouncement(
   });
 
   if (!comment || comment.announcementId !== announcementId) {
-    throw new NotFoundError("Comment not found");
+    throw new NotFoundError("Reply not found");
   }
 
   return comment;
@@ -71,7 +71,7 @@ export async function addComment(
   );
 
   if (!isHost && !isInvited) {
-    throw new ForbiddenError("Only the host and invitees can comment");
+    throw new ForbiddenError("Only the host and invitees can reply");
   }
 
   return prisma.comment.create({
@@ -91,7 +91,7 @@ export async function updateComment(
   const comment = await getCommentInAnnouncement(announcementId, commentId);
 
   if (comment.userId !== userId) {
-    throw new ForbiddenError("You can only edit your own comments");
+    throw new ForbiddenError("You can only edit your own reply");
   }
 
   return prisma.comment.update({
@@ -111,7 +111,7 @@ export async function deleteComment(
   const comment = await getCommentInAnnouncement(announcementId, commentId);
 
   if (comment.userId !== userId && !isHost) {
-    throw new ForbiddenError("You can only delete your own comments");
+    throw new ForbiddenError("You can only delete your own reply");
   }
 
   await prisma.comment.delete({
