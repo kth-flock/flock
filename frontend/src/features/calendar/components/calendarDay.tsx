@@ -5,23 +5,32 @@ import EventPill from "./eventPill";
 import { formatDate } from "@/shared/lib/dateFormat";
 import DayNumber from "./dayNumber";
 
-const MAX_PILLS_PER_DAY = 2;
+const MAX_LANES = 2;
 
 type CalendarDayProps = {
   day: Date | null;
   isToday?: boolean;
-  events?: CalendarEvent[];
+  slots?: (CalendarEvent | null)[];
+  isWeekStart?: boolean;
+  isWeekEnd?: boolean;
   onClick: (day: Date) => void;
 };
 
 export default function CalendarDay({
   day,
   isToday = false,
-  events = [],
+  slots = [],
+  isWeekStart = false,
+  isWeekEnd = false,
   onClick,
 }: CalendarDayProps) {
-  const visible = events.slice(0, MAX_PILLS_PER_DAY);
-  const hiddenCount = events.length - visible.length;
+  const visible = Array.from(
+    { length: Math.min(slots.length, MAX_LANES) },
+    (_, i) => slots[i] ?? null,
+  );
+  const total = slots.filter(Boolean).length;
+  const hiddenCount = total - visible.filter(Boolean).length;
+
   return (
     <td
       className={twMerge(
@@ -31,22 +40,36 @@ export default function CalendarDay({
     >
       {day && (
         <button
-          aria-label={`${formatDate(day)}, ${events.length} ${events.length === 1 ? "event" : "events"}`}
+          aria-label={`${formatDate(day)}, ${total} ${total === 1 ? "event" : "events"}`}
           className={twMerge(
-            "flex flex-col items-start gap-1 w-full h-full",
-            events.length > 0 ? "cursor-pointer" : "",
+            "flex flex-col items-stretch gap-1 w-full h-full",
+            total > 0 ? "cursor-pointer" : "",
           )}
           onClick={() => onClick(day)}
-          disabled={events.length <= 0}
+          disabled={total <= 0}
         >
-          <DayNumber day={day} isToday={isToday} className="size-7" />
+          <DayNumber
+            day={day}
+            isToday={isToday}
+            className="size-7 self-start"
+          />
 
-          {visible.map((event) => (
-            <EventPill key={event.id} event={event} />
-          ))}
+          {visible.map((event, i) =>
+            event ? (
+              <EventPill
+                key={event.id}
+                event={event}
+                day={day}
+                isWeekStart={isWeekStart}
+                isWeekEnd={isWeekEnd}
+              />
+            ) : (
+              <div key={`spacer-${i}`} className="h-10 shrink-0" aria-hidden />
+            ),
+          )}
 
           {hiddenCount > 0 && (
-            <span className="px-2 text-xs text-neutral-500">
+            <span className="px-2 text-xs text-neutral-500 self-start">
               +{hiddenCount} more
             </span>
           )}

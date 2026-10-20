@@ -88,7 +88,7 @@ export default function CalendarWrapper() {
             <CalendarGridView {...viewProps} />
           </div>
           <div className="md:hidden">
-            <CalendarListView {...viewProps} />
+            <CalendarListView {...viewProps} isLoading={false} />
           </div>
         </>
       )}

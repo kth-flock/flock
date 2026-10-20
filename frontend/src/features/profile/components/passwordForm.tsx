@@ -5,33 +5,37 @@ import { changePassword } from "../lib/api";
 import SettingsSection from "./settingsSection";
 import Input from "@/shared/components/formInputs";
 import Button from "@/shared/components/button";
-import { SaveResult } from "./profileSettings";
+import { twMerge } from "tailwind-merge";
 
 export default function PasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { save, isSaving, result, setResult } = useSave();
+  const { save, isSaving, errorMessage, setErrorMessage } = useSave();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      setResult({ ok: false, message: "Passwords do not match" });
+      setErrorMessage("Passwords do not match");
       return;
     }
     const passwordCheck = passwordSchema.safeParse(newPassword);
     if (!passwordCheck.success) {
-      setResult({ ok: false, message: passwordCheck.error.issues[0].message });
+      setErrorMessage(passwordCheck.error.issues[0].message);
       return;
     }
 
-    save(async () => {
-      await changePassword({ currentPassword, newPassword });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    }, "Password changed");
+    save(
+      async () => {
+        await changePassword({ currentPassword, newPassword });
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      },
+      "Password changed",
+      "Failed to change password",
+    );
   }
 
   return (
@@ -70,13 +74,16 @@ export default function PasswordForm() {
             variant="secondary"
             size="sm"
             className="shrink-0 md:mt-3.5"
-            disabled={isSaving}
+            isLoading={isSaving}
+            disabled={!newPassword || isSaving}
           >
             {isSaving ? "Saving..." : "Update password"}
           </Button>
         </div>
       </form>
-      <SaveResult result={result} />
+      <p role={"alert"} className={twMerge("flock-ui-label", "text-error")}>
+        {errorMessage}
+      </p>
     </SettingsSection>
   );
 }

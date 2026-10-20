@@ -27,8 +27,8 @@ export default function InviteModal({
   const [searchResults, setSearchResults] = useState<UserSearchResult[] | null>(
     null,
   );
-  const { search: debouncedSearch, cancel: cancelSearch } =
-    useDebouncedSearch(async (query: string, isCurrent: () => boolean) => {
+  const { search: debouncedSearch, cancel: cancelSearch } = useDebouncedSearch(
+    async (query: string, isCurrent: () => boolean) => {
       try {
         const results = await searchUsers(query);
         if (isCurrent()) setSearchResults(results);
@@ -37,7 +37,9 @@ export default function InviteModal({
           console.error("User search failed:", error);
         }
       }
-    }, 300);
+    },
+    300,
+  );
   const [invitedUserIds, setInvitedUserIds] = useState(
     () => new Set(invitees.map((invitee) => invitee.id)),
   );

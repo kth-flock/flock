@@ -6,6 +6,7 @@ type PublicUserSelect = {
     firstName: true;
     lastName: true;
     imageUrl: true;
+    createdAt: true;
   };
 };
 

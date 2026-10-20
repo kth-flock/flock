@@ -1,73 +1,52 @@
-import { useState } from "react";
+import type { EventPayloadMode } from "../lib/formValueFormat";
 import ImageUpload from "@/features/images/components/imageUpload";
-import { FaCamera, FaPenToSquare } from "react-icons/fa6";
-import Button from "@/shared/components/button";
-import Image from "next/image";
+import EditableImage from "@/shared/components/editableImage";
+import EventImage from "@/shared/components/eventImage";
 
 export default function EventImageField({
+  mode,
   currentImageUrl,
   onChange,
+  onDelete,
+  onCancelDelete,
 }: {
+  mode: EventPayloadMode;
   currentImageUrl?: string | null;
   onChange: (file: File | null) => void;
+  onDelete: () => void;
+  onCancelDelete: () => void;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  if (isEditing) {
+  if (mode === "create") {
     return (
-      <div className="flex w-full flex-col gap-2">
-        <ImageUpload
-          onFileSelect={onChange}
-          onFileRemove={() => onChange(null)}
-          className="rounded-2xl h-40 md:h-56 border border-primary/20 bg-background py-16 px-6 text-primary flock-h4 hover:border-primary"
-        >
-          <span className="flex items-center gap-4">
-            <FaCamera size={40} aria-hidden="true" />
-            <span>Upload new image</span>
-          </span>
-        </ImageUpload>
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          className="self-center hover:bg-success-light"
-          onClick={() => {
-            setIsEditing(false);
-            onChange(null);
-          }}
-        >
-          Cancel image editing
-        </Button>
-      </div>
+      <ImageUpload
+        label="Upload"
+        onFileSelect={onChange}
+        onFileRemove={() => onChange(null)}
+        className="rounded-2xl border border-primary/20 bg-background px-6 py-16"
+      />
     );
   }
-  return (
-    <div className="relative h-40 overflow-hidden rounded-2xl shadow-lg md:h-56">
-      <Image
-        src={currentImageUrl ?? "/placeholder.png"}
-        alt=""
-        fill
-        sizes="(min-width: 48rem) 48rem, 100vw"
-        loading="eager"
-        fetchPriority="high"
-        className="object-cover"
-      />
 
-      <Button
-        type="button"
-        variant="tertiary"
-        onClick={() => setIsEditing(true)}
-        aria-label="Change image"
-        className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-2xl bg-foreground/20 cursor-pointer"
-      >
-        <span className="flex items-center rounded-full p-4 bg-background/60 shadow-lg transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:inset-shadow-sm active:shadow-none">
-          <FaPenToSquare
-            size={40}
-            aria-hidden="true"
-            className="text-primary"
-          />
-        </span>
-      </Button>
-    </div>
+  return (
+    <EditableImage
+      className="h-40 w-full rounded-2xl md:h-56"
+      imageUploadClass="border border-primary/20 bg-background text-primary hover:border-primary"
+      noImage={currentImageUrl == null}
+      current={
+        <EventImage
+          src={currentImageUrl ?? null}
+          alt="Cover image for event"
+          fill
+          sizes="(min-width: 48rem) 48rem, 100vw"
+          fetchPriority="high"
+          className="object-cover"
+        />
+      }
+      label="Upload new image"
+      onFileSelect={onChange}
+      onFileRemove={() => onChange(null)}
+      onDelete={currentImageUrl ? onDelete : undefined}
+      onCancel={onCancelDelete}
+    />
   );
 }

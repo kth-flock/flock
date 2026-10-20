@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { ExtendedEvent } from "@/shared/types/event";
@@ -7,6 +6,7 @@ import ProfileImage from "@/shared/components/profileImage";
 import AvatarStack from "@/shared/components/avatarStack";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
+import EventImage from "@/shared/components/eventImage";
 
 export default function EventHeader({
   event,
@@ -30,15 +30,16 @@ export default function EventHeader({
       )}
 
       <div className="relative flex flex-col justify-end h-64 w-full overflow-hidden rounded-2xl shadow-lg md:h-96">
-        <Image
-          src={event.imageUrl ?? "/placeholder.png"}
-          alt=""
+        <EventImage
+          src={event.imageUrl}
+          alt={`Cover image for ${event.title}`}
           fill
           sizes="(min-width: 48rem) 48rem, 100vw"
           loading="eager"
           fetchPriority="high"
           className="object-cover"
         />
+
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
         <div className="z-20 flex w-full items-end justify-between p-6 md:p-8">

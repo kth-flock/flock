@@ -38,6 +38,7 @@ export default function ProfileHeader({
         <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-6 text-white md:p-8">
           <div className="flex min-w-0 items-center gap-3 drop-shadow-md">
             <ProfileImage
+              className="size-16"
               firstName={profile.firstName}
               lastName={profile.lastName}
               profileImgSrc={profile.imageUrl ?? ""}

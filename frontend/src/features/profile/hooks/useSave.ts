@@ -1,31 +1,35 @@
+import { useToast } from "@/shared/components/toast";
 import { useState } from "react";
-
-export type Result = { ok: boolean; message: string };
 
 export function useSave() {
   const [isSaving, setIsSaving] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const toast = useToast();
 
-  async function save(action: () => Promise<void>, successMessage: string) {
+  async function save(
+    action: () => Promise<void>,
+    successMessage: string,
+    errorMessage: string,
+  ) {
     setIsSaving(true);
-    setResult(null);
+    setErrorMessage(null);
     try {
       await action();
-      setResult({ ok: true, message: successMessage });
+
+      toast(successMessage, "success");
     } catch (err) {
-      setResult({
-        ok: false,
-        message:
-          err instanceof TypeError
-            ? "Couldn't reach the server. Try again."
-            : err instanceof Error
-              ? err.message
-              : "Something went wrong",
-      });
+      setErrorMessage(
+        err instanceof TypeError
+          ? "Couldn't reach the server. Try again."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong",
+      );
+      toast(errorMessage, "error");
     } finally {
       setIsSaving(false);
     }
   }
 
-  return { save, isSaving, result, setResult };
+  return { save, isSaving, errorMessage, setErrorMessage };
 }

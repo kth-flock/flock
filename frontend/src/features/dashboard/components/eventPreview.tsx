@@ -18,6 +18,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
+import EventImage from "@/shared/components/eventImage";
 
 export type EventStatus = Rsvp | "HOST";
 
@@ -75,7 +76,7 @@ export default function EventPreview({
     >
       <div className="relative bg-neutral w-full h-36">
         {event.imageUrl ? (
-          <Image
+          <EventImage
             src={event.imageUrl}
             alt={event.title}
             fill
@@ -151,7 +152,7 @@ export function SmallEventPreview({
     >
       <div className="relative w-1/2 shrink-0 bg-primary">
         {event.imageUrl ? (
-          <Image
+          <EventImage
             src={event.imageUrl}
             alt={event.title}
             fill

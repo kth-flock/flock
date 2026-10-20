@@ -23,7 +23,7 @@ export async function inviteFriend(eventId: number, userId: number) {
 
 export async function batchInvite(eventId: number, userIds: number[]) {
   const response = await apiData<{ skipped: number }>(
-    `/events/${eventId}/invitees/}`,
+    `/events/${eventId}/invitees`,
     {
       method: "POST",
       body: { inviteeIds: userIds },

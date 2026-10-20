@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { EventPillDetails } from "./eventPill";
+import EventPillDetails from "./eventPillDetails";
 import DayNumber from "./dayNumber";
 import {
   WEEKDAYS,
@@ -16,7 +16,8 @@ export default function CalendarListView({
   today,
   weeks,
   eventsByDay,
-}: CalendarViewProps) {
+  isLoading,
+}: CalendarViewProps & { isLoading: boolean }) {
   const targetRef = useRef<HTMLLIElement | null>(null);
 
   const days = useMemo(
@@ -32,7 +33,7 @@ export default function CalendarListView({
   }, [monthKey, hasEvents]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!hasEvents) {
-    return (
+    return isLoading ? null : (
       <p className="py-8 text-center flock-body-serif">No events this month</p>
     );
   }
@@ -59,7 +60,7 @@ export default function CalendarListView({
           <ul className="flex flex-1 flex-col gap-3 border-l pl-4">
             {events.map((event) => (
               <li key={event.id}>
-                <EventPillDetails event={event} />
+                <EventPillDetails event={event} day={day} />
               </li>
             ))}
           </ul>
