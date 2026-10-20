@@ -32,7 +32,8 @@ export default function PrivateHomePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
-      <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
+      {/* min-w-0 stops long names or titles from stretching this column */}
+      <div className="flex w-full min-w-0 flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
         <FriendPreview
           friends={friends.isLoading ? undefined : friends.data}
           error={friends.error}

@@ -1,5 +1,4 @@
 import type { InvitedEvent } from "@/features/event/lib/types";
-import LoadError from "@/shared/components/loadError";
 import Skeleton from "@/shared/components/skeleton";
 import EventHistory, { type HistoryItem } from "./eventHistory";
 
@@ -8,38 +7,27 @@ export default function EventsTogether({
   error,
   onRetry,
   myId,
-  isLoading,
+  isLoading = events === null && !error,
 }: {
+  // null while loading or if loading failed
   events: InvitedEvent[] | null;
   error?: string | null;
   onRetry?: () => void;
   myId: number;
-  isLoading: boolean;
+  isLoading?: boolean;
 }) {
-    const items: HistoryItem[] = (events ?? []).map((event) => {
+  const items: HistoryItem[] = (events ?? []).map((event) => {
     const isMine = event.createdById === myId;
     return {
       event,
       status: isMine ? "HOST" : (event.invitees[0]?.rsvp ?? "PENDING"),
+      // "Hosting" is unclear on someone else's profile
       statusLabel: isMine ? "Hosted by you" : undefined,
     };
   });
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="flock-h2 text-primary">Upcoming events together</h2>
-
-      {isLoading ? (
-        <div className="flex flex-col gap-4">
-          <Skeleton className="h-28 w-full rounded-2xl" />
-          <Skeleton className="h-28 w-full rounded-2xl" />
-        </div>
-      ) : error || !events ? (
-        <LoadError onRetry={onRetry}>
-          {error ?? "Couldn't load your events together."}
-        </LoadError>
-      ) :  (
-        <EventHistory
+    <EventHistory
       title="Events together"
       sectionTitles={{
         upcoming: "Upcoming events together",
@@ -47,12 +35,20 @@ export default function EventsTogether({
       }}
       items={items}
       isLoading={isLoading}
-      hasError={!isLoading && !events}
+      loadingFallback={
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-28 w-full rounded-2xl" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
+        </div>
+      }
+      error={
+        error ??
+        (!isLoading && !events ? "Couldn't load your events together." : null)
+      }
+      onRetry={onRetry}
       emptyText="No events together yet."
-      errorText="Couldn't load your events together. Try refreshing the page."
+      // Events either of you declined aren't counted as together
       hiddenFilters={["DECLINED"]}
     />
-      )}
-    </section>
   );
 }
