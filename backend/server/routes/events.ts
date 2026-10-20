@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  getEvents,
   getEventById,
   getCreatedEvents,
   getInvitedEvents,
@@ -9,7 +8,7 @@ import {
   deleteEvent,
   rsvpToEvent,
 } from "../controllers/eventsController";
-import { authMiddleware } from "../middleware/authMiddleware";
+
 import { inviteesRouter } from "./invitees";
 import { announcementsRouter } from "./announcement";
 
@@ -17,9 +16,6 @@ export const eventsRouter = Router();
 
 eventsRouter.use("/:eventId/invitees", inviteesRouter);
 eventsRouter.use("/:eventId/announcements", announcementsRouter);
-
-//Get surface level data for all events (no annoncements, comments, or userData)
-eventsRouter.get("/", getEvents);
 
 //Get surface level data for all events created by user (no annoncements, comments, or userData)
 eventsRouter.get("/created", getCreatedEvents);
@@ -41,4 +37,4 @@ eventsRouter.patch("/:eventId", updateEventInfo);
 eventsRouter.delete("/:eventId", deleteEvent);
 
 //RSVP to an event only if current logged in user is invited to the event
-eventsRouter.patch("/:eventId/rsvp", authMiddleware, rsvpToEvent); // TODO: middleware (might be applied to the entire event router but ill put it here for now //Elinor)
+eventsRouter.patch("/:eventId/rsvp", rsvpToEvent);

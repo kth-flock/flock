@@ -30,8 +30,8 @@ app.get("/", (req, res) => {
   res.json({ message: "Express server running" });
 });
 
-// Routes (signImages turns image keys into signed URLs; /image is left out because its upload response returns a raw key)
-app.use("/users", signImages, usersRouter);
+// Routes (signImages turns image keys into signed URLs
+app.use("/users", authMiddleware, signImages, usersRouter);
 app.use("/auth", authRouter);
 app.use("/geocode", authMiddleware, geocodeRouter);
 app.use("/events", authMiddleware, signImages, eventsRouter);

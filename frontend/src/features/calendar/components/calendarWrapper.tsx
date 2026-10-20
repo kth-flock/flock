@@ -5,10 +5,12 @@ import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa6";
 import Button, { IconButton } from "@/shared/components/button";
 import CalendarGridView from "./calendarGridView";
 import CalendarListView from "./calendarListView";
+import CalendarSkeleton from "./calendarSkeleton";
 import { MONTHS, getMonthWeeks, groupEventsByDay } from "../lib/utils";
 import { useFetch } from "@/shared/hooks/useFetch";
 import { getMyEvents } from "@/features/event/lib/api";
 import type { CalendarViewProps } from "../lib/types";
+import ErrorState from "@/shared/components/ErrorState";
 
 export default function CalendarWrapper() {
   const { data, isLoading, error, refetch } = useFetch(getMyEvents);
@@ -34,20 +36,21 @@ export default function CalendarWrapper() {
     eventsByDay,
   };
 
+  if (error && !data) {
+    return (
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        action={{ label: "Try again", onClick: refetch }}
+      />
+    );
+  }
+
   return (
     <div className="w-full">
-      {error && (
-        <div className="mb-4 flex items-center gap-4" role="alert">
-          <p className="text-error">{error}</p>
-          <Button type="button" variant="secondary" size="sm" onClick={refetch}>
-            Retry
-          </Button>
-        </div>
-      )}
-
-      <div className="sticky top-0 z-20 -mx-6 flex items-center justify-between bg-background px-4 py-2 md:static md:mx-0 md:bg-transparent md:p-0 ">
+      <div className="sticky top-0 z-20 -mx-6 flex items-center justify-between bg-background px-4 py-2 md:static md:mx-0 md:bg-transparent md:p-0">
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
-          <h2 className="flock-h2 w-48 md:w-64 text-center">
+          <h2 className="flock-h2 w-52 md:w-64 text-center">
             {MONTHS[month]} {year}
           </h2>
           <div className="flex gap-2">
@@ -74,17 +77,18 @@ export default function CalendarWrapper() {
         </Button>
       </div>
 
-      <div
-        aria-busy={isLoading}
-        className={isLoading ? "opacity-60 transition-opacity" : ""}
-      >
-        <div className="hidden md:block">
-          <CalendarGridView {...viewProps} />
-        </div>
-        <div className="md:hidden">
-          <CalendarListView {...viewProps} isLoading={isLoading} />
-        </div>
-      </div>
+      {isLoading ? (
+        <CalendarSkeleton />
+      ) : (
+        <>
+          <div className="hidden md:block">
+            <CalendarGridView {...viewProps} />
+          </div>
+          <div className="md:hidden">
+            <CalendarListView {...viewProps} isLoading={false} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

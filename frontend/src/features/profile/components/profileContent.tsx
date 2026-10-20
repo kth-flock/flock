@@ -2,15 +2,20 @@ import { twMerge } from "tailwind-merge";
 import { FaCalendarCheck, FaCrown, FaClock, FaUsers } from "react-icons/fa6";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
-import type { UserSearchResult } from "@/shared/types/user";
+import type { PublicUser, UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
-import { PublicUser } from "@/shared/types/user";
+import { FriendStackSkeleton } from "./profilePageSkeleton";
+import LoadError from "@/shared/components/loadError";
 
-const countOf = (list: unknown[] | null) => (list ? String(list.length) : "-");
+const countOf = (list: unknown[] | null | undefined) =>
+  list ? String(list.length) : "-";
 
 type ProfileContentProps = {
   profile: PublicUser;
-  friends: UserSearchResult[] | null;
+  /** undefined while loading, null if failed */
+  friends: UserSearchResult[] | null | undefined;
+  friendsError?: string | null;
+  onFriendsRetry?: () => void;
   myId?: number;
   hostedEvents?: EventSummary[] | null;
   invitedEvents?: InvitedEvent[] | null;
@@ -20,6 +25,8 @@ type ProfileContentProps = {
 export default function ProfileContent({
   profile,
   friends,
+  friendsError,
+  onFriendsRetry,
   myId,
   hostedEvents,
   invitedEvents,
@@ -28,16 +35,23 @@ export default function ProfileContent({
   const content = [
     {
       icon: <FaClock />,
-      value: formatMonthYear(profile.createdAt),
+      value: profile.createdAt ? formatMonthYear(profile.createdAt) : "-",
       label: "Member since",
     },
     {
       icon: <FaUsers />,
       value: countOf(friends),
       label: "Friends",
-      extra: friends && friends.length > 0 && (
-        <FriendStack friends={friends} myId={myId} />
-      ),
+      extra:
+        friends === undefined ? (
+          <FriendStackSkeleton />
+        ) : friends === null || friendsError ? (
+          <LoadError onRetry={onFriendsRetry}>
+            {friendsError ?? "Couldn't load friends"}
+          </LoadError>
+        ) : (
+          friends.length > 0 && <FriendStack friends={friends} myId={myId} />
+        ),
     },
     ...(hostedEvents !== undefined
       ? [

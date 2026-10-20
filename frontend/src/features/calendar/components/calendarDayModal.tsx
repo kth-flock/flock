@@ -1,7 +1,7 @@
 import Modal from "@/shared/components/modal";
 import type { CalendarEvent } from "../lib/types";
 import { formatDate } from "@/shared/lib/dateFormat";
-import { EventPillDetails } from "./eventPill";
+import EventPillDetails from "./eventPillDetails";
 
 type CalendarDayModalProps = {
   isOpen: boolean;
@@ -22,7 +22,9 @@ export default function CalendarDayModal({
         <p className="flock-h4">{formatDate(day)}</p>
         <div className="border-b border-neutral w-full" />
         {events.length > 0 ? (
-          events.map((item) => <EventPillDetails event={item} key={item.id} />)
+          events.map((item) => (
+            <EventPillDetails event={item} key={item.id} day={day} />
+          ))
         ) : (
           <p className="flock-body text-neutral">No events to show</p>
         )}

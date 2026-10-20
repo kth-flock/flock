@@ -1,137 +1,131 @@
-// Event timestamps are displayed and edited in the browser's local time zone.
+import dayjs, { type ConfigType } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import "dayjs/locale/en-gb";
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
+dayjs.locale("en-gb");
 
-const timeFormatter = new Intl.DateTimeFormat("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
+const DATE_INPUT_FORMAT = "YYYY-MM-DD";
+const TIME_INPUT_FORMAT = "HH:mm";
+const DATE_TIME_INPUT_FORMAT = `${DATE_INPUT_FORMAT} ${TIME_INPUT_FORMAT}`;
 
-const monthYearFormatter = new Intl.DateTimeFormat("en-GB", {
-  month: "short",
-  year: "numeric",
-});
+const toValidDayjs = (value: ConfigType) => {
+  const result = dayjs(value);
 
-const dateInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-export const formatMonthYear = (iso: string | Date) => {
-  const date = typeof iso === "string" ? new Date(iso) : iso;
-  if (Number.isNaN(date.getTime())) {
-    throw new TypeError("Invalid date passed to formatMonthYear");
+  if (!result.isValid()) {
+    throw new TypeError("Invalid date");
   }
 
-  return monthYearFormatter.format(date);
+  return result;
 };
 
-const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
-  hour: "2-digit",
-  minute: "2-digit",
-  hourCycle: "h23",
-});
+export const formatShortDate = (value: Date | string) =>
+  toValidDayjs(value).format("DD MMM");
 
-export const formatDate = (iso: Date | string) =>
-  dateFormatter.format(new Date(iso));
-export const formatTime = (iso: Date | string) =>
-  timeFormatter.format(new Date(iso));
-
-export function formatDateInput(date: Date | string) {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  const parts = Object.fromEntries(
-    dateInputFormatter
-      .formatToParts(dateObj)
-      .map(({ type, value }) => [type, value]),
-  );
-  return `${parts.year}-${parts.month}-${parts.day}`;
+export function formatMonthYear(value: Date | string) {
+  return toValidDayjs(value).format("MMM YYYY");
 }
 
-export function formatTimeInput(date: Date | string) {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
-  const parts = Object.fromEntries(
-    timeInputFormatter
-      .formatToParts(dateObj)
-      .map(({ type, value }) => [type, value]),
-  );
-  return `${parts.hour}:${parts.minute}`;
+export const formatWeekdayDate = (value: Date | string) =>
+  toValidDayjs(value).format("ddd, D MMM");
+
+export const isMultiDay = (
+  startsAt: Date | string,
+  endsAt: Date | string | null,
+) => endsAt !== null && formatDate(startsAt) !== formatDate(endsAt);
+
+export function formatDate(value: Date | string) {
+  return toValidDayjs(value).format("ddd, D MMM YYYY");
 }
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-const RELATIVE_DAYS_AHEAD = 14;
+export function formatTime(value: Date | string) {
+  return toValidDayjs(value).format("HH:mm");
+}
 
-const localDayNumber = (date: Date) =>
-  Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+export function formatDateInput(value: Date | string) {
+  return toValidDayjs(value).format(DATE_INPUT_FORMAT);
+}
 
-const daysFromToday = (iso: Date | string) =>
-  (localDayNumber(new Date(iso)) - localDayNumber(new Date())) / MS_PER_DAY;
-
-// Relative date formatting
-export function formatRelativeDate(iso: Date | string) {
-  const days = daysFromToday(iso);
-  if (days < 0 || days > RELATIVE_DAYS_AHEAD) return formatDate(iso);
-  if (days === 0) return "Today";
-  if (days === 1) return "Tomorrow";
-  return `In ${days} days`;
+export function formatTimeInput(value: Date | string) {
+  return toValidDayjs(value).format(TIME_INPUT_FORMAT);
 }
 
 export function formatTimeRange(
   startsAt: Date | string,
   endsAt: Date | string | null,
 ) {
-  const start = `${formatTime(startsAt)}`;
-  if (!endsAt) return start;
+  const start = formatTime(startsAt);
 
-  return `${start} - ${formatTime(endsAt)}`;
+  return endsAt ? `${start} - ${formatTime(endsAt)}` : start;
 }
 
-export function getRelativeDatetime(datetime: Date) {
-  const eventDate = new Date(datetime);
-  const today = new Date();
-  const diffSeconds = Math.round(
-    (eventDate.getTime() - today.getTime()) / 1000,
-  );
-  const diffMinutes = Math.round(diffSeconds / 60);
-  const diffHours = Math.round(diffMinutes / 60);
-  const diffDays = Math.round(diffHours / 24);
+export function formatDateRange(
+  startsAt: Date | string,
+  endsAt: Date | string,
+) {
+  return `${formatShortDate(startsAt)} - ${formatShortDate(endsAt)}`;
+}
 
-  if (diffSeconds > 0) {
-    if (diffHours < 24) {
-      return "today";
-    }
-    if (diffHours < 48) {
-      return "tomorrow";
-    }
-    if (diffDays < 4) {
-      return `in ${diffDays} days`;
-    }
-  }
-  if (diffSeconds < 0) {
-    if (diffSeconds > -60) {
-      return "just now";
-    }
+export function formatMultiDayRange(
+  startsAt: Date | string,
+  endsAt: Date | string,
+) {
+  return `${getRelativeDatetime(startsAt)}, ${formatTime(startsAt)} – ${formatWeekdayDate(endsAt)}, ${formatTime(endsAt)}`;
+}
+
+export function formatEventDay(value: Date | string) {
+  const date = toValidDayjs(value);
+  const year = date.year() === dayjs().year() ? "" : ` ${date.year()}`;
+  return `${formatWeekdayDate(value)}${year}`;
+}
+
+export function isOngoing(startsAt: Date, endsAt: Date | null) {
+  const now = Date.now();
+  return endsAt !== null && startsAt.getTime() <= now && now < endsAt.getTime();
+}
+
+const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? "" : "s"}`;
+const MAX_FUTURE_DAYS = 3;
+const MAX_PAST_DAYS = 7;
+
+export function getRelativeDatetime(value: Date | string) {
+  const date = toValidDayjs(value);
+  const now = dayjs();
+
+  const diffSeconds = date.diff(now, "second");
+  const diffMinutes = date.diff(now, "minute");
+  const diffHours = date.diff(now, "hour");
+
+  const calendarDays = date.startOf("day").diff(now.startOf("day"), "day");
+
+  if (diffSeconds >= 0) {
+    if (calendarDays === 0) return "today";
+    if (calendarDays === 1) return "tomorrow";
+    if (calendarDays <= MAX_FUTURE_DAYS) return `in ${calendarDays} days`;
+  } else {
+    if (diffSeconds > -60) return "just now";
     if (diffMinutes > -60) {
-      return `${Math.abs(diffMinutes)} minute${diffMinutes !== -1 ? "s" : ""} ago`;
+      return `${plural(Math.abs(diffMinutes), "minute")} ago`;
     }
     if (diffHours > -24) {
-      return `${Math.abs(diffHours)} hour${diffHours !== -1 ? "s" : ""} ago`;
+      return `${plural(Math.abs(diffHours), "hour")} ago`;
     }
-    if (diffDays > -7) {
-      return `${Math.abs(diffDays)} day${diffDays !== -1 ? "s" : ""} ago`;
+    if (calendarDays < 0 && calendarDays > -MAX_PAST_DAYS) {
+      return `${plural(Math.abs(calendarDays), "day")} ago`;
     }
   }
-  return formatDate(eventDate);
+
+  return formatWeekdayDate(value);
 }
 
 export function combineDateTime(date: string, time: string): Date | null {
   if (!date || !time) return null;
 
-  const result = new Date(`${date}T${time}`);
-  return Number.isNaN(result.getTime()) ? null : result;
+  const parsed = dayjs(`${date} ${time}`, DATE_TIME_INPUT_FORMAT, true);
+
+  return parsed.isValid() ? parsed.toDate() : null;
 }

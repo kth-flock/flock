@@ -16,6 +16,8 @@ import { useAuth } from "@/shared/auth/authContext";
 import { randomBannerColor } from "../lib/bannerColor";
 import { useFetch } from "@/shared/hooks/useFetch";
 import type { PrivateUser } from "@/shared/types/user";
+import ProfilePageSkeleton from "./profilePageSkeleton";
+import ErrorState from "@/shared/components/ErrorState";
 
 export default function PublicProfileClient({
   profileId,
@@ -54,22 +56,42 @@ function PublicProfileData({
 
   const [bannerColor] = useState(randomBannerColor);
 
-  const { data: profile, error, isLoading } = useFetch(fetchProfile);
-  const { data: friends } = useFetch(fetchFriends);
+  const { data: profile, error, errorStatus, isLoading, refetch } =
+    useFetch(fetchProfile);
+  const {
+    data: friends,
+    isLoading: friendsLoading,
+    error: friendsError,
+    refetch: refetchFriends,
+  } = useFetch(fetchFriends);
   const { data: friendStatuses } = useFetch(getMyFriendshipStatuses);
-  const { data: eventsTogether } = useFetch(fetchEventsTogether);
+  const {
+    data: eventsTogether,
+    error: eventsTogetherError,
+    isLoading: isLoadingEventsTogether,
+    refetch: refetchEventsTogether,
+  } = useFetch(fetchEventsTogether);
 
-  const friendsWithStatus = useMemo(
-    () =>
-      friends?.map((friend) => ({
-        ...friend,
-        friendshipStatus: friendStatuses?.get(friend.id) ?? ("NONE" as const),
-      })) ?? null,
-    [friends, friendStatuses],
-  );
+  const friendsWithStatus = useMemo(() => {
+    if (friendsLoading) return undefined;
+    if (friendsError || !friends) return null;
+    return friends.map((friend) => ({
+      ...friend,
+      friendshipStatus: friendStatuses?.get(friend.id) ?? ("NONE" as const),
+    }));
+  }, [friends, friendsLoading, friendsError, friendStatuses]);
 
-  // TODO: Error and loading
-  if (isLoading || error) return null;
+  if (isLoading) return <ProfilePageSkeleton />;
+  if (errorStatus === 404) notFound();
+  if (error) {
+    return (
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        action={{ label: "Try again", onClick: refetch }}
+      />
+    );
+  }
   if (!profile) notFound();
 
   const friendshipStatus = friendStatuses
@@ -87,11 +109,19 @@ function PublicProfileData({
         <ProfileContent
           profile={profile}
           friends={friendsWithStatus}
+          friendsError={friendsError}
+          onFriendsRetry={refetchFriends}
           myId={friendStatuses ? user.id : undefined}
           className="grid-cols-2 md:grid-cols-1"
         />
         <div className="border-t border-primary/20 pt-6 md:col-span-2 md:border-t-0 md:border-l md:pt-0 md:pl-6">
-          <EventsTogether events={eventsTogether} myId={user.id} />
+          <EventsTogether
+            events={eventsTogether}
+            error={eventsTogetherError}
+            onRetry={refetchEventsTogether}
+            myId={user.id}
+            isLoading={isLoadingEventsTogether}
+          />
         </div>
       </div>
     </div>

@@ -18,6 +18,7 @@ type FieldWrapperProps = {
   error?: string;
   size?: "default" | "compact";
   className?: string;
+  disabled?: boolean;
 };
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -45,13 +46,14 @@ export function FieldWrapper({
   error,
   size = "default",
   className,
+  disabled = false,
 }: FieldWrapperProps) {
   const isCompact = size === "compact";
 
   return (
     <div className={twMerge("flex w-full flex-col gap-1", className)}>
       <div
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
         className={twMerge(
           "flex w-full cursor-text border bg-background transition-colors hover:border-primary",
           isCompact
@@ -65,6 +67,7 @@ export function FieldWrapper({
               : "border-secondary shadow-md"
             : !isCompact && "border-primary/20",
           error && "border-error",
+          disabled && "cursor-not-allowed opacity-60 hover:border-primary/20",
         )}
       >
         {icon && (
@@ -131,6 +134,7 @@ export default function Input({
       htmlFor={props.id}
       isFocused={isFocused}
       error={error}
+      disabled={props.disabled}
       onClick={() => {
         ref.current?.focus();
         showPickerIfSupported();
@@ -150,7 +154,7 @@ export default function Input({
           onBlur?.(e);
         }}
         className={twMerge(
-          "w-full border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral [&::-webkit-calendar-picker-indicator]:hidden",
+          "w-full border-0 bg-transparent p-0 flock-body outline-none placeholder:text-neutral disabled:cursor-not-allowed [&::-webkit-calendar-picker-indicator]:hidden",
           className,
         )}
         autoComplete="off"

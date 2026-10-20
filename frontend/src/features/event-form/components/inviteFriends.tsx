@@ -79,7 +79,7 @@ export default function InviteFriends({ eventId }: { eventId: number }) {
           eventId,
           invitees.map((invitee) => invitee.id),
         );
-        toast("Invites sent successfully!", "success");
+        toast("Invites sent!", "success");
       }
       router.push(`/event/${eventId}`);
     } catch (error) {

@@ -10,19 +10,47 @@ import { getMyFriends } from "@/shared/lib/api";
 import { getCreatedEvents, getInvitedEvents } from "@/features/event/lib/api";
 import { useAuth } from "@/shared/auth/authContext";
 import { notFound } from "next/navigation";
+import FlockLoader from "@/shared/components/flockLoader";
 
 export default function ProfileClient() {
   const { user } = useAuth();
   const [bannerColor] = useState(randomBannerColor);
-  const { data: hostedEvents, isLoading: createdLoading } =
-    useFetch(getCreatedEvents);
-  const { data: invitedEvents, isLoading: invitedLoading } =
-    useFetch(getInvitedEvents);
-  const { data: friends } = useFetch(getMyFriends);
+  const {
+    data: hostedEvents,
+    isLoading: createdLoading,
+    error: createdError,
+    refetch: refetchCreated,
+  } = useFetch(getCreatedEvents);
+  const {
+    data: invitedEvents,
+    isLoading: invitedLoading,
+    error: invitedError,
+    refetch: refetchInvited,
+  } = useFetch(getInvitedEvents);
+  const {
+    data: friends,
+    isLoading: friendsLoading,
+    error: friendsError,
+    refetch: refetchFriends,
+  } = useFetch(getMyFriends);
 
-  // TODO: Add loading and error
-  if (user === undefined) return;
+  if (user === undefined) return <FlockLoader />;
   if (!user) notFound();
+
+  const friendsWithStatus = friendsLoading
+    ? undefined
+    : friendsError
+      ? null
+      : (friends?.map((friend) => ({
+          ...friend,
+          friendshipStatus: "FRIENDS" as const,
+        })) ?? null);
+
+  const historyLoading = createdLoading || invitedLoading;
+  const historyError =
+    !historyLoading && (createdError || invitedError)
+      ? (createdError ?? invitedError)
+      : null;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10">
@@ -35,12 +63,9 @@ export default function ProfileClient() {
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3">
         <ProfileContent
           profile={user}
-          friends={
-            friends?.map((friend) => ({
-              ...friend,
-              friendshipStatus: "FRIENDS" as const,
-            })) ?? null
-          }
+          friends={friendsWithStatus}
+          friendsError={friendsError}
+          onFriendsRetry={refetchFriends}
           hostedEvents={hostedEvents}
           invitedEvents={invitedEvents}
           className="grid-cols-2 md:grid-cols-1"
@@ -49,7 +74,12 @@ export default function ProfileClient() {
           <ProfileHistory
             hostedEvents={hostedEvents}
             invitedEvents={invitedEvents}
-            isLoading={createdLoading || invitedLoading}
+            isLoading={historyLoading}
+            error={historyError}
+            onRetry={() => {
+              void refetchCreated();
+              void refetchInvited();
+            }}
           />
         </div>
       </div>

@@ -1,4 +1,3 @@
-// features/dashboard/components/upcomingEvents.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,22 +9,26 @@ import EventPreview, {
   SmallEventPreview,
 } from "./eventPreview";
 import type { UpcomingEvent } from "@/features/event/lib/api";
+import UpcomingEventsSkeleton from "./upcomingEventsSkeleton";
 
 const MAX_UPCOMING_EVENTS = 6;
 
 export default function UpcomingEvents({
   events,
+  error,
+  onRetry,
 }: {
   events: UpcomingEvent[] | null | undefined;
+  error?: string | null;
+  onRetry?: () => void;
 }) {
   const [showAll, setShowAll] = useState(false);
 
-  if (events === undefined)
-    return <p className="flock-body text-text-muted">Loading…</p>;
-  if (events === null)
+  if (events === undefined) return <UpcomingEventsSkeleton />;
+  if (events === null || error)
     return (
-      <LoadError>
-        {"Couldn't load your events. Try refreshing the page."}
+      <LoadError onRetry={onRetry}>
+        {error ?? "Couldn't load your events. Try again."}
       </LoadError>
     );
 

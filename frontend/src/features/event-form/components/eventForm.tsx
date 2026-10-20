@@ -11,6 +11,7 @@ import { useToast } from "@/shared/components/toast";
 type Props<TPayload> = {
   heading?: string;
   submitLabel: string;
+  loadingLabel?: string;
   cancelHref: string;
   initialValues: EventFormValues;
   mode: EventPayloadMode;
@@ -18,6 +19,7 @@ type Props<TPayload> = {
   schema: ZodType<TPayload>;
   fallbackError: string;
   successMessage: string;
+  startLocked?: boolean;
   onSubmit: (
     payload: TPayload,
     imageFile: File | null,
@@ -28,6 +30,7 @@ type Props<TPayload> = {
 export default function EventForm<TPayload>({
   heading,
   submitLabel,
+  loadingLabel = "Loading...",
   cancelHref,
   initialValues,
   mode,
@@ -35,11 +38,13 @@ export default function EventForm<TPayload>({
   schema,
   fallbackError,
   successMessage,
+  startLocked,
   onSubmit,
 }: Props<TPayload>) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
   const toast = useToast();
+
   const form = useEventForm({
     initialValues,
     mode,
@@ -65,6 +70,7 @@ export default function EventForm<TPayload>({
         values={form.values}
         errors={form.errors}
         onChange={form.setField}
+        startLocked={startLocked}
       />
       {form.submitError && (
         <p className="flock-ui-label text-error" role="alert">
@@ -75,8 +81,12 @@ export default function EventForm<TPayload>({
         <Button type="button" variant="secondary" href={cancelHref}>
           Cancel
         </Button>
-        <Button type="submit" disabled={form.isSubmitting}>
-          {submitLabel}
+        <Button
+          type="submit"
+          isLoading={form.isSubmitting}
+          disabled={form.isSubmitting}
+        >
+          {form.isSubmitting ? loadingLabel : submitLabel}
         </Button>
       </div>
     </form>

@@ -7,6 +7,8 @@ import AvatarStack from "@/shared/components/avatarStack";
 import { fullName } from "@/shared/lib/user";
 import InviteesList from "./inviteesList";
 import EventImage from "@/shared/components/eventImage";
+import { isOngoing } from "@/shared/lib/dateFormat";
+import OngoingPill from "./ongoingPill";
 
 export default function EventHeader({
   event,
@@ -44,17 +46,21 @@ export default function EventHeader({
 
         <div className="z-20 flex w-full items-end justify-between p-6 md:p-8">
           <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
+            {isOngoing(event.startsAt, event.endsAt) && <OngoingPill />}
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
             <Link
               href={`/profile/${createdBy.id}`}
-              className="group/host flock-body-sm flex w-fit items-center gap-2"
+              className="group/host flock-body-sm flex w-fit min-w-0 max-w-full items-center gap-2"
             >
               <ProfileImage
                 profileImgSrc={createdBy.imageUrl ?? ""}
                 firstName={createdBy.firstName}
                 lastName={createdBy.lastName}
               />
-              <span className="group-hover/host:underline">
+              <span
+                className="min-w-0 truncate group-hover/host:underline"
+                title={isHost ? undefined : fullName(createdBy)}
+              >
                 Hosted by{" "}
                 <span className="flock-ui-label">
                   {isHost ? "you" : fullName(createdBy)}

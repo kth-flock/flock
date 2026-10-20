@@ -1,36 +1,22 @@
 import { prisma } from "../prisma";
 import { UserId } from "@flock/shared/schemas/user";
 import { EventId } from "@flock/shared/schemas/event";
-import {
-  NotFoundError,
-  ForbiddenError,
-  ValidationError,
-  ConflictError,
-} from "../utils/errors";
+import { NotFoundError, ValidationError, ConflictError } from "../utils/errors";
+import { assertEventHost } from "../utils/service";
+
+async function assertUserExists(inviteeId: UserId) {
+  const user = await prisma.user.findUnique({ where: { id: inviteeId } });
+  if (!user) throw new NotFoundError("Invitee is not a valid user");
+}
 
 export async function addInvitee(
   userId: UserId,
   eventId: EventId,
   inviteeId: UserId,
 ) {
-  const eventExists = await prisma.event.findUnique({
-    where: { id: eventId },
-  });
+  await assertEventHost(eventId, userId, "Only event host can invite users");
 
-  if (!eventExists) {
-    throw new NotFoundError("Event not found");
-  }
-
-  if (eventExists.createdById !== userId) {
-    throw new ForbiddenError("Only event host can invite users");
-  }
-
-  const inviteeExists = await prisma.user.findUnique({
-    where: { id: inviteeId },
-  });
-  if (!inviteeExists) {
-    throw new NotFoundError("Invitee is not a valid user");
-  }
+  await assertUserExists(inviteeId);
 
   if (inviteeId === userId) {
     throw new ValidationError("You cannot invite yourself to your own event");
@@ -56,17 +42,7 @@ export async function AddInviteesInBatch(
   eventId: EventId,
   inviteeIds: UserId[],
 ) {
-  const eventExists = await prisma.event.findUnique({
-    where: { id: eventId },
-  });
-
-  if (!eventExists) {
-    throw new NotFoundError("Event not found");
-  }
-
-  if (eventExists.createdById !== userId) {
-    throw new ForbiddenError("Only event host can invite users");
-  }
+  await assertEventHost(eventId, userId, "Only event host can invite users");
 
   const uniqueIds = [...new Set(inviteeIds)].filter((id) => id !== userId);
 
@@ -87,24 +63,9 @@ export async function removeInvitee(
   eventId: EventId,
   inviteeId: UserId,
 ) {
-  const eventExists = await prisma.event.findUnique({
-    where: { id: eventId },
-  });
+  await assertEventHost(eventId, userId, "Only event host can remove invitees");
 
-  if (!eventExists) {
-    throw new NotFoundError("Event not found");
-  }
-
-  if (eventExists.createdById !== userId) {
-    throw new ForbiddenError("Only event host can remove invitees");
-  }
-
-  const inviteeExists = await prisma.user.findUnique({
-    where: { id: inviteeId },
-  });
-  if (!inviteeExists) {
-    throw new NotFoundError("Invitee is not a valid user");
-  }
+  await assertUserExists(inviteeId);
 
   const inviteeIsInvited = await prisma.invitee.findUnique({
     where: { eventId_userId: { eventId, userId: inviteeId } },

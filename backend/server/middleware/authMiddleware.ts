@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
 import { Request, Response, NextFunction } from "express";
+import { InvalidCredentialsError } from "../utils/errors";
 
 export const authMiddleware = async (
   req: Request,
@@ -13,16 +14,13 @@ export const authMiddleware = async (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    //TODO: can perhaps be removed if we only use cookies
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies?.token) {
     token = req.cookies.token;
   }
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ status: "Error", error: "Session token was not provided" });
+    throw new InvalidCredentialsError("Session token was not provided");
   }
 
   try {
@@ -30,21 +28,19 @@ export const authMiddleware = async (
     if (!secret) {
       return res
         .status(500)
-        .json({ status: "Error", error: "JWT_SECRET is not set" });
+        .json({ status: "Error", error: "Internal server error" });
     }
 
     //verify the token and extract the user id from it
     const decoded = jwt.verify(token, secret);
 
     if (typeof decoded === "string" || typeof decoded.id !== "number") {
-      return res.status(401).json({ status: "Error", error: "Invalid token" });
+      throw new InvalidCredentialsError("Invalid token");
     }
 
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) {
-      return res
-        .status(401)
-        .json({ status: "Error", error: "User no longer exists" });
+      throw new InvalidCredentialsError("User no longer exists");
     }
 
     req.user = { id: user.id };

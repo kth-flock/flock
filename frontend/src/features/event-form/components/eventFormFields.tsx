@@ -18,9 +18,11 @@ export default function EventFormFields({
   values,
   errors,
   onChange,
+  startLocked = false,
 }: {
   values: EventFormValues;
   errors: Record<string, string>;
+  startLocked?: boolean;
   onChange: <Key extends keyof EventFormValues>(
     field: Key,
     value: EventFormValues[Key],
@@ -60,6 +62,7 @@ export default function EventFormFields({
           type="date"
           label="Start date"
           required
+          disabled={startLocked}
           value={values.startDate}
           onChange={(e) => onChange("startDate", e.target.value)}
         />
@@ -69,6 +72,7 @@ export default function EventFormFields({
           type="time"
           label="Start time"
           required
+          disabled={startLocked}
           value={values.startTime}
           onChange={(e) => onChange("startTime", e.target.value)}
         />
@@ -105,24 +109,26 @@ export default function EventFormFields({
         </>
       )}
 
-      <div className="md:col-span-2">
-        <Button
-          type="button"
-          variant="tertiary"
-          size="sm"
-          onClick={toggleEndFields}
-        >
-          {showEndFields ? (
-            <>
-              <BiMinus /> <p>Remove end date</p>
-            </>
-          ) : (
-            <>
-              <BiPlus /> <p>Add end date</p>
-            </>
-          )}
-        </Button>
-      </div>
+      {!(startLocked && showEndFields) && (
+        <div className="md:col-span-2">
+          <Button
+            type="button"
+            variant="tertiary"
+            size="sm"
+            onClick={toggleEndFields}
+          >
+            {showEndFields ? (
+              <>
+                <BiMinus /> <p>Remove end date</p>
+              </>
+            ) : (
+              <>
+                <BiPlus /> <p>Add end date</p>
+              </>
+            )}
+          </Button>
+        </div>
+      )}
 
       <div className="md:col-span-2">
         <TextArea

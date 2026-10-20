@@ -20,12 +20,13 @@ export default function CreateEventFlow() {
       {eventId === null ? (
         <EventForm
           submitLabel="Create"
+          loadingLabel="Creating..."
           cancelHref="/"
           initialValues={emptyEventFormValues}
           mode="create"
           schema={createEventSchema}
           fallbackError="Couldn't create the event. Please try again."
-          successMessage="Event created successfully."
+          successMessage="Event created."
           onSubmit={async (payload, imageFile) => {
             const created = await withUploadedImage(imageFile, (imageUrl) =>
               createEvent({ ...payload, imageUrl }),

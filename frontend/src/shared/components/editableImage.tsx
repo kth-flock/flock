@@ -36,7 +36,7 @@ export default function EditableImage({
 
   if (isEditing) {
     return (
-      <div className="flex w-full flex-col items-stretch gap-2">
+      <div className="flex w-full flex-col gap-2">
         <ImageUpload
           label={label}
           onFileSelect={onFileSelect}

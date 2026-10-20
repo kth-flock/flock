@@ -1,7 +1,6 @@
 import { Router } from "express";
 
 export const inviteesRouter = Router({ mergeParams: true });
-import { authMiddleware } from "../middleware/authMiddleware";
 import {
   addInviteesInBatch,
   addInvitee,
@@ -9,5 +8,5 @@ import {
 } from "../controllers/inviteesController";
 
 inviteesRouter.post("/", addInviteesInBatch);
-inviteesRouter.post("/:inviteeId", addInvitee); // TODO: invitees or invite?
+inviteesRouter.post("/:inviteeId", addInvitee);
 inviteesRouter.delete("/:inviteeId", removeInvitee);

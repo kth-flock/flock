@@ -10,11 +10,6 @@ import { getUserById } from "../services/usersServices";
 import { validate } from "../utils/validate";
 import { NotFoundError } from "../utils/errors";
 
-export async function getEvents(req: Request, res: Response) {
-  const events = await eventsService.getEvents();
-  res.status(200).json(events);
-}
-
 export async function getEventById(req: Request, res: Response) {
   const eventId = validate(idSchema, req.params.eventId, "Invalid event ID");
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
@@ -27,24 +22,12 @@ export async function getEventById(req: Request, res: Response) {
 export async function getCreatedEvents(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
 
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
-
   const events = await eventsService.getCreatedEvents(userId);
   res.status(200).json(events);
 }
 
 export async function getInvitedEvents(req: Request, res: Response) {
   const userId = validate(idSchema, req.user.id, "Invalid user ID");
-
-  const user = await getUserById(userId);
-
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
 
   const events = await eventsService.getInvitedEvents(userId);
 

@@ -19,7 +19,6 @@ export function errorHandler(
     return res.status(400).json({ status: "Error", error: error.message });
   }
 
-  console.log(error);
   if (error instanceof ValidationError) {
     return res.status(400).json({
       status: "Error",

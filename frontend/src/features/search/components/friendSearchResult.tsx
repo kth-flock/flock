@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FriendshipStatus } from "@flock/shared/schemas/user";
 import type { UserSearchResult } from "@/shared/types/user";
 import Button, { IconButton } from "../../../shared/components/button";
@@ -14,6 +15,7 @@ type FriendSearchResultProps = {
   onAddFriend?: () => void;
   onAcceptFriend?: () => void;
   onDeclineFriend?: () => void;
+  onOpenProfile?: () => void;
 };
 
 type ActionConfig = {
@@ -34,6 +36,7 @@ export default function FriendSearchResult({
   onAddFriend,
   onAcceptFriend,
   onDeclineFriend,
+  onOpenProfile,
 }: FriendSearchResultProps) {
   const actions: Record<FriendshipStatus, ActionConfig> = {
     NONE: {
@@ -73,15 +76,26 @@ export default function FriendSearchResult({
     isPending && (pendingAction === "add" || pendingAction === "accept");
 
   return (
-    <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-2 gap-1">
-      <ProfileImage
-        firstName={user.firstName}
-        lastName={user.lastName}
-        profileImgSrc={user.imageUrl ?? ""}
-      />
-      <p className="min-w-0 flex-1 break-words whitespace-normal px-2">
-        {fullName(user)}
-      </p>
+    <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-1 gap-1">
+      <Link
+        href={`/profile/${user.id}`}
+        onClick={onOpenProfile}
+        className="-ml-1 flex min-w-0 flex-1 items-center rounded-lg py-1 pl-1 transition-colors hover:bg-accent/10"
+      >
+        <ProfileImage
+          firstName={user.firstName}
+          lastName={user.lastName}
+          profileImgSrc={user.imageUrl ?? ""}
+        />
+        <span className="flex min-w-0 flex-1 flex-col px-2">
+          <span className="line-clamp-2 wrap-break-word" title={fullName(user)}>
+            {fullName(user)}
+          </span>
+          {user.friendshipStatus === "FRIENDS" && (
+            <span className="flock-caption text-[11px]! md:text-xs!">Friends</span>
+          )}
+        </span>
+      </Link>
       {user.friendshipStatus === "REQUEST_RECEIVED" && (
         <IconButton
           variant="primary"
@@ -94,18 +108,20 @@ export default function FriendSearchResult({
           <FaXmark aria-hidden />
         </IconButton>
       )}
-      <Button
-        variant={action.variant}
-        size="sm"
-        icon={action.icon}
-        iconPlacement="right"
-        aria-label={action.ariaLabel}
-        onClick={action.onClick}
-        disabled={action.disabled || isPending}
-        className="px-1.5"
-      >
-        {showPrimaryPending ? "pending..." : action.label}
-      </Button>
+      {user.friendshipStatus !== "FRIENDS" && (
+        <Button
+          variant={action.variant}
+          size="sm"
+          icon={action.icon}
+          iconPlacement="right"
+          aria-label={action.ariaLabel}
+          onClick={action.onClick}
+          disabled={action.disabled || isPending}
+          className="px-1.5"
+        >
+          {showPrimaryPending ? "pending..." : action.label}
+        </Button>
+      )}
     </div>
   );
 }

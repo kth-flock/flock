@@ -51,29 +51,13 @@ export const updateEventSchema = z
     longitude: z.number().min(-180).max(180).nullable().optional(),
     startsAt: z.coerce
       .date({ error: "Start date and time are required." })
-      .refine((date) => date.getTime() > Date.now(), {
-        error: "Start date must be in the future.",
-      })
       .optional(),
     endsAt: z.coerce
       .date({ error: "End date and time must be set together." })
       .nullable()
-      .optional()
-      .refine((date) => date == null || date.getTime() > Date.now(), {
-        error: "End date must be in the future.",
-      }),
+      .optional(),
     imageUrl: z.string().nullable().optional(),
   })
-  .refine(
-    (event) =>
-      !event.startsAt ||
-      !(event.endsAt instanceof Date) ||
-      event.endsAt.getTime() > event.startsAt.getTime(),
-    {
-      path: ["endsAt"],
-      error: "End date must be after the start date.",
-    },
-  )
   .refine(
     (event) =>
       (event.latitude === undefined && event.longitude === undefined) ||
@@ -87,6 +71,66 @@ export const updateEventSchema = z
   );
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
+
+type EventTimes = { startsAt: Date; endsAt: Date | null };
+
+const sameMinute = (a: Date | null, b: Date | null) =>
+  a?.getTime() === b?.getTime() ||
+  (!!a && !!b && Math.floor(a.getTime() / 60000) === Math.floor(b.getTime() / 60000));
+
+export function eventTimeErrors(
+  update: Pick<UpdateEventData, "startsAt" | "endsAt">,
+  current: EventTimes,
+) {
+  const errors: { path: "startsAt" | "endsAt"; message: string }[] = [];
+  const now = Date.now();
+  const startsAt = update.startsAt ?? current.startsAt;
+  const endsAt = update.endsAt === undefined ? current.endsAt : update.endsAt;
+
+  const hasBegun = current.startsAt.getTime() <= now;
+
+  if (hasBegun && !sameMinute(startsAt, current.startsAt)) {
+    errors.push({
+      path: "startsAt",
+      message: "The start can't be changed after the event has begun.",
+    });
+  } else if (
+    !sameMinute(startsAt, current.startsAt) &&
+    startsAt.getTime() <= now
+  ) {
+    errors.push({
+      path: "startsAt",
+      message: "Start date must be in the future.",
+    });
+  }
+  if (hasBegun && current.endsAt && !endsAt) {
+    errors.push({
+      path: "endsAt",
+      message: "The end date can't be removed after the event has begun.",
+    });
+  }
+  if (
+    endsAt &&
+    !sameMinute(endsAt, current.endsAt) &&
+    endsAt.getTime() <= now
+  ) {
+    errors.push({ path: "endsAt", message: "End date must be in the future." });
+  }
+  if (endsAt && endsAt.getTime() <= startsAt.getTime()) {
+    errors.push({
+      path: "endsAt",
+      message: "End date must be after the start date.",
+    });
+  }
+  return errors;
+}
+
+export const updateEventSchemaFor = (current: EventTimes) =>
+  updateEventSchema.superRefine((update, ctx) => {
+    for (const { path, message } of eventTimeErrors(update, current)) {
+      ctx.addIssue({ code: "custom", path: [path], message });
+    }
+  });
 
 export type RsvpStatus = "PENDING" | "ACCEPTED" | "MAYBE" | "DECLINED";
 
@@ -102,6 +146,7 @@ export const rsvpToEventSchema = z.object({
   rsvpComment: z
     .string()
     .max(200, "Comment can be at most 200 characters")
+    .nullable()
     .optional(),
 });
 export type RsvpToEventData = z.infer<typeof rsvpToEventSchema>;
