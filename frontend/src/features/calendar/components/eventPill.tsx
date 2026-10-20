@@ -6,8 +6,6 @@ import { getDayInfo, EventDetailStyles } from "../lib/utils";
 import { useEventStatus } from "../hooks/useEventStatus";
 import type { Rsvp } from "@/features/event/lib/types";
 
-// ---------- PILL  ----------
-
 function SingleDayContent({
   event,
   status,
@@ -83,7 +81,6 @@ export default function EventPill({
         "h-10 shrink-0 truncate px-2 py-0.5 text-left flock-caption",
         EventDetailStyles[status],
         strike,
-        // Round the ends of the event, and bridge the cell gaps in between
         startsToday ? "rounded-l-lg" : !isWeekStart && "-ml-[8.5px]",
         endsToday ? "rounded-r-lg" : !isWeekEnd && "-mr-[8.5px]",
       )}
@@ -93,7 +90,6 @@ export default function EventPill({
           event={event}
           status={status}
           startsToday={startsToday}
-          // Label on the first day, and again at the start of each week row
           showLabel={startsToday || isWeekStart}
           showStatus={endsToday || isWeekEnd}
         />

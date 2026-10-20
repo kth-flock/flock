@@ -5,7 +5,6 @@ import EditEventClient from "@/features/event-form/components/editEventClient";
 export default async function EditEventPage({
   params,
 }: PageProps<"/edit-event/[eventId]">) {
-  // ---- GET EVENT ID ----
   const { eventId } = await params;
   const parsedEventId = idSchema.safeParse(eventId);
   if (!parsedEventId.success) notFound();

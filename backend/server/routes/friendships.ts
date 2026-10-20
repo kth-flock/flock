@@ -9,7 +9,7 @@ import {
 
 export const friendshipsRouter = Router();
 
-friendshipsRouter.get("/", getMyFriends); // GET ALL my friends
+friendshipsRouter.get("/", getMyFriends);
 friendshipsRouter.get("/requests", getFriendRequests); // GET friendship requests, use direction=sent or direction=received to get specific request type
 friendshipsRouter.post("/request", sendFriendRequest);
 friendshipsRouter.patch("/request", acceptFriendship);

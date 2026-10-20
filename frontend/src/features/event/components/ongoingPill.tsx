@@ -1,7 +1,5 @@
 import { twMerge } from "tailwind-merge";
 
-// "Ongoing" with a pulsing dot, for events happening right now. Same style as
-// the RSVP status pills, in the "Maybe" yellow
 export default function OngoingPill({ size = "md" }: { size?: "sm" | "md" }) {
   return (
     <span

@@ -1,4 +1,3 @@
-// features/dashboard/components/upcomingEvents.tsx
 "use client";
 
 import { useState } from "react";

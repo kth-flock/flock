@@ -9,7 +9,6 @@ import { validate } from "../utils/validate";
 export async function getUser(req: Request, res: Response) {
   const userId = validate(idSchema, req.params.userId, "Invalid user ID");
 
-  // Includes createdAt, for "Member since" on the profile page
   const user = await usersServices.getUserProfile(userId);
 
   res.status(200).json({ status: "Success", data: user });

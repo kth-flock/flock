@@ -1,5 +1,3 @@
-// Placeholder until profiles get a real banner (image or chosen colour)
-
 const bannerColors = [
   "bg-primary",
   "bg-secondary",

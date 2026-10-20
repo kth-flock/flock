@@ -1,4 +1,3 @@
-// features/location/components/locationMap.tsx
 "use client";
 
 import { MapContainer, TileLayer, Marker } from "react-leaflet";

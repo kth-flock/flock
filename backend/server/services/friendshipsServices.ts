@@ -60,8 +60,6 @@ export async function sendFriendRequest(
   if (requesteeId === requesterId) {
     throw new ValidationError("Cannot send a friend request to yourself");
   }
-
-  // check if requestee exists
   await getUserById(requesteeId);
 
   const friendship = await prisma.friendship.findFirst({

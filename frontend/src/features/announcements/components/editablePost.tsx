@@ -1,4 +1,3 @@
-// features/event/components/editablePost.tsx
 "use client";
 
 import { useState } from "react";

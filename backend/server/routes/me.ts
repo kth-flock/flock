@@ -14,8 +14,8 @@ export const meRouter = Router();
 meRouter.use("/friendships", friendshipsRouter);
 meRouter.use("/notifications", notificationsRouter);
 
-meRouter.get("/", getMyAccount); // GET my account
-meRouter.delete("/", deleteMyAccount); // DELETE my user a ccount
-meRouter.patch("/", editUserInfo); // Edit my user information
-meRouter.patch("/email", changeEmail); //change my email
-meRouter.patch("/password", changePassword); //change my password
+meRouter.get("/", getMyAccount);
+meRouter.delete("/", deleteMyAccount);
+meRouter.patch("/", editUserInfo);
+meRouter.patch("/email", changeEmail);
+meRouter.patch("/password", changePassword);

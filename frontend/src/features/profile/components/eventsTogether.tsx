@@ -21,7 +21,6 @@ export default function EventsTogether({
     return {
       event,
       status: isMine ? "HOST" : (event.invitees[0]?.rsvp ?? "PENDING"),
-      // "Hosting" is unclear on someone else's profile
       statusLabel: isMine ? "Hosted by you" : undefined,
     };
   });

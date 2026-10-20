@@ -24,7 +24,6 @@ export default function FriendPreview({
   error,
   onRetry,
 }: {
-  // undefined while loading, null if it failed
   friends: PublicUser[] | null | undefined;
   error?: string | null;
   onRetry?: () => void;
