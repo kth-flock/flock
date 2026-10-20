@@ -8,7 +8,7 @@ import {
   deleteEvent,
   rsvpToEvent,
 } from "../controllers/eventsController";
-import { authMiddleware } from "../middleware/authMiddleware";
+
 import { inviteesRouter } from "./invitees";
 import { announcementsRouter } from "./announcement";
 
@@ -37,4 +37,4 @@ eventsRouter.patch("/:eventId", updateEventInfo);
 eventsRouter.delete("/:eventId", deleteEvent);
 
 //RSVP to an event only if current logged in user is invited to the event
-eventsRouter.patch("/:eventId/rsvp", authMiddleware, rsvpToEvent); // TODO: middleware (might be applied to the entire event router but ill put it here for now //Elinor)
+eventsRouter.patch("/:eventId/rsvp", rsvpToEvent);
