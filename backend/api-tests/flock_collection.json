@@ -53,13 +53,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -107,13 +102,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -151,13 +141,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -195,13 +180,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
             }
           },
           "response": []
@@ -239,13 +219,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -283,13 +258,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -328,13 +298,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -385,12 +350,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events"]
             }
           },
           "response": []
@@ -428,12 +389,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events"]
             }
           },
           "response": []
@@ -471,12 +428,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events"]
             }
           },
           "response": []
@@ -501,13 +454,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/created",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "created"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "created"]
             }
           },
           "response": []
@@ -531,13 +479,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
@@ -561,13 +504,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/999999",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "999999"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "999999"]
             }
           },
           "response": []
@@ -591,13 +529,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/abc",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "abc"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "abc"]
             }
           },
           "response": []
@@ -636,13 +569,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
@@ -680,13 +608,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
@@ -724,13 +647,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/999999",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "999999"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "999999"]
             }
           },
           "response": []
@@ -753,15 +671,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/invitees/{{userBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "invitees",
-                "{{userBId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "invitees", "{{userBId}}"]
             }
           },
           "response": []
@@ -785,15 +696,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/999999/invitees/{{userBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "999999",
-                "invitees",
-                "{{userBId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "999999", "invitees", "{{userBId}}"]
             }
           },
           "response": []
@@ -832,14 +736,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "announcements"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "announcements"]
             }
           },
           "response": []
@@ -877,14 +775,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "announcements"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "announcements"]
             }
           },
           "response": []
@@ -923,9 +815,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -969,15 +859,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/999999",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "announcements",
-                "999999"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "announcements", "999999"]
             }
           },
           "response": []
@@ -1016,9 +899,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1063,9 +944,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1114,14 +993,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships/request",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "request"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "request"]
             }
           },
           "response": []
@@ -1159,14 +1032,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships/request",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "request"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "request"]
             }
           },
           "response": []
@@ -1189,14 +1056,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/friendships/requests?direction=sent",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "requests"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "requests"],
               "query": [
                 {
                   "key": "direction",
@@ -1226,14 +1087,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/friendships/requests?direction=sideways",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "requests"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "requests"],
               "query": [
                 {
                   "key": "direction",
@@ -1283,13 +1138,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -1327,14 +1177,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "announcements"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "announcements"]
             }
           },
           "response": []
@@ -1373,9 +1217,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1421,9 +1263,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1469,9 +1309,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentAId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1503,9 +1341,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentAId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1537,9 +1373,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -1569,13 +1403,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/invited",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "invited"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "invited"]
             }
           },
           "response": []
@@ -1612,14 +1441,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "rsvp"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "rsvp"]
             }
           },
           "response": []
@@ -1657,14 +1480,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "rsvp"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "rsvp"]
             }
           },
           "response": []
@@ -1701,14 +1518,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships/request",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "request"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "request"]
             }
           },
           "response": []
@@ -1746,14 +1557,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships/request",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships",
-                "request"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships", "request"]
             }
           },
           "response": []
@@ -1776,13 +1581,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/friendships",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships"]
             }
           },
           "response": []
@@ -1805,13 +1605,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/notifications",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "notifications"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "notifications"]
             }
           },
           "response": []
@@ -1834,12 +1629,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -1876,12 +1667,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -1919,12 +1706,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -1952,13 +1735,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userAId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userAId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userAId}}"]
             }
           },
           "response": []
@@ -1982,13 +1760,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/999999",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "999999"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "999999"]
             }
           },
           "response": []
@@ -2011,14 +1784,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/{{userAId}}/friends",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "{{userAId}}",
-                "friends"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userAId}}", "friends"]
             }
           },
           "response": []
@@ -2042,14 +1809,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/abc/friends",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "abc",
-                "friends"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "abc", "friends"]
             }
           },
           "response": []
@@ -2072,13 +1833,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/search?query=Alice",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
               "query": [
                 {
                   "key": "query",
@@ -2108,13 +1864,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/search?query=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "search"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
               "query": [
                 {
                   "key": "query",
@@ -2163,13 +1914,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/image/upload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image",
-                "upload"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image", "upload"]
             }
           },
           "response": []
@@ -2203,13 +1949,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/image/upload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image",
-                "upload"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image", "upload"]
             }
           },
           "response": []
@@ -2246,12 +1987,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/image",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image"]
             }
           },
           "response": []
@@ -2288,12 +2025,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/image",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image"]
             }
           },
           "response": []
@@ -2337,13 +2070,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -2366,15 +2094,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/invitees/{{userBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "invitees",
-                "{{userBId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "invitees", "{{userBId}}"]
             }
           },
           "response": []
@@ -2398,15 +2119,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/999999/invitees/{{userBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "999999",
-                "invitees",
-                "{{userBId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "999999", "invitees", "{{userBId}}"]
             }
           },
           "response": []
@@ -2444,13 +2158,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships"]
             }
           },
           "response": []
@@ -2488,13 +2197,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/me/friendships",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships"]
             }
           },
           "response": []
@@ -2518,9 +2222,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -2552,9 +2254,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments/{{commentBId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -2586,9 +2286,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -2618,9 +2316,7 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -2649,13 +2345,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
@@ -2679,13 +2370,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
@@ -2714,13 +2400,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "logout"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
             }
           },
           "response": []
@@ -2749,13 +2430,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/created",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "created"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "created"]
             }
           },
           "response": []
@@ -2779,13 +2455,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/invited",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "invited"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "invited"]
             }
           },
           "response": []
@@ -2809,14 +2480,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/rsvp",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "rsvp"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "rsvp"]
             }
           },
           "response": []
@@ -2840,12 +2505,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -2869,12 +2530,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -2898,13 +2555,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/friendships",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "friendships"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "friendships"]
             }
           },
           "response": []
@@ -2928,13 +2580,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me/notifications",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me",
-                "notifications"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me", "notifications"]
             }
           },
           "response": []
@@ -2958,13 +2605,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/users/search",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users",
-                "search"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"]
             }
           },
           "response": []
@@ -2988,13 +2630,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geocode/search",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "search"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geocode", "search"]
             }
           },
           "response": []
@@ -3018,13 +2655,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/geocode/reverse",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "geocode",
-                "reverse"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["geocode", "reverse"]
             }
           },
           "response": []
@@ -3048,13 +2680,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/image/upload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image",
-                "upload"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image", "upload"]
             }
           },
           "response": []
@@ -3078,12 +2705,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/image",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "image"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["image"]
             }
           },
           "response": []
@@ -3121,14 +2744,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events",
-                "{{eventId}}",
-                "announcements"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "announcements"]
             }
           },
           "response": []
@@ -3166,9 +2783,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/events/{{eventId}}/announcements/{{announcementId}}/comments",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "events",
                 "{{eventId}}",
@@ -3219,13 +2834,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -3248,12 +2858,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -3292,13 +2898,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": []
@@ -3321,12 +2922,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["me"]
             }
           },
           "response": []
@@ -3437,7 +3034,7 @@
           "  required: [\"id\", \"type\", \"createdAt\", \"from\"],",
           "  properties: {",
           "    id: { type: \"string\" },",
-          "    type: { enum: [\"INVITATION\", \"ANNOUNCEMENT\", \"ANNOUNCEMENT_COMMENT\", \"FRIEND_REQUEST\", \"FRIEND_REQUEST_ACCEPTED\"] },",
+          "    type: { enum: [\"INVITATION\", \"ANNOUNCEMENT\", \"ANNOUNCEMENT_COMMENT\", \"FRIEND_REQUEST\", \"FRIEND_REQUEST_ACCEPTED\", \"NEW_FRIEND\"] },",
           "    createdAt: { type: \"string\" },",
           "    from: publicUser,",
           "    event: {",
