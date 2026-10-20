@@ -1,7 +1,6 @@
 import { Router } from "express";
 
 export const inviteesRouter = Router({ mergeParams: true });
-import { authMiddleware } from "../middleware/authMiddleware";
 import {
   addInviteesInBatch,
   addInvitee,

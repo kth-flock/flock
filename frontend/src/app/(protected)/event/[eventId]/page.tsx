@@ -7,6 +7,5 @@ export default async function EventPage({
 }: PageProps<"/event/[eventId]">) {
   const parsed = idSchema.safeParse((await params).eventId);
   if (!parsed.success) notFound();
-
   return <EventPageClient eventId={parsed.data} />;
 }

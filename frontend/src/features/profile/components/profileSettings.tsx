@@ -7,25 +7,9 @@ import Button from "@/shared/components/button";
 import Modal from "@/shared/components/modal";
 import { PrivateUser } from "@/shared/types/user";
 import ProfileForm from "./profileForm";
-import { type Result } from "../hooks/useSave";
 import EmailForm from "./emailForm";
 import PasswordForm from "./passwordForm";
 import DangerZone from "./dangerZone";
-
-export function SaveResult({ result }: { result: Result | null }) {
-  if (!result) return null;
-  return (
-    <p
-      role={result.ok ? "status" : "alert"}
-      className={twMerge(
-        "flock-ui-label",
-        result.ok ? "text-success" : "text-error",
-      )}
-    >
-      {result.message}
-    </p>
-  );
-}
 
 export default function ProfileSettings({
   profile,
