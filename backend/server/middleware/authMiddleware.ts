@@ -3,7 +3,6 @@ import { prisma } from "../prisma";
 import { Request, Response, NextFunction } from "express";
 import { InvalidCredentialsError } from "../utils/errors";
 
-// TODO check these error messages and if they should use error handling
 export const authMiddleware = async (
   req: Request,
   res: Response,
@@ -15,7 +14,6 @@ export const authMiddleware = async (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    //TODO: can perhaps be removed if we only use cookies
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies?.token) {
     token = req.cookies.token;

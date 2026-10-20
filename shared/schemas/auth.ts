@@ -20,7 +20,6 @@ export const registerUserSchema = z
     firstName: z.string().trim().min(1, "First name cannot be empty"),
     lastName: z.string().trim().min(1, "Last name cannot be empty"),
     email: emailSchema,
-    // TODO: for now its not optional but in future we may add google login.
     password: passwordSchema,
   })
   .strict();
