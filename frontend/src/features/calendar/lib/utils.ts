@@ -1,5 +1,9 @@
 import type { CalendarEvent } from "./types";
-import { formatTime, formatShortDate } from "@/shared/lib/dateFormat";
+import {
+  formatTime,
+  formatShortDate,
+  isMultiDay,
+} from "@/shared/lib/dateFormat";
 
 export const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export const MONTHS = [
@@ -148,8 +152,7 @@ export function getDayInfo(event: CalendarEvent, day: Date) {
   return {
     startsToday: isSameDay(event.startsAt, day),
     endsToday: event.endsAt ? isSameDay(event.endsAt, day) : true,
-    isMultiDay:
-      Boolean(event.endsAt) && !isSameDay(event.startsAt, event.endsAt!),
+    isMultiDay: isMultiDay(event.startsAt, event.endsAt),
   };
 }
 

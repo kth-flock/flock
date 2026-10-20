@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { FaCalendarCheck, FaCrown, FaClock, FaUsers } from "react-icons/fa6";
 import type { EventSummary, InvitedEvent } from "@/features/event/lib/types";
 import { formatMonthYear } from "@/shared/lib/dateFormat";
-import type { ProfileUser, UserSearchResult } from "@/shared/types/user";
+import type { PublicUser, UserSearchResult } from "@/shared/types/user";
 import FriendStack from "./friendStack";
 import { FriendStackSkeleton } from "./profilePageSkeleton";
 import LoadError from "@/shared/components/loadError";
@@ -11,7 +11,7 @@ const countOf = (list: unknown[] | null | undefined) =>
   list ? String(list.length) : "-";
 
 type ProfileContentProps = {
-  profile: ProfileUser;
+  profile: PublicUser;
   /** undefined while loading, null if failed */
   friends: UserSearchResult[] | null | undefined;
   friendsError?: string | null;
