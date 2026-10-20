@@ -8,5 +8,5 @@ import {
 } from "../controllers/inviteesController";
 
 inviteesRouter.post("/", addInviteesInBatch);
-inviteesRouter.post("/:inviteeId", addInvitee); // TODO: invitees or invite?
+inviteesRouter.post("/:inviteeId", addInvitee);
 inviteesRouter.delete("/:inviteeId", removeInvitee);
