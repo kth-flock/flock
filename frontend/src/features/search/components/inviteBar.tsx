@@ -162,7 +162,7 @@ export default function InviteBar() {
           />
 
           {showDropdown && (
-            <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-100 flex-col overflow-y-auto rounded-xl border border-primary/20 bg-white p-3 shadow-md">
+            <div className="absolute left-0 right-0 top-full z-50 mt-2 flex max-h-100 flex-col overflow-y-auto rounded-xl border border-primary/20 bg-background p-3 shadow-md">
               {loading ? (
                 <p
                   className="flock-caption flex items-center justify-center gap-2 p-2 text-primary"
