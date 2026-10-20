@@ -2,126 +2,124 @@ import {
   FaCalendar,
   FaClock,
   FaLocationDot,
-  FaCircleCheck,
   FaCirclePlus,
-  FaCircleQuestion,
-  FaCircleXmark,
-  FaCrown,
 } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import {
   formatDate,
-  getRelativeDatetime,
+  formatEventDate,
+  formatMultiDayRange,
+  isMultiDay,
+  isOngoing,
   formatTimeRange,
 } from "@/shared/lib/dateFormat";
 import Link from "next/link";
-import Image from "next/image";
 import Button from "@/shared/components/button";
 import type { EventSummary, Rsvp } from "@/features/event/lib/types";
+import RsvpStatus from "@/features/rsvp/components/rsvpStatus";
 import EventImage from "@/shared/components/eventImage";
+import OngoingPill from "@/features/event/components/ongoingPill";
 
 export type EventStatus = Rsvp | "HOST";
 
-const statusIcon: Record<
-  EventStatus,
-  { icon: React.ReactElement; label: string }
-> = {
-  HOST: { icon: <FaCrown className="fill-primary" />, label: "Hosting" },
-  ACCEPTED: {
-    icon: <FaCircleCheck className="fill-secondary" />,
-    label: "Going",
-  },
-  MAYBE: { icon: <FaCircleQuestion className="fill-warn" />, label: "Maybe" },
-  DECLINED: {
-    icon: <FaCircleXmark className="fill-error" />,
-    label: "Not going",
-  },
-  PENDING: {
-    icon: <FaClock className="fill-(--color-text-muted)" />,
-    label: "Not answered",
-  },
+const chipLabel: Record<EventStatus, string> = {
+  HOST: "Hosting",
+  ACCEPTED: "Going",
+  MAYBE: "Maybe",
+  DECLINED: "Not going",
+  PENDING: "Not answered",
 };
 
-function ImagePlaceholder({
-  title,
-  className,
-}: {
-  title: string;
-  className: string;
-}) {
-  return (
-    <span
-      aria-hidden
-      className={twMerge(
-        "absolute inset-0 flex items-center justify-center px-4 font-serif",
-        className,
-      )}
-    >
-      <span className="truncate">{title}</span>
-    </span>
-  );
-}
+const hasEnded = (event: EventSummary) =>
+  (event.endsAt ?? event.startsAt).getTime() < Date.now();
+
+const statusChipStyle: Record<EventStatus, string> = {
+  HOST: "bg-info-light text-info-dark!",
+  ACCEPTED: "bg-success-light text-success-dark!",
+  MAYBE: "bg-warn-light text-warn-dark!",
+  DECLINED: "bg-error-light text-error-dark!",
+  PENDING: "bg-neutral text-foreground!",
+};
 
 export default function EventPreview({
   event,
   status,
+  statusLabel,
 }: {
   event: EventSummary;
   status: EventStatus;
+  statusLabel?: string;
 }) {
   return (
     <Link
       href={`/event/${event.id}`}
       className="block rounded-2xl shadow-md bg-neutral/20  w-full overflow-hidden hover:shadow-lg hover:scale-[0.98] transition-all"
     >
-      <div className="relative bg-neutral w-full h-36">
-        {event.imageUrl ? (
-          <EventImage
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            sizes="(min-width: 48rem) 32rem, 100vw"
-            className="object-cover"
-          />
-        ) : (
-          <ImagePlaceholder
-            title={event.title}
-            className="text-3xl text-primary/50"
-          />
-        )}
+      <div className="relative w-full h-36">
+        <EventImage
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          sizes="(min-width: 48rem) 32rem, 100vw"
+          className="object-cover"
+        />
+        <div className="absolute left-3 top-3 right-2 flex flex-wrap gap-1.5">
+          <span
+            className={twMerge(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1 flock-body-sm ring-[1.5px] ring-current [&_svg]:fill-current",
+              statusChipStyle[status],
+            )}
+          >
+            <span aria-hidden className="inline-flex">
+              <RsvpStatus rsvp={status} />
+            </span>
+            {statusLabel ?? chipLabel[status]}
+          </span>
+          {isOngoing(event.startsAt, event.endsAt) && <OngoingPill />}
+        </div>
       </div>
       <div className="p-6 flex flex-col gap-2">
         <div className="flex justify-between items-start gap-4">
-          <span
-            className="flock-h4 min-w-0 line-clamp-2 wrap-break-word"
-            title={event.title}
-          >
+          <span className="flock-h4 min-w-0 truncate" title={event.title}>
             {event.title}
-          </span>
-          <span className="inline-flex shrink-0 gap-2 items-center flock-body">
-            {statusIcon[status].icon}
-            {statusIcon[status].label}
           </span>
         </div>
 
-        <span className="flex flex-wrap gap-x-4 gap-y-2">
+        {/* A separate time range would read as "17:00 - 09:00" on the same
+            day, so events over several days get one row with both days */}
+        {isMultiDay(event.startsAt, event.endsAt) ? (
           <span
-            className="inline-flex gap-2 items-center flock-body text-nowrap capitalize"
+            className="inline-flex gap-2 items-center flock-body"
             title="Date"
           >
-            <FaCalendar />
+            <FaCalendar className="shrink-0" />
             <time
               dateTime={event.startsAt.toISOString()}
-              title={formatDate(event.startsAt)}
+              title={`${formatDate(event.startsAt)} – ${formatDate(event.endsAt!)}`}
             >
-              {getRelativeDatetime(event.startsAt)}
+              {formatMultiDayRange(event.startsAt, event.endsAt!)}
             </time>
           </span>
-          <span className="inline-flex gap-2 items-center flock-body text-nowrap">
-            <FaClock />
-            {formatTimeRange(event.startsAt, event.endsAt)}
+        ) : (
+          <span className="flex flex-wrap gap-x-4 gap-y-2">
+            <span
+              className="inline-flex gap-2 items-center flock-body text-nowrap"
+              title="Date"
+            >
+              <FaCalendar />
+              <time
+                dateTime={event.startsAt.toISOString()}
+                title={formatDate(event.startsAt)}
+              >
+                {formatEventDate(event.startsAt, event.endsAt)}
+              </time>
+            </span>
+            <span className="inline-flex gap-2 items-center flock-body text-nowrap">
+              <FaClock />
+              {formatTimeRange(event.startsAt, event.endsAt)}
+            </span>
           </span>
-        </span>
+        )}
         {event.locationName && (
           <span
             className="flex gap-2 items-start flock-body"
@@ -141,59 +139,61 @@ export default function EventPreview({
 export function SmallEventPreview({
   event,
   status,
+  statusLabel,
 }: {
   event: EventSummary;
   status: EventStatus;
+  statusLabel?: string;
 }) {
+  const passed = hasEnded(event);
+
   return (
     <Link
       href={`/event/${event.id}`}
       className="flex min-h-28 w-full overflow-hidden rounded-2xl shadow-md bg-neutral/25 hover:shadow-lg hover:scale-[0.98] transition-all"
     >
-      <div className="relative w-1/2 shrink-0 bg-primary">
-        {event.imageUrl ? (
-          <EventImage
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            sizes="(min-width: 48rem) 16rem, 50vw"
-            className="object-cover"
-          />
-        ) : (
-          <ImagePlaceholder
-            title={event.title}
-            className="text-lg text-background/70"
-          />
-        )}
+      <div className="relative w-1/2 shrink-0">
+        <EventImage
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          sizes="(min-width: 48rem) 16rem, 50vw"
+          className="object-cover"
+        />
+        <div className="absolute left-2 top-2 right-2 flex flex-wrap gap-1">
+          <span
+            className={twMerge(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 flock-caption ring-[1.5px] ring-current [&_svg]:fill-current",
+              statusChipStyle[status],
+            )}
+          >
+            <span aria-hidden className="inline-flex">
+              <RsvpStatus rsvp={status} />
+            </span>
+            {statusLabel ?? chipLabel[status]}
+          </span>
+          {isOngoing(event.startsAt, event.endsAt) && <OngoingPill size="sm" />}
+        </div>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-4">
-        <span className="flex justify-between items-start gap-2">
-          <p
-            className="flock-ui-label min-w-0 line-clamp-2 wrap-break-word"
-            title={event.title}
-          >
-            {event.title}
-          </p>
-          <span
-            className="mt-0.5 shrink-0"
-            title={statusIcon[status].label}
-            aria-label={statusIcon[status].label}
-          >
-            {statusIcon[status].icon}
-          </span>
-        </span>
+        <p className="flock-ui-label min-w-0 truncate" title={event.title}>
+          {event.title}
+        </p>
 
         <span
-          className="inline-flex items-center gap-1 flock-caption capitalize"
-          title="Date"
+          className={twMerge(
+            "inline-flex items-center gap-1 flock-caption",
+            passed && "text-error!",
+          )}
+          title={passed ? "Date (this event is over)" : "Date"}
         >
           <FaCalendar />
           <time
             dateTime={event.startsAt.toISOString()}
             title={formatDate(event.startsAt)}
           >
-            {getRelativeDatetime(event.startsAt)}
+            {formatEventDate(event.startsAt, event.endsAt)}
           </time>
         </span>
 

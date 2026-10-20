@@ -4,9 +4,7 @@ import { RSVP, STATUS } from "../../prisma/generated/enums";
 import { publicUserInformationSelect } from "../utils/selectors";
 import type { Notification } from "@flock/shared/schemas/notifications";
 
-// Max rows fetched per notification type
 const NOTIFICATIONS_PER_TYPE = 20;
-// Max notifications returned to the client after merging
 const NOTIFICATIONS_LIMIT = 20;
 
 export async function getNotifications(
@@ -18,6 +16,7 @@ export async function getNotifications(
     getCommentNotifications(userId),
     getFriendRequestNotifications(userId),
     getAcceptedFriendRequestNotifications(userId),
+    getNewFriendNotifications(userId),
     getRsvpNotifications(userId),
   ]);
 
@@ -31,7 +30,6 @@ export async function getNotifications(
     .slice(0, NOTIFICATIONS_LIMIT);
 }
 
-// Someone invited me to an event
 async function getInvitationNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
@@ -56,7 +54,6 @@ async function getInvitationNotifications(
     },
   });
 
-  // Filter is needed for TypeScript: Prisma still types createdAt as Date | null
   return invitations.flatMap((invitation) =>
     invitation.createdAt
       ? [
@@ -72,7 +69,6 @@ async function getInvitationNotifications(
   );
 }
 
-// Someone else posted an announcement on an event I'm invited to
 async function getAnnouncementNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
@@ -102,7 +98,6 @@ async function getAnnouncementNotifications(
   }));
 }
 
-// Someone else commented on an announcement on an event I'm invited to, or commented to an announcement on my event:
 async function getCommentNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
@@ -147,7 +142,6 @@ async function getCommentNotifications(
   }));
 }
 
-// Someone sent me a friend request that is still pending
 async function getFriendRequestNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
@@ -171,7 +165,6 @@ async function getFriendRequestNotifications(
   }));
 }
 
-// Someone accepted a friend request I sent
 async function getAcceptedFriendRequestNotifications(
   userId: UserId,
 ): Promise<Notification[]> {
@@ -191,7 +184,6 @@ async function getAcceptedFriendRequestNotifications(
     },
   });
 
-  // Filter is needed for TypeScript: Prisma still types updatedAt as Date | null
   return acceptedRequests.flatMap((friendship) =>
     friendship.updatedAt
       ? [
@@ -206,6 +198,39 @@ async function getAcceptedFriendRequestNotifications(
   );
 }
 
+async function getNewFriendNotifications(
+  userId: UserId,
+): Promise<Notification[]> {
+  const acceptedRequests = await prisma.friendship.findMany({
+    where: {
+      requesteeId: userId,
+      status: STATUS.ACCEPTED,
+      updatedAt: { not: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: NOTIFICATIONS_PER_TYPE,
+    select: {
+      requesterId: true,
+      requesteeId: true,
+      updatedAt: true,
+      requester: { select: publicUserInformationSelect },
+    },
+  });
+
+  return acceptedRequests.flatMap((friendship) =>
+    friendship.updatedAt
+      ? [
+          {
+            id: `new-friend:${friendship.requesterId}:${friendship.requesteeId}`,
+            type: "NEW_FRIEND" as const,
+            createdAt: friendship.updatedAt,
+            from: friendship.requester,
+          },
+        ]
+      : [],
+  );
+}
+
 async function getRsvpNotifications(userId: UserId): Promise<Notification[]> {
   const answers = await prisma.invitee.findMany({
     where: {
@@ -213,7 +238,6 @@ async function getRsvpNotifications(userId: UserId): Promise<Notification[]> {
       userId: { not: userId },
       rsvp: { not: RSVP.PENDING },
       updatedAt: { not: null },
-      // Only answers with a comment notify the host
       rsvpComment: { not: null },
       NOT: { rsvpComment: "" },
     },

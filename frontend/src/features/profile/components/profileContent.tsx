@@ -35,7 +35,7 @@ export default function ProfileContent({
   const content = [
     {
       icon: <FaClock />,
-      value: formatMonthYear(profile.createdAt),
+      value: profile.createdAt ? formatMonthYear(profile.createdAt) : "-",
       label: "Member since",
     },
     {

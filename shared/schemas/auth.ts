@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const emailSchema = z.string().email("Invalid email address");
+export const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .email("Invalid email address");
 
 // Used both when registering and when changing your password
 export const passwordSchema = z

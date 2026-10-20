@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaUserPlus } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
@@ -119,6 +119,13 @@ export default function InviteBar() {
     return () => window.removeEventListener(OPEN_SEARCH_EVENT, open);
   }, []);
 
+  const closeSearch = useCallback(() => {
+    setSearchBarToggle(false);
+    setResults(null);
+    setLoading(false);
+    cancelSearch();
+  }, [cancelSearch]);
+
   useEffect(() => {
     if (!searchBarToggle) return;
 
@@ -126,15 +133,12 @@ export default function InviteBar() {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (barRef.current?.contains(target)) return;
-      setSearchBarToggle(false);
-      setResults(null);
-      setLoading(false);
-      cancelSearch();
+      closeSearch();
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
     return () => document.removeEventListener("pointerdown", handlePointerDown);
-  }, [searchBarToggle, cancelSearch]);
+  }, [searchBarToggle, closeSearch]);
 
   const showDropdown = loading || results !== null;
 
@@ -180,6 +184,7 @@ export default function InviteBar() {
                       onAddFriend={() => handleAddFriend(friend)}
                       onAcceptFriend={() => handleAcceptFriend(friend)}
                       onDeclineFriend={() => handleDeclineFriend(friend)}
+                      onOpenProfile={closeSearch}
                     />
                     {results && index < results.length - 1 && (
                       <div className="mx-auto w-3/4 border-t border-primary/20" />

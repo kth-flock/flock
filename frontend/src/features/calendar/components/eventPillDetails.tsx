@@ -58,9 +58,15 @@ export default function EventPillDetails({
             {formatDateRange(event.startsAt, event.endsAt)}
           </span>
         )}
-        <span className="inline-flex items-center gap-1">
-          <FaCrown />
-          <span className="flock-ui-label text-text-muted">{hostLabel}</span>
+        <span className="inline-flex min-w-0 max-w-full items-center gap-1">
+          <FaCrown className="shrink-0" />
+          {/* Long names are cut off with "..." */}
+          <span
+            className="flock-ui-label text-text-muted truncate"
+            title={hostLabel}
+          >
+            {hostLabel}
+          </span>
         </span>
       </Link>
     </div>

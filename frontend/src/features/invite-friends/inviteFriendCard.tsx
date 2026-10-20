@@ -21,7 +21,7 @@ export default function InviteFriendCard({
 }: InviteFriendCardProps) {
   return (
     <div className="bg-background rounded-2xl p-3 flex flex-row gap-4 justify-between items-center">
-      <div className="flex flex-row gap-4 items-center">
+      <div className="flex min-w-0 flex-row gap-4 items-center">
         <ProfileImage
           className="h-12 w-12"
           firstName={user.firstName}
@@ -29,8 +29,10 @@ export default function InviteFriendCard({
           profileImgSrc={user.imageUrl ?? ""}
         />
 
-        <div className="flex flex-col">
-          <p className="flock-body font-bold!">{fullName(user)}</p>
+        <div className="flex min-w-0 flex-col">
+          <p className="flock-body font-bold! truncate" title={fullName(user)}>
+            {fullName(user)}
+          </p>
           {user.friendshipStatus !== "NONE" && (
             <p className="flock-caption">Friend</p>
           )}

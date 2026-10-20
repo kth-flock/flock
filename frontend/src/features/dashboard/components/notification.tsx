@@ -19,8 +19,14 @@ const rsvpMessage = {
   DECLINED: "can't come to",
 } as const;
 
+const nameStyle = "inline-block max-w-full truncate align-bottom";
+
 function message({ type, event, rsvp }: NotificationData) {
-  const eventTitle = <b>{event?.title}</b>;
+  const eventTitle = (
+    <b className="inline-block max-w-full truncate align-bottom">
+      {event?.title}
+    </b>
+  );
 
   switch (type) {
     case "INVITATION":
@@ -33,6 +39,8 @@ function message({ type, event, rsvp }: NotificationData) {
       return <>sent you a friend request</>;
     case "FRIEND_REQUEST_ACCEPTED":
       return <>accepted your friend request</>;
+    case "NEW_FRIEND":
+      return null;
     case "RSVP":
       return (
         <>
@@ -88,17 +96,29 @@ export default function Notification({
           lastName={from.lastName}
           profileImgSrc={from.imageUrl ?? ""}
         />
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="flock-body">
-            <b>{fullName(from)}</b> {message(notification)}
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="flock-body wrap-break-word">
+            {type === "NEW_FRIEND" ? (
+              <>
+                You and <b className={nameStyle}>{fullName(from)}</b> are now
+                friends
+              </>
+            ) : (
+              <>
+                <b className={nameStyle} title={fullName(from)}>
+                  {fullName(from)}
+                </b>{" "}
+                {message(notification)}
+              </>
+            )}
           </p>
           {type === "ANNOUNCEMENT" && notification.announcement && (
-            <p className="flock-body-sm line-clamp-1 text-text-muted">
+            <p className="flock-body-sm truncate text-text-muted">
               {notification.announcement.content}
             </p>
           )}
           {type === "RSVP" && notification.rsvp?.comment && (
-            <p className="flock-body-sm line-clamp-1 text-text-muted">
+            <p className="flock-body-sm truncate text-text-muted">
               {`"${notification.rsvp.comment}"`}
             </p>
           )}
