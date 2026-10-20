@@ -6,6 +6,7 @@ import {
   EventId,
   UpdateEventData,
   RsvpStatus,
+  eventTimeErrors,
 } from "@flock/shared/schemas/event";
 import {
   NotFoundError,
@@ -153,6 +154,8 @@ export async function updateEventInfo(
     select: {
       createdById: true,
       imageUrl: true,
+      startsAt: true,
+      endsAt: true,
     },
   });
 
@@ -162,6 +165,11 @@ export async function updateEventInfo(
 
   if (event.createdById !== userId) {
     throw new ForbiddenError("User is not authorized to update event");
+  }
+
+  const [timeError] = eventTimeErrors(eventData, event);
+  if (timeError) {
+    throw new ValidationError(timeError.message);
   }
 
   const newEvent = await prisma.event.update({
