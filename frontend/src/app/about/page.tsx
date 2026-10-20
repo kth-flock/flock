@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import ProfileImage from "@/shared/components/profileImage";
@@ -71,7 +72,6 @@ export default function AboutPage() {
           <br /><br />With Flock, you can create events, invite your friends, and RSVP to events all in one place (and yes, you can even explain your reason for not attending without notifying literally everyone).
         </p>
       </section>
-
       <section className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
           <span aria-hidden className="h-px flex-1 bg-primary/30" />
@@ -125,6 +125,9 @@ export default function AboutPage() {
             ),
           )}
         </ul>
+        <div aria-hidden className="mx-auto size-48">
+          <DotLottieReact src="/flock-load.json" loop autoplay />
+        </div>
       </section>
       <section className="flex flex-col gap-4">
         <p className="flock-body">
