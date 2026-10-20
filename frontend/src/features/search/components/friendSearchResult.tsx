@@ -87,11 +87,13 @@ export default function FriendSearchResult({
           lastName={user.lastName}
           profileImgSrc={user.imageUrl ?? ""}
         />
-        <span
-          className="min-w-0 flex-1 line-clamp-2 wrap-break-word px-2"
-          title={fullName(user)}
-        >
-          {fullName(user)}
+        <span className="flex min-w-0 flex-1 flex-col px-2">
+          <span className="line-clamp-2 wrap-break-word" title={fullName(user)}>
+            {fullName(user)}
+          </span>
+          {user.friendshipStatus === "FRIENDS" && (
+            <span className="flock-caption text-[11px]! md:text-xs!">Friends</span>
+          )}
         </span>
       </Link>
       {user.friendshipStatus === "REQUEST_RECEIVED" && (
@@ -106,18 +108,20 @@ export default function FriendSearchResult({
           <FaXmark aria-hidden />
         </IconButton>
       )}
-      <Button
-        variant={action.variant}
-        size="sm"
-        icon={action.icon}
-        iconPlacement="right"
-        aria-label={action.ariaLabel}
-        onClick={action.onClick}
-        disabled={action.disabled || isPending}
-        className="px-1.5"
-      >
-        {showPrimaryPending ? "pending..." : action.label}
-      </Button>
+      {user.friendshipStatus !== "FRIENDS" && (
+        <Button
+          variant={action.variant}
+          size="sm"
+          icon={action.icon}
+          iconPlacement="right"
+          aria-label={action.ariaLabel}
+          onClick={action.onClick}
+          disabled={action.disabled || isPending}
+          className="px-1.5"
+        >
+          {showPrimaryPending ? "pending..." : action.label}
+        </Button>
+      )}
     </div>
   );
 }
