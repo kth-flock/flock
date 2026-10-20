@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { FaComment } from "react-icons/fa6";
+import { FaComment, FaTrash } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
-import Button from "@/shared/components/button";
+import Button, { IconButton } from "@/shared/components/button";
 import Input from "@/shared/components/formInputs";
 import { updateRsvp } from "@/shared/lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 import type { Rsvp } from "../lib/types";
+import { error } from "console";
+import { useToast } from "@/shared/components/toast";
 
 const MAX_COMMENT_LENGTH = 200;
 
@@ -25,30 +27,25 @@ export default function RsvpCommentForm({
   const [comment, setComment] = useState(initialComment);
   const [savedComment, setSavedComment] = useState(initialComment);
   const [isSaving, setIsSaving] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(
-    null,
-  );
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const toast = useToast();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = comment.trim();
+    save(trimmed, trimmed ? "Comment saved" : "Comment removed");
+  }
 
+  async function save(trimmed: string, toastMessage: string) {
     setIsSaving(true);
-    setResult(null);
     try {
-      await updateRsvp(eventId, { rsvp, rsvpComment: trimmed });
+      await updateRsvp(eventId, { rsvp, rsvpComment: trimmed || null });
       setComment(trimmed);
       setSavedComment(trimmed);
-      setResult({
-        ok: true,
-        message: trimmed ? "Comment saved" : "Comment removed",
-      });
       onChange();
+      toast(toastMessage, "success");
     } catch (err) {
-      setResult({
-        ok: false,
-        message: getErrorMessage(err, "Couldn't save the comment. Try again."),
-      });
+      toast("Couldn't save the comment. Try again.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -57,7 +54,7 @@ export default function RsvpCommentForm({
   return (
     <>
       <form
-        className="relative flex w-full max-w-lg flex-col gap-2"
+        className="relative flex w-full max-w-lg items-center"
         onSubmit={handleSubmit}
       >
         <Input
@@ -69,28 +66,46 @@ export default function RsvpCommentForm({
           value={comment}
           onChange={(e) => {
             setComment(e.target.value);
-            setResult(null);
           }}
         />
-        <Button
-          type="submit"
-          variant="secondary"
-          size="sm"
-          className="self-end md:absolute md:left-full md:top-1/2 md:ml-2 md:-translate-y-1/2"
-          disabled={isSaving || comment.trim() === savedComment}
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
+
+        {comment.trim() !== savedComment && (
+          <>
+            <Button
+              type="button"
+              variant="tertiary"
+              size="sm"
+              onClick={() => setComment(savedComment)}
+              disabled={isSaving || comment.trim() === savedComment}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="secondary"
+              size="sm"
+              isLoading={isSaving}
+              disabled={isSaving || comment.trim() === savedComment}
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
+          </>
+        )}
+        {savedComment && comment.trim() === savedComment && (
+          <IconButton
+            type="button"
+            variant="tertiary"
+            className="text-error"
+            disabled={isSaving}
+            onClick={() => save("", "Comment removed")}
+          >
+            <FaTrash aria-hidden />
+          </IconButton>
+        )}
       </form>
-      {result && (
-        <p
-          className={twMerge(
-            "flock-caption",
-            result.ok ? "text-success" : "text-error",
-          )}
-          role={result.ok ? "status" : "alert"}
-        >
-          {result.message}
+      {savedComment && comment.trim() !== savedComment && (
+        <p className={"flock-caption text-error!"} role={"alert"}>
+          This will replace your previous rsvp comment
         </p>
       )}
     </>

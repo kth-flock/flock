@@ -220,7 +220,7 @@ export async function rsvpToEvent(
   userId: UserId,
   eventId: EventId,
   rsvpStatus: RsvpStatus,
-  comment?: string,
+  comment?: string | null,
 ) {
   const eventExists = await prisma.event.findUnique({
     where: { id: eventId },
