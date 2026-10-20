@@ -41,7 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className={` flex flex-row  gap-2 items-center rounded-xl border bg-background px-8 py-4 flock-lead shadow-lg ${variantClasses[toast.variant]}`}
+              className={` flex flex-row  gap-2 items-center rounded-xl border bg-background px-4 py-2 flock-lead shadow-lg ${variantClasses[toast.variant]}`}
             >
               {toast.variant === "info" ? (
                 <></>
