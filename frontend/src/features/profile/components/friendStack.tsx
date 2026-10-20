@@ -14,6 +14,7 @@ import {
 } from "@/shared/lib/api";
 import { fullName } from "@/shared/lib/user";
 import type { UserSearchResult } from "@/shared/types/user";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 const MAX_FRIEND_IMAGES = 4;
 
@@ -186,11 +187,7 @@ export default function FriendStack({
       setChangedStatuses((prev) => ({ ...prev, [friendId]: nextStatus }));
     } catch (err) {
       setError(
-        err instanceof TypeError
-          ? "Couldn't reach the server. Try again."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
+        getErrorMessage(err, "Couldn't update friendship. Please try again."),
       );
     } finally {
       setPendingId(null);

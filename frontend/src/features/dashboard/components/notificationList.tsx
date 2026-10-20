@@ -7,6 +7,7 @@ import Notification from "./notification";
 import NotificationListSkeleton from "./notificationListSkeleton";
 import LoadError from "@/shared/components/loadError";
 import { acceptFriendRequest, declineFriendRequest } from "@/shared/lib/api";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
 
@@ -41,11 +42,10 @@ export default function NotificationList({
       onFriendRequestHandled(notification, accept);
     } catch (err) {
       setError(
-        err instanceof TypeError
-          ? "Couldn't reach the server. Try again."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
+        getErrorMessage(
+          err,
+          "Couldn't handle friend request. Please try again.",
+        ),
       );
     } finally {
       setPendingId(null);

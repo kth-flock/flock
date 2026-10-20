@@ -30,7 +30,7 @@ export const authMiddleware = async (
     if (!secret) {
       return res
         .status(500)
-        .json({ status: "Error", error: "JWT_SECRET is not set" });
+        .json({ status: "Error", error: "Internal server error" });
     }
 
     //verify the token and extract the user id from it

@@ -1,5 +1,6 @@
 import { useToast } from "@/shared/components/toast";
 import { useState } from "react";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export function useSave() {
   const [isSaving, setIsSaving] = useState(false);
@@ -18,13 +19,7 @@ export function useSave() {
 
       toast(successMessage, "success");
     } catch (err) {
-      setErrorMessage(
-        err instanceof TypeError
-          ? "Couldn't reach the server. Try again."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
-      );
+      setErrorMessage(getErrorMessage(err, "Couldn't save. Try again."));
       toast(errorMessage, "error");
     } finally {
       setIsSaving(false);
