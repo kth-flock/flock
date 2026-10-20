@@ -63,9 +63,11 @@ export default function EventInfo({
       )}
 
       {event.description && (
-        <section className="flex flex-col gap-2">
+        <section className="flex min-w-0 flex-col gap-2">
           <h2 className="flock-h2 text-primary">About this event</h2>
-          <p className="flock-body whitespace-pre-line">{event.description}</p>
+          <p className="flock-body whitespace-pre-line wrap-break-word">
+            {event.description}
+          </p>
         </section>
       )}
     </div>

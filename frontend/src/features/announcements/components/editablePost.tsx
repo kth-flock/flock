@@ -118,7 +118,9 @@ export default function EditablePost({
           </span>
         </form>
       ) : (
-        <p className="flock-body pl-10 whitespace-pre-line">{content}</p>
+        <p className="flock-body min-w-0 pl-10 whitespace-pre-line wrap-break-word">
+          {content}
+        </p>
       )}
       <Modal
         isOpen={isConfirmingDelete}
