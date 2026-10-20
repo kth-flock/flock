@@ -14,12 +14,8 @@ import {
 } from "../utils/errors";
 import { UserId } from "@flock/shared/schemas/user";
 import { deleteImageFromS3 } from "./imageService";
-
-export async function getEvents() {
-  const events = await prisma.event.findMany();
-
-  return events;
-}
+import { getUserById } from "./usersServices";
+import { assertEventHost } from "../utils/service";
 
 export async function getEventById(eventId: EventId, userId: UserId) {
   const event = await prisma.event.findUnique({
@@ -79,18 +75,23 @@ export async function getEventById(eventId: EventId, userId: UserId) {
 }
 
 export async function getCreatedEvents(userId: UserId) {
+  const user = await getUserById(userId);
+
   const events = await prisma.event.findMany({
-    where: { createdById: userId },
+    where: { createdById: user.id },
   });
+
   return events;
 }
 
 export async function getInvitedEvents(userId: UserId) {
+  const user = await getUserById(userId);
+
   const events = await prisma.event.findMany({
     where: {
       invitees: {
         some: {
-          userId: userId,
+          userId: user.id,
         },
       },
     },
@@ -100,7 +101,7 @@ export async function getInvitedEvents(userId: UserId) {
         select: publicUserInformationSelect,
       },
       invitees: {
-        where: { userId },
+        where: { userId: user.id },
         select: { rsvp: true },
       },
     },
@@ -109,6 +110,8 @@ export async function getInvitedEvents(userId: UserId) {
 }
 
 export async function getEventsTogether(myId: UserId, otherId: UserId) {
+  await getUserById(myId);
+
   const isParticipant = (userId: UserId) => ({
     OR: [
       { createdById: userId },
@@ -227,14 +230,17 @@ export async function rsvpToEvent(
   if (!eventExists) {
     throw new NotFoundError("Event not found, you cannot RSVP to it");
   }
+
   if (eventExists.endsAt && new Date(eventExists.endsAt) < new Date()) {
     throw new ValidationError("Event has ended, you cannot RSVP to it");
   }
+
   const inviteeExists = await prisma.invitee.findUnique({
     where: { eventId_userId: { eventId, userId } },
   });
+
   if (!inviteeExists) {
-    throw new ValidationError(
+    throw new ForbiddenError(
       "You are not invited to this event, you cannot RSVP to it",
     );
   }

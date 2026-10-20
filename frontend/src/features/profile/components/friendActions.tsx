@@ -15,6 +15,7 @@ import {
   removeFriendship,
   sendFriendRequest,
 } from "@/shared/lib/api";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 const positiveStyle = "bg-success/60 text-background hover:bg-success/40";
 const negativeStyle = "bg-error/60 text-background hover:bg-error/40";
@@ -45,11 +46,7 @@ export default function FriendActions({
       router.refresh();
     } catch (err) {
       setError(
-        err instanceof TypeError
-          ? "Couldn't reach the server. Try again."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
+        getErrorMessage(err, "Couldn't update friendship. Please try again."),
       );
       if (!(err instanceof TypeError)) router.refresh();
     } finally {

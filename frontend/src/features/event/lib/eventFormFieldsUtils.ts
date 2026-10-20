@@ -3,12 +3,6 @@ export const DATE_ERROR_KEYS: Record<string, string> = {
   endsAt: "endDate",
 };
 
-export function combineDateTime(date: string, time: string): Date | null {
-  if (!date && !time) return null;
-  if (!date || !time) return new Date(NaN);
-  return new Date(`${date}T${time}`);
-}
-
 export function getFieldErrors(
   issues: { path: PropertyKey[]; message: string }[],
 ): Record<string, string> {

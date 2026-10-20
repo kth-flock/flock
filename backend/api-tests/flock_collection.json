@@ -482,35 +482,6 @@
           "response": []
         },
         {
-          "name": "GET /events - 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"Matches eventListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"eventListSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "GET /events/created - 200",
           "event": [
             {
@@ -1964,34 +1935,6 @@
       "name": "5. Users",
       "item": [
         {
-          "name": "GET /users - 200",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Matches userListSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"userListSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "GET /users/:userId - 200",
           "event": [
             {
@@ -2787,35 +2730,6 @@
     {
       "name": "8. Unauthenticated (after logout)",
       "item": [
-        {
-          "name": "GET /events - 401 not logged in",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
-                  "pm.test(\"Matches errorSchema\", () => pm.response.to.have.jsonSchema(JSON.parse(pm.collectionVariables.get(\"errorSchema\"))));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "events"
-              ]
-            }
-          },
-          "response": []
-        },
         {
           "name": "GET /events/created - 401 not logged in",
           "event": [

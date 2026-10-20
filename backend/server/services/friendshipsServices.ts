@@ -6,12 +6,15 @@ import { prisma } from "../prisma";
 import { publicUserInformationSelect } from "../utils/selectors";
 import { getUserById } from "./usersServices";
 import { ConflictError, NotFoundError, ValidationError } from "../utils/errors";
+import { getUser } from "../controllers/usersController";
 
 export async function getAllFriends(userId: UserId) {
+  const user = await getUserById(userId);
+
   const friendships = await prisma.friendship.findMany({
     where: {
       status: STATUS.ACCEPTED,
-      OR: [{ requesterId: userId }, { requesteeId: userId }],
+      OR: [{ requesterId: user.id }, { requesteeId: user.id }],
     },
     include: {
       requester: { select: publicUserInformationSelect },
@@ -58,10 +61,8 @@ export async function sendFriendRequest(
     throw new ValidationError("Cannot send a friend request to yourself");
   }
 
-  const requestee = await getUserById(requesteeId);
-  if (!requestee) {
-    throw new NotFoundError("User not found");
-  }
+  // check if requestee exists
+  await getUserById(requesteeId);
 
   const friendship = await prisma.friendship.findFirst({
     where: {
@@ -96,21 +97,29 @@ export async function getFriendship(userId: UserId, friendId: UserId) {
   });
   return friendship;
 }
+export async function updateFriendship(
+  requesterId: UserId,
+  requesteeId: UserId,
+) {
+  const friendship = await getFriendship(requesterId, requesteeId);
 
-export async function updateFriendship(friendship: Friendship) {
-  const updatedFriendship = await prisma.friendship.update({
-    where: {
-      requesterId_requesteeId: {
-        requesterId: friendship.requesterId,
-        requesteeId: friendship.requesteeId,
-      },
-    },
+  if (friendship?.status === STATUS.ACCEPTED) {
+    throw new ConflictError("Users already friends");
+  }
+  if (!friendship || friendship.requesteeId !== requesteeId) {
+    throw new NotFoundError("Friend request not found");
+  }
+
+  return prisma.friendship.update({
+    where: { requesterId_requesteeId: { requesterId, requesteeId } },
     data: { status: STATUS.ACCEPTED, updatedAt: new Date() },
   });
-  return updatedFriendship;
 }
 
-export async function deleteFriendship(friendship: Friendship) {
+export async function deleteFriendship(userId: UserId, friendId: UserId) {
+  const friendship = await getFriendship(userId, friendId);
+  if (!friendship) throw new NotFoundError("Friendship not found");
+
   await prisma.friendship.delete({
     where: {
       requesterId_requesteeId: {

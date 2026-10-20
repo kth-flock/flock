@@ -12,7 +12,7 @@ export const createCommentSchema = z
       .min(1, "Comment cannot be empty")
       .max(
         MAX_COMMENT_LENGTH,
-        "Comment must be at most ${MAX_COMMENT_LENGTH} characters",
+        `Comment must be at most ${MAX_COMMENT_LENGTH} characters`,
       ),
   })
   .strict();

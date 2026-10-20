@@ -8,6 +8,7 @@ import { TextArea } from "@/shared/components/formInputs";
 import { useAuth } from "@/shared/auth/authContext";
 import type { PublicUser } from "@/shared/types/user";
 import PostMeta from "./postMeta";
+import Modal from "@/shared/components/modal";
 
 export default function EditablePost({
   author,
@@ -15,6 +16,8 @@ export default function EditablePost({
   content,
   label,
   disableEdit = false,
+  isDeleting = false,
+  canModerate = false,
   onSave,
   onRemove,
   onEditingChange,
@@ -24,6 +27,8 @@ export default function EditablePost({
   content: string;
   label: string;
   disableEdit?: boolean;
+  isDeleting?: boolean;
+  canModerate?: boolean;
   onSave: (content: string) => void;
   onRemove: () => void;
   onEditingChange?: (isEditing: boolean) => void;
@@ -31,6 +36,12 @@ export default function EditablePost({
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(content);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  function confirmDelete() {
+    setIsConfirmingDelete(false);
+    onRemove();
+  }
 
   function setEditing(value: boolean) {
     setIsEditing(value);
@@ -48,33 +59,40 @@ export default function EditablePost({
     setEditing(false);
   }
 
-  const canEdit = user?.id === author.id && !isEditing && !disableEdit;
+  const isAuthor = user?.id === author.id;
+  const isAvailable = !isEditing && !disableEdit;
+  const canEdit = isAuthor && isAvailable;
+  const canRemove = (isAuthor || canModerate) && isAvailable;
 
   return (
     <div className="flex flex-col gap-1">
       <div className="inline-flex items-center justify-between">
         <PostMeta user={author} createdAt={createdAt} />
-        {canEdit && (
-          <span className="inline-flex">
+        <span className="inline-flex">
+          {canEdit && (
             <IconButton
               variant="tertiary"
               size="sm"
               aria-label={`Edit ${label}`}
               onClick={startEditing}
+              disabled={isDeleting}
             >
               <FaPenToSquare aria-hidden />
             </IconButton>
+          )}
+          {canRemove && (
             <IconButton
               variant="tertiary"
               size="sm"
               className="text-error!"
               aria-label={`Remove ${label}`}
-              onClick={onRemove}
+              onClick={() => setIsConfirmingDelete(true)}
+              disabled={isDeleting}
             >
               <FaTrash aria-hidden />
             </IconButton>
-          </span>
-        )}
+          )}
+        </span>
       </div>
 
       {isEditing ? (
@@ -102,6 +120,37 @@ export default function EditablePost({
       ) : (
         <p className="flock-body pl-10 whitespace-pre-line">{content}</p>
       )}
+      <Modal
+        isOpen={isConfirmingDelete}
+        onClose={() => setIsConfirmingDelete(false)}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="flock-h5">Delete this {label}?</h2>
+            <p className="flock-caption">{"This can't be undone."}</p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="tertiary"
+              size="sm"
+              onClick={() => setIsConfirmingDelete(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              icon={<FaTrash />}
+              iconPlacement="left"
+              className="bg-error text-background hover:bg-error-dark"
+              onClick={confirmDelete}
+            >
+              Delete {label}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

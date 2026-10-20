@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
 import Link from "next/link";
 import { useToast } from "@/shared/components/toast";
+import { getErrorMessage } from "@/shared/lib/errors";
 
 export default function LoginForm() {
   const [validationError, setValidationError] = useState<
@@ -64,11 +65,10 @@ export default function LoginForm() {
       toast("Welcome back!", "info");
     } catch (error) {
       setSubmitError(
-        error instanceof TypeError
-          ? "Couldn't connect to the server. Check your connection and try again."
-          : error instanceof Error
-            ? error.message
-            : "Couldn't log into your account. Please try again.",
+        getErrorMessage(
+          error,
+          "Couldn't log into your account. Please try again.",
+        ),
       );
     } finally {
       setIsSubmitting(false);

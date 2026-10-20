@@ -9,6 +9,7 @@ import { prisma } from "../prisma";
 import { privateUserInformationSelect } from "../utils/selectors";
 import { deleteImageFromS3 } from "./imageService";
 import { ConflictError, ForbiddenError, NotFoundError } from "../utils/errors";
+import { getUserById } from "./usersServices";
 
 export async function getMyAccount(userId: UserId) {
   const account = await prisma.user.findUnique({
@@ -21,36 +22,36 @@ export async function getMyAccount(userId: UserId) {
   return account;
 }
 
-export async function deleteMyAccount(userId: UserId, imageUrl: string | null) {
+export async function deleteMyAccount(userId: UserId) {
+  const user = await getUserById(userId);
+
   await prisma.user.delete({
     where: { id: userId },
   });
 
-  if (imageUrl) {
-    await deleteImageFromS3(imageUrl).catch((error) =>
+  if (user.imageUrl) {
+    await deleteImageFromS3(user.imageUrl).catch((error) =>
       console.error("Failed to delete event image from S3:", error),
     );
   }
 }
 
-export async function editUserInfo(
-  userId: UserId,
-  data: UserInfo,
-  prevImageUrl: string | null,
-) {
+export async function editUserInfo(userId: UserId, data: UserInfo) {
+  const user = await getUserById(userId);
+
   const updatedUser = await prisma.user.update({
-    where: { id: userId },
+    where: { id: user.id },
     select: privateUserInformationSelect,
     data,
   });
 
   if (
-    prevImageUrl &&
+    user.imageUrl &&
     data.imageUrl !== undefined &&
-    prevImageUrl !== data.imageUrl
+    user.imageUrl !== data.imageUrl
   ) {
-    deleteImageFromS3(prevImageUrl).catch((error) =>
-      console.error(`Failed to delete old image ${prevImageUrl}`, error),
+    deleteImageFromS3(user.imageUrl).catch((error) =>
+      console.error(`Failed to delete old image ${user.imageUrl}`, error),
     );
   }
 
@@ -74,11 +75,11 @@ async function checkPassword(userId: UserId, password: string) {
 
 export async function changeEmail(userId: UserId, data: ChangeEmail) {
   await checkPassword(userId, data.password);
-
   const emailOwner = await prisma.user.findUnique({
     where: { email: data.email },
     select: { id: true },
   });
+
   if (emailOwner && emailOwner.id !== userId) {
     throw new ConflictError("Email is already in use");
   }
