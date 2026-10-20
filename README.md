@@ -26,12 +26,11 @@
 ### Backend (Docker)
 **Prerequisites:** Docker
 
-1. Create a new .env file in the **root** folder (`/flock`) based on the example file.
+1. Create a new .env file in the **root** folder (`/flock`) based on the example file (in the root folder).
 ```bash
    cp .env.example .env
    ```
-3. Change DATABASE_URL to say `@postgres` instead of `@localhost`
-4. Run the following line from root folder
+3. Run the following line from root folder
 
    ```
    docker compose up --build -d
@@ -39,7 +38,7 @@
 
    - Wait for the containers to be created and start
      
-5. Run from root folder.
+4. Run from root folder.
    ```
    docker compose exec express-api npx prisma migrate deploy
    ```
@@ -50,7 +49,7 @@ The server will be running at `http://localhost:4000`.
 
 If you want a visual representation of the database and tables, open prisma studio:
 
-1. Create a new .env file in the **/backend** folder based on the example file.
+1. Create a new .env file in the **/backend** folder based on the example file. Change username, password, and database to the same names as in the .env-file in root folder
 ```bash
 cd backend
    cp .env.example .env
@@ -67,6 +66,7 @@ The visual representation of the local database will running at `http://localhos
 
 ## Changes in the backend
 **After changing server dependencies**
+
 After changing dependencies in the server, rebuild with
   ```
   docker compose up --build --renew-anon-volumes -d
@@ -82,7 +82,7 @@ cd backend
 npx prisma migrate dev --name [name of migration]
 ```
 
-**When you, or someone else, as created a new migration**
+**When you, or someone else, has created a new migration**
 1. Run
    ```
    docker compose exec express-api npx prisma migrate deploy
