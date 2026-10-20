@@ -2,7 +2,7 @@ import { z } from "zod";
 import { idSchema } from "./common";
 
 export type AnnouncementId = z.infer<typeof idSchema>;
-const MAX_ANNOUNCEMENT_LENGTH = 3000;
+const MAX_ANNOUNCEMENT_LENGTH = 2000;
 
 export const createAnnouncementSchema = z
   .object({

@@ -9,6 +9,7 @@ import EditablePost from "./editablePost";
 import { deleteAnnouncement, updateAnnouncement } from "../lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 import { updateAnnouncementSchema } from "@flock/shared/schemas/announcement";
+import { useToast } from "@/shared/components/toast";
 
 export default function Announcement({
   announcement,
@@ -22,6 +23,7 @@ export default function Announcement({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const comments = useMemo(
     () => [...announcement.comments].sort(byOldest),
@@ -34,6 +36,7 @@ export default function Announcement({
     try {
       await deleteAnnouncement(announcement.eventId, announcement.id);
       onChange();
+      toast("Update deleted!", "success");
     } catch (err) {
       setError(
         getErrorMessage(err, "Couldn't delete the update. Please try again."),
@@ -55,6 +58,7 @@ export default function Announcement({
           updateAnnouncementResult.data,
         );
         onChange();
+        toast("Update edited!", "success");
       } else {
         setError(updateAnnouncementResult.error.issues[0].message);
       }
