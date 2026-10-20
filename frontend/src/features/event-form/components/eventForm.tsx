@@ -19,6 +19,7 @@ type Props<TPayload> = {
   schema: ZodType<TPayload>;
   fallbackError: string;
   successMessage: string;
+  startLocked?: boolean;
   onSubmit: (
     payload: TPayload,
     imageFile: File | null,
@@ -37,6 +38,7 @@ export default function EventForm<TPayload>({
   schema,
   fallbackError,
   successMessage,
+  startLocked,
   onSubmit,
 }: Props<TPayload>) {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -68,6 +70,7 @@ export default function EventForm<TPayload>({
         values={form.values}
         errors={form.errors}
         onChange={form.setField}
+        startLocked={startLocked}
       />
       {form.submitError && (
         <p className="flock-ui-label text-error" role="alert">
