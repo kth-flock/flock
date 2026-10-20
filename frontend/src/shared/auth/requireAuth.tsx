@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/auth/authContext";
+import FlockLoader from "@/shared/components/flockLoader";
 
 export default function RequireAuth({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -12,8 +13,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
     if (user === null) router.replace("/");
   }, [user, router]);
 
-  // undefined = still loading, null = redirecting
-  if (!user) return null;
+  if (!user) return <FlockLoader />;
 
   return <>{children}</>;
 }

@@ -66,7 +66,7 @@ export async function acceptFriendRequest(requesterId: number) {
 }
 
 export async function declineFriendRequest(friendId: number) {
-  await apiFetch(`/me/friendships/request`, {
+  await apiFetch(`/me/friendships`, {
     method: "DELETE",
     body: { friendId },
     fallbackError: "Failed to send friend request",

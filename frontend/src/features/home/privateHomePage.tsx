@@ -12,9 +12,6 @@ import type { Notification } from "@flock/shared/schemas/notifications";
 
 const REFRESH_MS = 60_000;
 
-const toLoadable = <T,>(r: { data: T | null; isLoading: boolean }) =>
-  r.isLoading ? undefined : r.data;
-
 export default function PrivateHomePage() {
   const events = useFetch(getUpcomingEvents);
   const notifications = useFetch(getNotifications);
@@ -36,15 +33,27 @@ export default function PrivateHomePage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:items-start lg:gap-16">
       <div className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-last lg:gap-12">
-        <FriendPreview friends={toLoadable(friends)} />
+        <FriendPreview
+          friends={friends.isLoading ? undefined : friends.data}
+          error={friends.error}
+          onRetry={friends.refetch}
+        />
         <NotificationList
-          notifications={toLoadable(notifications)}
+          notifications={
+            notifications.isLoading ? undefined : notifications.data
+          }
+          error={notifications.error}
+          onRetry={notifications.refetch}
           onFriendRequestHandled={handleFriendRequest}
         />
       </div>
       <div className="flex w-full min-w-0 flex-col gap-4">
         <h2 className="flock-h2">Your next event</h2>
-        <UpcomingEvents events={toLoadable(events)} />
+        <UpcomingEvents
+          events={events.isLoading ? undefined : events.data}
+          error={events.error}
+          onRetry={events.refetch}
+        />
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { useState, Fragment } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 import type { Notification as NotificationData } from "@flock/shared/schemas/notifications";
 import Notification from "./notification";
+import NotificationListSkeleton from "./notificationListSkeleton";
+import LoadError from "@/shared/components/loadError";
 import { acceptFriendRequest, declineFriendRequest } from "@/shared/lib/api";
 import { getErrorMessage } from "@/shared/lib/errors";
 
@@ -11,9 +13,13 @@ const headerStyle = "bg-primary text-background flock-h3 p-4 w-full";
 
 export default function NotificationList({
   notifications,
+  error: loadError,
+  onRetry,
   onFriendRequestHandled,
 }: {
   notifications: NotificationData[] | null | undefined;
+  error?: string | null;
+  onRetry?: () => void;
   onFriendRequestHandled: (
     notification: NotificationData,
     accepted: boolean,
@@ -76,15 +82,13 @@ export default function NotificationList({
           isOpen ? "flex" : "hidden",
         )}
       >
-        {notifications === undefined && (
-          <p className="p-4 text-center flock-body-sm text-text-muted">
-            Loading…
-          </p>
-        )}
-        {notifications === null && (
-          <p className="p-4 text-center flock-body-sm text-error" role="alert">
-            {"Couldn't load your notifications"}
-          </p>
+        {notifications === undefined && <NotificationListSkeleton />}
+        {(notifications === null || loadError) && (
+          <div className="p-4">
+            <LoadError onRetry={onRetry}>
+              {loadError ?? "Couldn't load your notifications"}
+            </LoadError>
+          </div>
         )}
         {notifications?.length === 0 && (
           <p className="p-4 text-center flock-body-sm text-text-muted">

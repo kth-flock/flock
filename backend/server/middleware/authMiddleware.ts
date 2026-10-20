@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../prisma";
 import { Request, Response, NextFunction } from "express";
+import { InvalidCredentialsError } from "../utils/errors";
 
+// TODO check these error messages and if they should use error handling
 export const authMiddleware = async (
   req: Request,
   res: Response,
@@ -20,9 +22,7 @@ export const authMiddleware = async (
   }
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ status: "Error", error: "Session token was not provided" });
+    throw new InvalidCredentialsError("Session token was not provided");
   }
 
   try {
@@ -37,14 +37,12 @@ export const authMiddleware = async (
     const decoded = jwt.verify(token, secret);
 
     if (typeof decoded === "string" || typeof decoded.id !== "number") {
-      return res.status(401).json({ status: "Error", error: "Invalid token" });
+      throw new InvalidCredentialsError("Invalid token");
     }
 
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) {
-      return res
-        .status(401)
-        .json({ status: "Error", error: "User no longer exists" });
+      throw new InvalidCredentialsError("User no longer exists");
     }
 
     req.user = { id: user.id };

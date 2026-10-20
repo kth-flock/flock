@@ -10,6 +10,8 @@ import { openFriendSearch } from "@/features/search/components/inviteBar";
 import { FriendsModal } from "@/features/profile/components/friendStack";
 import { fullName } from "@/shared/lib/user";
 import type { PublicUser } from "@/shared/types/user";
+import FriendPreviewSkeleton from "./friendPreviewSkeleton";
+import LoadError from "@/shared/components/loadError";
 
 const MAX_SHOWN_FRIENDS = 7;
 
@@ -19,9 +21,13 @@ const friendLinkStyle =
 
 export default function FriendPreview({
   friends,
+  error,
+  onRetry,
 }: {
   // undefined while loading, null if it failed
   friends: PublicUser[] | null | undefined;
+  error?: string | null;
+  onRetry?: () => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const shownFriends = friends?.slice(0, MAX_SHOWN_FRIENDS) ?? [];
@@ -45,11 +51,11 @@ export default function FriendPreview({
       </span>
       <div className="flex flex-row justify-center gap-4 w-full">
         {friends === undefined ? (
-          <p className={messageStyle}>Loading…</p>
-        ) : friends === null ? (
-          <p className={twMerge(messageStyle, "text-error")} role="alert">
-            {"Couldn't load your friends"}
-          </p>
+          <FriendPreviewSkeleton />
+        ) : friends === null || error ? (
+          <LoadError onRetry={onRetry}>
+            {error ?? "Couldn't load your friends"}
+          </LoadError>
         ) : friends.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">
             {shownFriends.map((friend) => (

@@ -1,27 +1,30 @@
+import { useToast } from "@/shared/components/toast";
 import { useState } from "react";
 import { getErrorMessage } from "@/shared/lib/errors";
 
-export type Result = { ok: boolean; message: string };
-
 export function useSave() {
   const [isSaving, setIsSaving] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const toast = useToast();
 
-  async function save(action: () => Promise<void>, successMessage: string) {
+  async function save(
+    action: () => Promise<void>,
+    successMessage: string,
+    errorMessage: string,
+  ) {
     setIsSaving(true);
-    setResult(null);
+    setErrorMessage(null);
     try {
       await action();
-      setResult({ ok: true, message: successMessage });
+
+      toast(successMessage, "success");
     } catch (err) {
-      setResult({
-        ok: false,
-        message: getErrorMessage(err, "Couldn't save. Try again."),
-      });
+      setErrorMessage(getErrorMessage(err, "Couldn't save. Try again."));
+      toast(errorMessage, "error");
     } finally {
       setIsSaving(false);
     }
   }
 
-  return { save, isSaving, result, setResult };
+  return { save, isSaving, errorMessage, setErrorMessage };
 }
