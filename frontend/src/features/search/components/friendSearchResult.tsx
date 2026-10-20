@@ -76,11 +76,11 @@ export default function FriendSearchResult({
     isPending && (pendingAction === "add" || pendingAction === "accept");
 
   return (
-    <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-2 gap-1">
+    <div className="flock-body-sm flex h-full w-full flex-row items-center justify-between py-1 gap-1">
       <Link
         href={`/profile/${user.id}`}
         onClick={onOpenProfile}
-        className="group/result flex min-w-0 flex-1 items-center"
+        className="-ml-1 flex min-w-0 flex-1 items-center rounded-lg py-1 pl-1 transition-colors hover:bg-accent/10"
       >
         <ProfileImage
           firstName={user.firstName}
@@ -88,7 +88,7 @@ export default function FriendSearchResult({
           profileImgSrc={user.imageUrl ?? ""}
         />
         <span
-          className="min-w-0 flex-1 line-clamp-2 wrap-break-word px-2 group-hover/result:underline"
+          className="min-w-0 flex-1 line-clamp-2 wrap-break-word px-2"
           title={fullName(user)}
         >
           {fullName(user)}
