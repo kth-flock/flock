@@ -27,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreBaskerville.variable} ${openSans.variable} h-full antialiased`}
     >
-      <body className="flex flex-col px-6 md:px-24 items-center">
+      <body className="flex flex-col w-full px-6 md:px-24 items-center">
         <AuthProvider>
           <ToastProvider>
             <div className="flex min-h-dvh w-full flex-col">

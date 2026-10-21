@@ -21,7 +21,7 @@ export default function EventPillDetails({
   const hostLabel = isHost ? "You" : fullName(event.createdBy);
 
   return (
-    <div className="flex w-full items-center gap-6">
+    <div className="flex w-full items-center gap-4 md:gap-6">
       <span
         className={twMerge(
           "flex w-14 shrink-0 flex-col items-end md:w-16",
@@ -40,17 +40,19 @@ export default function EventPillDetails({
       <Link
         href={`/event/${event.id}`}
         className={twMerge(
-          "flex w-full flex-col gap-1 truncate rounded-lg px-4 py-2",
+          "flex min-w-0 flex-1 flex-col gap-1 overflow-hidden rounded-lg px-4 py-2",
           EventDetailStyles[status],
         )}
       >
         <span
           className={twMerge(
-            "inline-flex items-center justify-between truncate flock-body font-semibold!",
+            "flex min-w-0 items-center gap-2 flock-body font-semibold!",
             strike,
           )}
         >
-          {event.title}
+          <span className="min-w-0 flex-1 truncate" title={event.title}>
+            {event.title}
+          </span>
           <RsvpStatus rsvp={status} />
         </span>
         {dayInfo.isMultiDay && event.endsAt && (
