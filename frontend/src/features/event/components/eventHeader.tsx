@@ -45,7 +45,7 @@ export default function EventHeader({
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
         <div className="z-20 flex w-full items-end justify-between p-6 md:p-8">
-          <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md">
+          <div className="flex min-w-0 flex-col gap-3 text-background drop-shadow-md text-white">
             {isOngoing(event.startsAt, event.endsAt) && <OngoingPill />}
             <h1 className="flock-h1 wrap-break-word">{event.title}</h1>
             <Link
