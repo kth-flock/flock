@@ -39,12 +39,12 @@ export default function CalendarListView({
   }
 
   return (
-    <ol className="mt-4 flex flex-col gap-6">
+    <ol className="mt-4 flex min-w-0 flex-col gap-6">
       {days.map(({ day, events }) => (
         <li
           key={dayKey(day)}
           ref={dayKey(day) === targetKey ? targetRef : null}
-          className="flex scroll-mt-24 items-center gap-4 not-last:border-b border-neutral pb-6"
+          className="flex w-full min-w-0 scroll-mt-24 items-center gap-2 not-last:border-b border-neutral pb-6"
         >
           <div className="flex w-12 shrink-0 flex-col items-center">
             <DayNumber
@@ -57,9 +57,9 @@ export default function CalendarListView({
             </span>
           </div>
 
-          <ul className="flex flex-1 flex-col gap-3 border-l pl-4">
+          <ul className="flex min-w-0 flex-1 flex-col gap-3 border-l pl-2">
             {events.map((event) => (
-              <li key={event.id}>
+              <li className="min-w-0" key={event.id}>
                 <EventPillDetails event={event} day={day} />
               </li>
             ))}
