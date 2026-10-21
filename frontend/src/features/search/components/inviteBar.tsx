@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FaUserPlus } from "react-icons/fa6";
+import { FaUserPlus, FaXmark } from "react-icons/fa6";
 import SearchBar from "./searchBar";
 import { twMerge } from "tailwind-merge";
 import FriendSearchResult from "./friendSearchResult";
@@ -146,12 +146,41 @@ export default function InviteBar() {
     <div
       ref={barRef}
       className={twMerge(
-        "relative flex h-full items-center rounded-full",
-        searchBarToggle ? "z-50 w-48 px-1 py-1 md:w-64" : "justify-center",
+        "relative flex h-full items-center justify-center rounded-full",
+        searchBarToggle && "z-50 md:w-64 md:px-1 md:py-1",
       )}
     >
-      {searchBarToggle ? (
-        <>
+      <button
+        type="button"
+        aria-label={
+          searchBarToggle ? "Close invite search" : "Open invite search"
+        }
+        aria-expanded={searchBarToggle}
+        className={twMerge(
+          `flex h-[50%] ${navLinkStyle}`,
+          searchBarToggle && "md:hidden",
+        )}
+        onClick={() =>
+          searchBarToggle ? closeSearch() : setSearchBarToggle(true)
+        }
+      >
+        <FaUserPlus
+          className={twMerge(
+            navIconStyle,
+            searchBarToggle ? "fill-secondary" : "",
+          )}
+        />
+      </button>
+
+      {searchBarToggle && (
+        <div
+          className={twMerge(
+            // mobile: floating panel, centered below the button
+            "absolute translate-x-13 top-full z-50 mt-2 w-60 max-w-[calc(100vw-3rem)]  rounded-full shadow-md",
+            // desktop: inline, replaces the button
+            "md:static md:mt-0 md:w-full md:max-w-none md:translate-x-0 md:shadow-none",
+          )}
+        >
           <SearchBar
             autoFocus
             id="invite-search"
@@ -194,17 +223,7 @@ export default function InviteBar() {
               )}
             </div>
           )}
-        </>
-      ) : (
-        <button
-          type="button"
-          aria-label="Open invite search"
-          aria-expanded={false}
-          className={`flex h-[50%] ${navLinkStyle}`}
-          onClick={() => setSearchBarToggle(true)}
-        >
-          <FaUserPlus className={navIconStyle} />
-        </button>
+        </div>
       )}
     </div>
   );
