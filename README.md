@@ -136,6 +136,10 @@ This will create a new deployment in Vercel. Inspect build logs to ensure that e
 To deploy backend to [Render](https://render.com), create a new pull request from `main` --> `production`.
 If server is not correctly deployed, log in to Render and create a manual deployment.
 
+
+## Project Architecture
+<img width="610" height="438" alt="Screenshot 2026-10-29 at 10 30 38" src="https://github.com/user-attachments/assets/70d3c9e1-31ff-41a8-b6bc-227a65c41394" />
+
 ## Project structure
 
 ```bash
